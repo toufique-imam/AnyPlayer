@@ -1,8 +1,6 @@
 package com.stream.jmxplayer
 
 
-import android.app.Activity
-import android.app.MediaRouteButton
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -10,7 +8,6 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.Patterns
 import android.view.*
 import android.view.animation.Animation
@@ -27,12 +24,6 @@ import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
-import com.google.android.gms.cast.MediaInfo
-import com.google.android.gms.cast.MediaLoadRequestData
-import com.google.android.gms.cast.MediaMetadata
-import com.google.android.gms.cast.framework.CastContext
-import com.google.android.gms.cast.framework.CastSession
-import com.google.android.gms.cast.framework.SessionManagerListener
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
@@ -45,9 +36,8 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.UnityAdUtils
-import com.unity3d.ads.IUnityAdsInitializationListener
-import com.unity3d.ads.UnityAds
 import kotlin.math.max
+import kotlin.system.exitProcess
 
 class PlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
@@ -84,12 +74,17 @@ class PlayerActivity : AppCompatActivity(),
     private lateinit var playerTitle: TextView
     private lateinit var playerDesc: TextView
     private lateinit var playerLang: TextView
+
     private lateinit var mPlayerView: PlayerView
     private lateinit var backButton: ImageButton
     private lateinit var menuButton: ImageButton
-    private lateinit var castButton: MediaRouteButton
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
+
+    private lateinit var forwardButton: ImageButton
+    private lateinit var rewindButton: ImageButton
+    private lateinit var playButton: ImageButton
+    private lateinit var pauseButton: ImageButton
 
     private var aspectRatio: EAspectRatio = EAspectRatio.ASPECT_MATCH
     private var resizeMode: EResizeMode = EResizeMode.FIT
@@ -97,142 +92,118 @@ class PlayerActivity : AppCompatActivity(),
     lateinit var unityAdUtils: UnityAdUtils
     lateinit var iAdListener: IAdListener
 
-    lateinit var mCastContext: CastContext
-    var mCastSession: CastSession? = null
-    lateinit var mediaItem: MediaItem
-
-    private var mPlayBackState: PlaybackState = PlaybackState.IDLE
-    private var mLocation: PlaybackLocation = PlaybackLocation.LOCAL
-
-
-    lateinit var mSessionManagerListener: SessionManagerListener<CastSession>
-
-    /**
-     * indicates whether we are doing a local or a remote playback
-     */
-    enum class PlaybackLocation {
-        LOCAL, REMOTE
-    }
-
-    /**
-     * List of various states that we can be in
-     */
-    enum class PlaybackState {
-        PLAYING, PAUSED, BUFFERING, IDLE
-    }
     /*
-    Cast Functions
+    Life Cycle
      */
 
-    private fun setupCastListeners() {
-        mSessionManagerListener = object : SessionManagerListener<CastSession> {
-            override fun onSessionStarting(p0: CastSession) {}
+    override fun onCreate(savedInstanceState: Bundle?) {
+        logger("onCreate", "called")
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_player)
 
-            override fun onSessionStarted(p0: CastSession, p1: String) {
-                onApplicationConnected(p0)
+        setUpOrientation()
+        alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
+        getDataFromIntent()
+        initAnimation()
+        allFindViewByID()
+        setUpDrawer()
+
+        setUpAppBar()
+        setUpAppBarTexts(playerModel.title, playerModel.description, playerModel.mLanguage)
+
+        setUpMenuButton()
+
+        setUpPlayerViewControl()
+        if (savedInstanceState != null) {
+            playbackPosition = savedInstanceState.getLong(_playbackPosition, 0)
+            currentWindow = savedInstanceState.getInt(_currentWindowIndex)
+            autoPlay = savedInstanceState.getBoolean(_autoPlay)
+        }
+
+        unityAdUtils = UnityAdUtils(this)
+    }
+
+    private fun setUpOrientation() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        if (Build.VERSION.SDK_INT < 30) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        } else {
+            val controller = window.insetsController
+            if (controller != null) {
+                controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                controller.systemBarsBehavior =
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
+        }
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
-            override fun onSessionStartFailed(p0: CastSession, p1: Int) {
-                onApplicationDisconnected()
-            }
+    }
 
-            override fun onSessionEnding(p0: CastSession) {}
-
-            override fun onSessionEnded(p0: CastSession, p1: Int) {
-                onApplicationDisconnected()
-            }
-
-            override fun onSessionResuming(p0: CastSession, p1: String) {}
-
-            override fun onSessionResumed(p0: CastSession, p1: Boolean) {
-                onApplicationConnected(p0)
-            }
-
-            override fun onSessionResumeFailed(p0: CastSession, p1: Int) {
-                onApplicationDisconnected()
-            }
-
-            override fun onSessionSuspended(p0: CastSession, p1: Int) {}
-
-            fun onApplicationConnected(castSession: CastSession) {
-                mCastSession = castSession
-                if (mPlayBackState == PlaybackState.PLAYING) {
-                    mPlayer!!.pause()
-                    loadRemoteMedia(playbackPosition, true)
-                } else {
-                    mPlayBackState = PlaybackState.IDLE
-
-                }
-                updatePlayButton(mPlayBackState)
-                // supportInvalidateOptionsMenu()
-
-            }
-
-            fun onApplicationDisconnected() {
-                updatePlayBackLocation(PlaybackLocation.LOCAL)
-                mPlayBackState = PlaybackState.IDLE
-                mLocation = PlaybackLocation.LOCAL
-                updatePlayButton(mPlayBackState)
-                // supportInvalidateOptionsMenu()
-
-            }
-
+    override fun onStart() {
+        logger("Came here", "onStart")
+        super.onStart()
+        if (Util.SDK_INT > 23) {
+            initPlayer()
         }
     }
 
-    private fun setUpControlsCallbacks() {
-
-    }
-
-    fun updatePlayButton(playbackState: PlaybackState) {
-
-    }
-
-    fun playCastLocal(position: Long) {
-        //todo
-        //startControllersTimer()
-        if (mLocation == PlaybackLocation.LOCAL) {
-            mPlayer?.seekTo(position)
-            mPlayer?.play()
-        } else if (mLocation == PlaybackLocation.REMOTE) {
-            mPlayBackState = PlaybackState.BUFFERING
-            updatePlayButton(mPlayBackState)
-            mCastSession?.remoteMediaClient?.seek(position)
+    override fun onResume() {
+        super.onResume()
+        logger("Came here", "onResume")
+        // start in pure full screen
+        hideSystemUi()
+        if (Util.SDK_INT <= 23) {
+            initPlayer()
         }
-        //todo
-        //restartTrickPlayTimer()
     }
 
+    private fun allFindViewByID() {
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.nav_view)
+        mPlayerView = findViewById(R.id.media_view)
+        forwardButton = mPlayerView.findViewById(R.id.exo_ffwd)
+        rewindButton = mPlayerView.findViewById(R.id.exo_rew)
+        playButton = mPlayerView.findViewById(R.id.exo_play)
+        pauseButton = mPlayerView.findViewById(R.id.exo_pause)
+        backButton = findViewById(R.id.exo_back)
 
-    private fun buildMediaInfo(): MediaInfo? {
-        val movieData: MediaMetadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE)
-        movieData.putString(MediaMetadata.KEY_TITLE, playerModel.title)
+        playerTitle = findViewById(R.id.textView_title_exo)
+        playerDesc = findViewById(R.id.textView_desc_exo)
+        playerLang = findViewById(R.id.textView_language_exo)
 
-        return MediaInfo.Builder(playerModel.link)
-            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-            .setContentType("videos/*")
-            .setMetadata(movieData)
-            .setCustomData(PlayerUtils.createJSONObject(playerModel))
-            .build()
+        menuButton = findViewById(R.id.exo_menu)
     }
 
-    fun loadRemoteMedia(position: Long, autoPlay: Boolean) {
-        if (mCastSession == null) {
-            return
+    override fun onPause() {
+        super.onPause()
+        logger("Came here", "onPause")
+        if (Util.SDK_INT <= 23) {
+            releasePlayer()
         }
-        val mediaClient = mCastSession!!.remoteMediaClient ?: return
-        mediaClient.load(
-            MediaLoadRequestData.Builder()
-                .setMediaInfo(buildMediaInfo())
-                .setAutoplay(autoPlay)
-                .setCurrentTime(position)
-                .build()
-        )
     }
 
+    override fun onStop() {
+        super.onStop()
+        logger("Came here", "onStop")
+        if (Util.SDK_INT > 23) {
+            releasePlayer()
+        }
+    }
 
-    fun updatePlayBackLocation(location: PlaybackLocation) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        logger("onConfigChanged", "here")
+        //setTitleText(playerModel.title, playerTitle)
+    }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(_playbackPosition, playbackPosition)
+        outState.putInt(_currentWindowIndex, currentWindow)
+        outState.putBoolean(_autoPlay, autoPlay)
     }
 
     /*
@@ -314,45 +285,48 @@ class PlayerActivity : AppCompatActivity(),
 
     private fun goAction() {
         if (btnClick == "ADM") {
-            adActivity(this, 2)
+            adActivity(2)
         } else if (btnClick == "IDM") {
-            adActivity(this, 1)
+            adActivity(1)
         }
     }
 
-    private fun workAfterAdActivity(state: Int) {
-        when (state) {
-            1 -> {
-                downloadWithIDM()
-            }
-            2 -> {
-                downloadWithADM()
-            }
-            4 -> {
-                mPlayer?.pause()
-                val intentNow = PlayerUtils.createViewIntent(playerModel)
-                intentNow.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                intentNow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    private fun newPlayModel(state: Bundle) {
+        errorCount = 0
+        playerModel = state.getSerializable(BUNDLE_MODEL) as PlayerModel
+        autoPlay = false
+        initPlayer()
+    }
 
-                if (intentNow.resolveActivity(packageManager) != null) {
-                    startActivity(intentNow)
-                } else {
-                    toaster(this, GlobalFunctions.NO_APP_FOUND_PLAY_MESSAGE)
-                }
-            }
-            3 -> {
-                setUpAppBarTexts()
-                initPlayer()
+    private fun workAfterAdActivity(state: Bundle, beforeAd: Boolean) {
+        val stateNow = state.getInt(BUNDLE_STATE, 0)
+        if (stateNow == 1) {
+            downloadWithIDM()
+        } else if (stateNow == 2) {
+            downloadWithADM()
+        } else if (stateNow == 3 && beforeAd) {
+            newPlayModel(state)
+        } else if (stateNow == 4) {
+            mPlayer?.pause()
+            val intentNow = PlayerUtils.createViewIntent(playerModel)
+            if (intentNow.resolveActivity(packageManager) != null) {
+                startActivity(intentNow)
+            } else {
+                toaster(this, GlobalFunctions.NO_APP_FOUND_PLAY_MESSAGE)
             }
         }
     }
 
-    private fun adActivity(activity: Activity, state: Int) {
+    private fun adActivity(state: Int) {
+        val bundle = Bundle()
+        bundle.putInt(BUNDLE_STATE, state)
+        if (state == 3)
+            bundle.putSerializable(BUNDLE_MODEL, playerModel)
         iAdListener = object : IAdListener {
             override fun onAdActivityDone(result: String) {
                 alertDialogLoading.dismiss()
-                logger("Splash Ad", result)
-                workAfterAdActivity(state)
+                logger("Ad", result)
+                workAfterAdActivity(bundle, false)
 
             }
 
@@ -362,15 +336,16 @@ class PlayerActivity : AppCompatActivity(),
 
             override fun onAdLoaded() {
                 alertDialogLoading.dismiss()
-                unityAdUtils.showAd(activity)
+                unityAdUtils.showAd(this@PlayerActivity)
             }
 
             override fun onAdError(error: String) {
                 alertDialogLoading.dismiss()
-                logger("Splash Ad", error)
-                workAfterAdActivity(state)
+                logger("Ad ", error)
+                workAfterAdActivity(bundle, false)
             }
         }
+        workAfterAdActivity(bundle, true)
         unityAdUtils.addListener(iAdListener)
         unityAdUtils.loadAd()
     }
@@ -436,10 +411,6 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun setUpPlayerViewControl() {
-        val forwardButton: ImageButton = mPlayerView.findViewById(R.id.exo_ffwd)
-        val rewindButton: ImageButton = mPlayerView.findViewById(R.id.exo_rew)
-        val playButton: ImageButton = mPlayerView.findViewById(R.id.exo_play)
-        val pauseButton: ImageButton = mPlayerView.findViewById(R.id.exo_pause)
 
         setFocusOnExoControl(
             forwardButton,
@@ -484,14 +455,14 @@ class PlayerActivity : AppCompatActivity(),
 
         _animationInMid.fillAfter = true
         _animationOutMid.fillAfter = false
-
-
     }
 
-    private fun appBarSetup() {
-        backButton = findViewById(R.id.exo_back)
+    private fun setUpAppBar() {
         backButton.setOnClickListener {
             finish()
+            finishAffinity()
+            exitProcess(0)
+
         }
         backButton.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
@@ -505,53 +476,21 @@ class PlayerActivity : AppCompatActivity(),
                 v.setBackgroundColor(Color.TRANSPARENT)
             }
         }
-
-        setUpMenuButton()
-
-        setUpCastButton()
-
-        setUpAppBarTexts()
-
     }
 
-    private fun setUpAppBarTexts() {
-        playerTitle = findViewById(R.id.textView_title_exo)
-        setTitleText(playerModel.title, playerTitle)
-
-        playerDesc = findViewById(R.id.textView_desc_exo)
-        playerDesc.text = playerModel.description
-
-        playerLang = findViewById(R.id.textView_language_exo)
-        playerLang.text = playerModel.mLanguage
+    private fun setUpAppBarTexts(title: String, desc: String, lang: String) {
+        setTitleText(title, playerTitle)
+        playerDesc.text = desc
+        playerLang.text = lang
     }
 
     private fun setUpMenuButton() {
-        menuButton = findViewById(R.id.exo_menu)
         menuButton.setOnClickListener {
             hideSystemUi()
             drawerLayout.openDrawer(Gravity.RIGHT)
 
         }
         menuButton.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus) {
-                view.startAnimation(_animationInRight)
-            } else {
-                view.startAnimation(_animationOutRight)
-            }
-            if (hasFocus) {
-                view.setBackgroundColor(Color.GRAY)
-            } else {
-                view.setBackgroundColor(Color.TRANSPARENT)
-            }
-        }
-    }
-
-    private fun setUpCastButton() {
-        castButton = findViewById(R.id.exo_custom_cast)
-        castButton.setOnClickListener {
-            toaster(this, "cast NOT DONE")
-        }
-        castButton.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus) {
                 view.startAnimation(_animationInRight)
             } else {
@@ -652,36 +591,42 @@ class PlayerActivity : AppCompatActivity(),
     nav setUp
      */
     private fun setUpDrawer() {
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.menu_change_orientation) {
-            requestedOrientation =
-                if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                } else {
-                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                }
-        } else if (id == R.id.menu_download_video) {
-            mPlayer?.pause()
-            showDownloadDialog()
-        } else if (id == R.id.menu_open_with_other_app) {
-            adActivity(this, 4)
-        } else if (id == R.id.menu_resize) {
-            changeResize()
-            item.title = resources.getString(R.string.resize) + " : " + resizeMode.valueStr
-        } else if (id == R.id.menu_aspect_ratio) {
-            changeAspectRatio()
-            item.title = resources.getString(R.string.aspect_ratio) + " : " + aspectRatio.valueStr
-        } else if (id == R.id.menu_custom_stream) {
-            mPlayer?.pause()
-            userInputStream()
-        } else if (id == R.id.menu_m3u) {
-            toaster(this, "NOT YET DONE")
+        when (item.itemId) {
+            R.id.menu_change_orientation -> {
+                requestedOrientation =
+                    if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    } else {
+                        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    }
+            }
+            R.id.menu_download_video -> {
+                mPlayer?.pause()
+                showDownloadDialog()
+            }
+            R.id.menu_open_with_other_app -> {
+                adActivity(4)
+            }
+            R.id.menu_resize -> {
+                changeResize()
+                item.title = resources.getString(R.string.resize) + " : " + resizeMode.valueStr
+            }
+            R.id.menu_aspect_ratio -> {
+                changeAspectRatio()
+                item.title =
+                    resources.getString(R.string.aspect_ratio) + " : " + aspectRatio.valueStr
+            }
+            R.id.menu_custom_stream -> {
+                mPlayer?.pause()
+                userInputStream()
+            }
+            R.id.menu_m3u -> {
+                toaster(this, "NOT YET DONE")
+            }
         }
         return true
     }
@@ -697,10 +642,13 @@ class PlayerActivity : AppCompatActivity(),
         } else {
             userInputStream()
         }
-        appBarSetup()
     }
 
     private fun userInputStream() {
+        if (drawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+            drawerLayout.closeDrawer(Gravity.RIGHT)
+        }
+        hideSystemUi()
 
         val dialogueView: View = layoutInflater.inflate(
             R.layout.custom_dialogue_user_stream, null
@@ -740,8 +688,9 @@ class PlayerActivity : AppCompatActivity(),
                         userAgent.text.toString()
                     }
                 playerModel = PlayerModel(titleNow, urlNow, userAgentNow)
+                logger("playerModelUser", playerModel.toString())
                 alertDialog.dismiss()
-                adActivity(this, 3)
+                adActivity(3)
             }
         }
 
@@ -794,29 +743,32 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun initPlayer() {
-        Log.e("MainActivity", "came here")
+        inErrorState = false
         if (mPlayer == null) {
             mPlayer = PlayerUtils.createPlayer(this)
-            mPlayer!!.playWhenReady = autoPlay
-            mPlayer!!.seekTo(currentWindow, playbackPosition)
-            mPlayer!!.addListener(this)
-            mPlayer!!.addAnalyticsListener(this)
+            mPlayer?.playWhenReady = autoPlay
+            mPlayer?.addListener(this)
+            mPlayer?.addAnalyticsListener(this)
             mPlayerView.player = mPlayer
         }
-        setAspectRatio()
-        setResize()
         val mediaSource = PlayerUtils.createMediaSource(this, playerModel, errorCount)
-        mPlayer!!.setMediaSource(mediaSource)
-        mPlayer!!.prepare()
+        mPlayer?.setMediaSource(mediaSource)
+        mPlayer?.prepare()
+        if (autoPlay) {
+            mPlayer?.play()
+        } else {
+            mPlayer?.pause()
+        }
+        setUpAppBarTexts(playerModel.title, playerModel.description, playerModel.mLanguage)
     }
 
     private fun releasePlayer() {
         if (mPlayer != null) {
             // save the player state before releasing its resources
-            playbackPosition = mPlayer!!.currentPosition
-            currentWindow = mPlayer!!.currentWindowIndex
-            autoPlay = mPlayer!!.playWhenReady
-            mPlayer!!.release()
+            playbackPosition = mPlayer?.currentPosition ?: 0L
+            currentWindow = mPlayer?.currentWindowIndex ?: 0
+            autoPlay = mPlayer?.playWhenReady ?: true
+            mPlayer?.release()
             mPlayer = null
         }
     }
@@ -827,8 +779,8 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun updateResumePosition() {
-        currentWindow = mPlayer!!.currentWindowIndex
-        playbackPosition = max(0, mPlayer!!.contentPosition)
+        currentWindow = mPlayer?.currentWindowIndex ?: 0
+        playbackPosition = max(0, mPlayer?.contentPosition ?: 0L)
     }
 
 
@@ -837,6 +789,7 @@ class PlayerActivity : AppCompatActivity(),
         loadEventInfo: LoadEventInfo,
         mediaLoadData: MediaLoadData
     ) {
+        logger("Loading", loadEventInfo.uri.toString())
         if (loadEventInfo.uri.toString() == MAGNA_TV_BLOCKED) {
             playerModel.link = ""
             inErrorState = true
@@ -874,6 +827,13 @@ class PlayerActivity : AppCompatActivity(),
     override fun onPlayerError(error: ExoPlaybackException) {
         logger(TAG, "Error : " + error.message)
         logger(TAG, "Error Cause : " + error.cause)
+        logger(
+            TAG,
+            "Error Media :" +
+                    " " + mPlayer?.currentMediaItem?.toString() +
+                    " " + mPlayer?.mediaMetadata?.mediaUri +
+                    " " + mPlayer?.mediaMetadata.toString()
+        )
         inErrorState = true
         errorCount++
         if (errorCount == 1) {
@@ -902,118 +862,9 @@ class PlayerActivity : AppCompatActivity(),
         if (inErrorState) updateResumePosition()
     }
 
-    /*
-    Life Cycle
-     */
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
-
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        setUpDrawer()
-
-        alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
-        setUpControlsCallbacks()
-        setUpCastButton()
-        mCastContext = CastContext.getSharedInstance(this)
-
-        mCastSession = mCastContext.sessionManager.currentCastSession
-
-
-        if (mCastSession != null && mCastSession!!.isConnected) {
-            updatePlayBackLocation(PlaybackLocation.REMOTE)
-        } else {
-            updatePlayBackLocation(PlaybackLocation.LOCAL)
-        }
-        mPlayBackState = PlaybackState.IDLE
-        updatePlayButton(mPlayBackState)
-
-        if (Build.VERSION.SDK_INT < 30) {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-            )
-        } else {
-            val controller = window.insetsController
-            if (controller != null) {
-                controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                controller.systemBarsBehavior =
-                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        }
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        mPlayerView = findViewById(R.id.media_view)
-
-        getDataFromIntent()
-        initAnimation()
-        setUpPlayerViewControl()
-        if (savedInstanceState != null) {
-            playbackPosition = savedInstanceState.getLong(_playbackPosition, 0)
-            currentWindow = savedInstanceState.getInt(_currentWindowIndex)
-            autoPlay = savedInstanceState.getBoolean(_autoPlay)
-        }
-
-        unityAdUtils = UnityAdUtils(this, object : IUnityAdsInitializationListener {
-            override fun onInitializationComplete() {
-                logger("unity init", "success")
-            }
-
-            override fun onInitializationFailed(
-                p0: UnityAds.UnityAdsInitializationError?,
-                p1: String?
-            ) {
-                logger("Unity Init error", p0.toString() + " " + p1)
-            }
-
-        })
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (Util.SDK_INT > 23) {
-            initPlayer()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // start in pure full screen
-        hideSystemUi()
-        if (Util.SDK_INT <= 23 || mPlayer == null) {
-            initPlayer()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (Util.SDK_INT <= 23) {
-            releasePlayer()
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (Util.SDK_INT > 23) {
-            releasePlayer()
-        }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        setTitleText(playerModel.title, playerTitle)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (mPlayer != null) {
-            outState.putLong(_playbackPosition, playbackPosition)
-            outState.putInt(_currentWindowIndex, currentWindow)
-            outState.putBoolean(_autoPlay, autoPlay)
-        }
-    }
-
     companion object {
+        const val BUNDLE_MODEL = "PLAY_MODEL"
+        const val BUNDLE_STATE = "STATE_MODEL"
         const val SERVER_ERROR_TEXT =
             "Lo sentimos, canal no disponible utilice otro servidor para volver a intentar o vuelva más tarde"
         const val TAG = "ExoPlayer"
@@ -1040,6 +891,7 @@ class PlayerActivity : AppCompatActivity(),
         }
     }
 }
+
 
 /*
 archive

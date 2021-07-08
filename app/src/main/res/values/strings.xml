@@ -19,4 +19,14 @@
     <string name="cast_app_id">C0868879</string>
 
     <string name="loading">Cargando Contenido..\nExpere un momento por favor.</string>
+    <string name="movie_name">Movie Name</string>
+    <string name="season_episode">Season | Episode</string>
+    <string name="langauge_name">Langauge Name</string>
+    <string name="back_button">back button</string>
+    <string name="menu_button">menu button</string>
+    <string name="forward_button">forward button</string>
+    <string name="pause_button">pause button</string>
+    <string name="cast_button">cast button</string>
+    <string name="backward_button">backward button</string>
+    <string name="play_button">play button</string>
 </resources>

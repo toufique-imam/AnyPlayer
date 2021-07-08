@@ -53,7 +53,7 @@ class PlayerModel : Serializable {
                 + mainLinkIntent + " : " + mainLink + "\n"
                 + userAgentIntent + " : " + userAgent + "\n"
                 + drmStringIntent + " : " + drmSting + "\n"
-                + cookieIntent + " : " + cookieIntent + "\n"
+                + cookieIntent + " : " + cookies + "\n"
                 + titleIntent + " : " + title + "\n"
                 + descriptionIntent + " : " + description + "\n"
                 + languageIntent + " : " + mLanguage + "\n"
@@ -69,7 +69,7 @@ class PlayerModel : Serializable {
         mainLink = link
         drmSting = ""
         cookies = ""
-        description = "JMX Player"
+        description = "I love JMX Player"
         headers["User-Agent"] = userAgent
         headers["referer"] = mainLink
     }

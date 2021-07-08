@@ -29,12 +29,13 @@ import com.stream.jmxplayer.model.PlayerModel.Companion.mainLinkIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.playerLatinoDomain
 import com.stream.jmxplayer.model.PlayerModel.Companion.titleIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.userAgentIntent
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import org.json.JSONObject
 
 
 class PlayerUtils {
     companion object {
-         fun createJSONObject(playerModel: PlayerModel): JSONObject {
+        fun createJSONObject(playerModel: PlayerModel): JSONObject {
             return JSONObject(Gson().toJson(playerModel))
         }
 
@@ -65,6 +66,8 @@ class PlayerUtils {
                 Uri.parse(playerModel.link),
                 "video/* , application/x-mpegURL"
             )
+            intentNow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intentNow.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             return addExtraToIntent(playerModel, intentNow)
         }
 
@@ -179,6 +182,7 @@ class PlayerUtils {
             playerModel: PlayerModel,
             errorCount: Int
         ): MediaSourceFactory {
+            logger("createMediaSource", playerModel.toString())
             val httpDataSourceFactory = createDataSourceFactory(activity, playerModel)
             val uriNow = Uri.parse(playerModel.link)
             when (Util.inferContentType(uriNow)) {
@@ -187,7 +191,6 @@ class PlayerUtils {
                         DefaultDashChunkSource.Factory(httpDataSourceFactory),
                         httpDataSourceFactory
                     )
-
                 }
                 C.TYPE_HLS -> {
                     return HlsMediaSource.Factory(httpDataSourceFactory)

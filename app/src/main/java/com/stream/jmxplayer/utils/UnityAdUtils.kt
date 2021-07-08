@@ -5,11 +5,10 @@ import android.content.Context
 import com.stream.jmxplayer.model.IAdListener
 import com.unity3d.ads.*
 
-class UnityAdUtils(context: Context, initListener: IUnityAdsInitializationListener) {
+class UnityAdUtils(context: Context) {
     companion object {
         const val unityAdId = "4191597"
         const val placementId1 = "Interstitial_Android"
-        const val placementId2 = "Like_interstitial"
         const val testMode = true
         const val TAG = "UnityAd"
     }
@@ -20,11 +19,13 @@ class UnityAdUtils(context: Context, initListener: IUnityAdsInitializationListen
     init {
         initListener()
         UnityAds.addListener(iUnityAdsListener)
-        UnityAds.initialize(context, unityAdId, testMode, true, initListener)
+        if (!UnityAds.isInitialized())
+            UnityAds.initialize(context, unityAdId, testMode, true)
     }
 
+
     fun addListener(iAdListener: IAdListener) {
-        this.iAdListener = iAdListener;
+        this.iAdListener = iAdListener
     }
 
     private fun initListener() {
@@ -106,7 +107,7 @@ class UnityAdUtils(context: Context, initListener: IUnityAdsInitializationListen
                 p0: String?,
                 p1: UnityAds.UnityAdsShowCompletionState?
             ) {
-                iAdListener.onAdActivityDone("Success $p0");
+                iAdListener.onAdActivityDone("Success $p0")
             }
 
         })
