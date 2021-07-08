@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_change_orientation"
+            android:title="@string/rotate" />
+
+        <item
+            android:id="@+id/menu_download_video"
+            android:title="@string/download_video" />
+
+        <item
+            android:id="@+id/menu_open_with_other_app"
+            android:title="@string/open_with" />
+        <item
+            android:id="@+id/menu_resize"
+            android:title="@string/resize" />
+        <item
+            android:id="@+id/menu_aspect_ratio"
+            android:title="@string/aspect_ratio"
+            android:visible="true" />
+    </group>
+    <item android:title="Personalize">
+        <menu>
+            <item
+                android:id="@+id/menu_custom_stream"
+                android:title="Stream Personal" />
+            <item
+                android:id="@+id/menu_m3u"
+                android:title="Stream M3U Playlist" />
+        </menu>
+    </item>
+
+</menu>
