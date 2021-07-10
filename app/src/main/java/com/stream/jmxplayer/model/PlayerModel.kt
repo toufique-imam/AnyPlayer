@@ -32,6 +32,7 @@ class PlayerModel : Serializable {
         const val titleIntent = "TITLE"
         const val descriptionIntent = "DESCRIPTION"
         const val mainLinkIntent = "MAIN_LINK"
+        const val typeIntent = "STREAM_TYPE"
         const val playerLatinoDomain = "app.playerlatino.live"
         const val DIRECT_PUT = "MODEL"
 
@@ -45,12 +46,14 @@ class PlayerModel : Serializable {
     var title: String = "JMX Player"
     var description: String = "JMX Player"
     var mLanguage: String = "default"
+    var streamType : Int = 0
     var headers: HashMap<String, String> = HashMap()
 
 
     override fun toString(): String {
         return (linkIntent + " : " + link + "\n"
                 + mainLinkIntent + " : " + mainLink + "\n"
+                + typeIntent + " : " + streamType + "\n"
                 + userAgentIntent + " : " + userAgent + "\n"
                 + drmStringIntent + " : " + drmSting + "\n"
                 + cookieIntent + " : " + cookies + "\n"
@@ -69,6 +72,7 @@ class PlayerModel : Serializable {
         mainLink = link
         drmSting = ""
         cookies = ""
+        streamType = 0
         description = "I love JMX Player"
         headers["User-Agent"] = userAgent
         headers["referer"] = mainLink

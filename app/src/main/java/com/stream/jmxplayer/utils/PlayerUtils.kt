@@ -17,7 +17,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
-import com.google.gson.Gson
+import com.stream.jmxplayer.casty.MediaData
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.model.PlayerModel.Companion.cookieIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.descriptionIntent
@@ -28,15 +28,46 @@ import com.stream.jmxplayer.model.PlayerModel.Companion.linkIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.mainLinkIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.playerLatinoDomain
 import com.stream.jmxplayer.model.PlayerModel.Companion.titleIntent
+import com.stream.jmxplayer.model.PlayerModel.Companion.typeIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.userAgentIntent
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
-import org.json.JSONObject
 
 
 class PlayerUtils {
     companion object {
-        fun createJSONObject(playerModel: PlayerModel): JSONObject {
-            return JSONObject(Gson().toJson(playerModel))
+        private fun getMimeType(link: String): String {
+            val uriNow = Uri.parse(link)
+            when (Util.inferContentType(uriNow)) {
+                C.TYPE_HLS -> {
+                    return "video/webm"
+                }
+                C.TYPE_DASH -> {
+                    return "video/webm"
+                }
+                C.TYPE_SS -> {
+                    return "video/mp4"
+                }
+                C.TYPE_OTHER -> {
+                    return "video/mp4"
+                }
+                else -> {
+                    return "video/mp4"
+                }
+            }
+        }
+
+        fun createMediaData(playerModel: PlayerModel): MediaData {
+            val builder = MediaData.Builder(playerModel.link)
+                .setContentType(getMimeType(playerModel.link))
+                .setTitle(playerModel.title)
+            if (playerModel.streamType == 1) {
+                builder.setStreamType(MediaData.STREAM_TYPE_LIVE)
+                builder.setMediaType(MediaData.MEDIA_TYPE_TV_SHOW)
+            } else {
+                builder.setStreamType(MediaData.STREAM_TYPE_BUFFERED)
+                builder.setMediaType(MediaData.MEDIA_TYPE_MOVIE)
+            }
+            return builder.build()
         }
 
         private fun addExtraToIntent(playerModel: PlayerModel, intentNow: Intent): Intent {
@@ -51,6 +82,7 @@ class PlayerUtils {
             intentNow.putExtra(titleIntent, playerModel.title)
             intentNow.putExtra(descriptionIntent, playerModel.description)
             intentNow.putExtra(mainLinkIntent, playerModel.mainLink)
+            intentNow.putExtra(typeIntent, playerModel.streamType)
             val headerNow = ArrayList<String>()
             for ((key, value) in playerModel.headers) {
                 headerNow.add(key)
@@ -109,6 +141,9 @@ class PlayerUtils {
             if (intent.getStringExtra(cookieIntent) != null) {
                 playerModel.cookies = intent.getStringExtra(cookieIntent)!!
             }
+
+            playerModel.streamType = intent.getIntExtra(cookieIntent, 0)
+
 
             if (intent.getStringExtra(titleIntent) != null) {
                 playerModel.title = intent.getStringExtra(titleIntent)!!

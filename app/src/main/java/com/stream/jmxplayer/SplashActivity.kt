@@ -79,9 +79,9 @@ class SplashActivity : AppCompatActivity() {
         }
 
         if (unityAdUtils != null) {
-            workAfterAdActivity()
-            // unityAdUtils!!.addListener(iAdListener)
-            //unityAdUtils!!.loadAd()
+            //workAfterAdActivity()
+            unityAdUtils!!.addListener(iAdListener)
+            unityAdUtils!!.loadAd()
         } else {
             workAfterAdActivity()
         }

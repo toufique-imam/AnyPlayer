@@ -10,12 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Patterns
 import android.view.*
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.BehindLiveWindowException
@@ -27,6 +26,7 @@ import com.google.android.exoplayer2.util.Util
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
+import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.EAspectRatio
 import com.stream.jmxplayer.model.EResizeMode
 import com.stream.jmxplayer.model.IAdListener
@@ -34,6 +34,7 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
+import com.stream.jmxplayer.utils.MAnimationUtils
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.UnityAdUtils
 import kotlin.math.max
@@ -44,33 +45,27 @@ class PlayerActivity : AppCompatActivity(),
     Player.Listener,
     AnalyticsListener {
 
+
     private val _autoPlay = "autoplay"
     private val _currentWindowIndex = "current_window_index"
     private val _playbackPosition = "playback_position"
 
     private lateinit var alertDialogLoading: AlertDialog
-
     private lateinit var playerModel: PlayerModel
     private lateinit var downloader: String
     private lateinit var btnClick: String
+
     private var autoPlay = true
     private var inErrorState = false
     private var errorCount = 0
 
     private var mPlayer: SimpleExoPlayer? = null
+    private lateinit var casty: Casty
 
     private var currentWindow = 0
     private var playbackPosition = 0L
 
-
-    private lateinit var _animationInLeft: Animation
-    private lateinit var _animationOutLeft: Animation
-    private lateinit var _animationInRight: Animation
-    private lateinit var _animationOutRight: Animation
-    private lateinit var _animationInMid: Animation
-    private lateinit var _animationOutMid: Animation
-
-
+    private lateinit var animationUtils: MAnimationUtils
     private lateinit var playerTitle: TextView
     private lateinit var playerDesc: TextView
     private lateinit var playerLang: TextView
@@ -85,6 +80,7 @@ class PlayerActivity : AppCompatActivity(),
     private lateinit var rewindButton: ImageButton
     private lateinit var playButton: ImageButton
     private lateinit var pauseButton: ImageButton
+    private lateinit var castButton: MediaRouteButton
 
     private var aspectRatio: EAspectRatio = EAspectRatio.ASPECT_MATCH
     private var resizeMode: EResizeMode = EResizeMode.FIT
@@ -100,11 +96,11 @@ class PlayerActivity : AppCompatActivity(),
         logger("onCreate", "called")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
-
         setUpOrientation()
         alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
         getDataFromIntent()
-        initAnimation()
+
+        animationUtils = MAnimationUtils(this)
         allFindViewByID()
         setUpDrawer()
 
@@ -112,8 +108,23 @@ class PlayerActivity : AppCompatActivity(),
         setUpAppBarTexts(playerModel.title, playerModel.description, playerModel.mLanguage)
 
         setUpMenuButton()
-
         setUpPlayerViewControl()
+
+        casty = Casty.create(this)
+        casty.setUpMediaRouteButton(castButton)
+
+        casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
+            override fun onConnected() {
+                toaster(this@PlayerActivity, "connected")
+                casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModel))
+
+            }
+
+            override fun onDisconnected() {
+                toaster(this@PlayerActivity, "disconnected")
+            }
+        })
+
         if (savedInstanceState != null) {
             playbackPosition = savedInstanceState.getLong(_playbackPosition, 0)
             currentWindow = savedInstanceState.getInt(_currentWindowIndex)
@@ -122,6 +133,7 @@ class PlayerActivity : AppCompatActivity(),
 
         unityAdUtils = UnityAdUtils(this)
     }
+
 
     private fun setUpOrientation() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -175,6 +187,8 @@ class PlayerActivity : AppCompatActivity(),
         playerLang = findViewById(R.id.textView_language_exo)
 
         menuButton = findViewById(R.id.exo_menu)
+        castButton = findViewById(R.id.exo_custom_cast)
+
     }
 
     override fun onPause() {
@@ -394,67 +408,28 @@ class PlayerActivity : AppCompatActivity(),
     View SetUps
      */
 
-    private fun setFocusOnExoControl(
-        view: ImageView,
-        animation_in: Animation, animation_out: Animation,
-        imageInID: Int, imageOutID: Int
-    ) {
-        view.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                view.startAnimation(animation_in)
-                view.setImageResource(imageInID)
-            } else {
-                view.startAnimation(animation_out)
-                view.setImageResource(imageOutID)
-            }
-        }
-    }
 
     private fun setUpPlayerViewControl() {
 
-        setFocusOnExoControl(
+        animationUtils.setMidFocusExoControl(
             forwardButton,
-            _animationInMid, _animationOutMid,
             R.drawable.ic_forward_red, R.drawable.forward
         )
-        setFocusOnExoControl(
+        animationUtils.setMidFocusExoControl(
             rewindButton,
-            _animationInMid, _animationOutMid,
             R.drawable.ic_backward_red, R.drawable.backward
         )
-        setFocusOnExoControl(
+        animationUtils.setMidFocusExoControl(
             playButton,
-            _animationInMid, _animationOutMid,
             R.drawable.ic_baseline_play_circle_red_filled_24,
             R.drawable.ic_baseline_play_circle_filled_24
         )
-        setFocusOnExoControl(
+        animationUtils.setMidFocusExoControl(
             pauseButton,
-            _animationInMid,
-            _animationOutMid,
             R.drawable.ic_baseline_pause_circle_red_filled_24,
             R.drawable.ic_baseline_pause_circle_filled_24
         )
 
-    }
-
-    private fun initAnimation() {
-
-        _animationInLeft = AnimationUtils.loadAnimation(this, R.anim.scale_in_left)
-        _animationOutLeft = AnimationUtils.loadAnimation(this, R.anim.scale_out_left)
-        _animationInLeft.fillAfter = true
-        _animationOutLeft.fillAfter = true
-        _animationInRight = AnimationUtils.loadAnimation(this, R.anim.scale_in_right)
-        _animationOutRight = AnimationUtils.loadAnimation(this, R.anim.scale_out_right)
-
-        _animationInRight.fillAfter = true
-        _animationOutRight.fillAfter = true
-
-        _animationInMid = AnimationUtils.loadAnimation(this, R.anim.scale_in_mid)
-        _animationOutMid = AnimationUtils.loadAnimation(this, R.anim.scale_out_mid)
-
-        _animationInMid.fillAfter = true
-        _animationOutMid.fillAfter = false
     }
 
     private fun setUpAppBar() {
@@ -466,9 +441,9 @@ class PlayerActivity : AppCompatActivity(),
         }
         backButton.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                v.startAnimation(_animationInLeft)
+                v.startAnimation(animationUtils.animationInLeft)
             } else {
-                v.startAnimation(_animationOutLeft)
+                v.startAnimation(animationUtils.animationOutLeft)
             }
             if (hasFocus) {
                 v.setBackgroundColor(Color.GRAY)
@@ -492,9 +467,9 @@ class PlayerActivity : AppCompatActivity(),
         }
         menuButton.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus) {
-                view.startAnimation(_animationInRight)
+                view.startAnimation(animationUtils.animationInRight)
             } else {
-                view.startAnimation(_animationOutRight)
+                view.startAnimation(animationUtils.animationOutRight)
             }
             if (hasFocus) {
                 view.setBackgroundColor(Color.GRAY)
@@ -782,7 +757,6 @@ class PlayerActivity : AppCompatActivity(),
         currentWindow = mPlayer?.currentWindowIndex ?: 0
         playbackPosition = max(0, mPlayer?.contentPosition ?: 0L)
     }
-
 
     override fun onLoadStarted(
         eventTime: AnalyticsListener.EventTime,

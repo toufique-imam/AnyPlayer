@@ -17,6 +17,8 @@
     <string name="reject">CANCELAR</string>
     <string name="splash_logo">splash_logo</string>
     <string name="cast_app_id">C0868879</string>
+    <string name="casty_introduction_text">Use this button to connect with Chromecast</string>
+
 
     <string name="loading">Cargando Contenido..\nExpere un momento por favor.</string>
     <string name="movie_name">Movie Name</string>
