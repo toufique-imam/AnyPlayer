@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">JMX Player</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="rotate">Orientacion de pantalla</string>
     <string name="resize">Ajuste Pantalla</string>
     <string name="aspect_ratio">Relación de aspecto</string>
@@ -16,7 +14,6 @@
     <string name="accept">ACEPTAR</string>
     <string name="reject">CANCELAR</string>
     <string name="splash_logo">splash_logo</string>
-    <string name="cast_app_id">C0868879</string>
     <string name="casty_introduction_text">Use this button to connect with Chromecast</string>
 
 

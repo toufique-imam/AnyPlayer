@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="dark">#FF222222</color>
     <color name="Black">#000000</color>
     <color name="white">#ffffff</color>
     <color name="White">#FFFFFF</color>
@@ -8,19 +7,11 @@
     <color name="Green">#008000</color>
 
 
-    <color name="colorPrimary">#FF0000</color>
     <color name="colorAccent">#e10000</color>
 
     <color name="TransparentBlack">#90000000</color>
     <color name="TransparentWhite">#00FFFFFF</color>
 
-    <color name="bgColor">#212228</color>
-
-    <color name="TextBlack">#000000</color>
-    <color name="TextWhite">#FFFFFF</color>
-
-    <color name="Background_black">#000000</color>
-    <color name="black_effective">#2a2a2a</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -28,15 +19,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
 
-    <color name="colorPrimaryDark">#FF1A237E</color>
-    <color name="red">#D81B60</color>
     <color name="DeepSkyBlue">#00bfff</color>
-    <color name="Yellow">#FFFF00</color>
     <color name="Pink">#FFC0CB</color>
     <color name="LightPink">#FFB6C1</color>
-    <color name="Wheat">#F5DEB3</color>
     <color name="LightGreen">#90EE90</color>
-    <color name="DarkRed">#8B0000</color>
     <color name="SkyBlue">#87CEEB</color>
     <color name="LimeGreen">#32CD32</color>
 </resources>

@@ -8,6 +8,9 @@ import androidx.annotation.IntDef;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.common.images.WebImage;
+import com.stream.jmxplayer.utils.GlobalFunctions;
+
+import org.json.JSONObject;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,7 +42,8 @@ public class MediaData {
 
     public static final long UNKNOWN_DURATION = -1L;
 
-    private String url;
+    private final String url;
+    JSONObject exoPlayerConfig;
     private int streamType = STREAM_TYPE_NONE;
     private String contentType;
     private long streamDuration = UNKNOWN_DURATION;
@@ -51,12 +55,16 @@ public class MediaData {
     boolean autoPlay = true;
     long position;
 
-    private List<String> imageUrls;
+    private final List<String> imageUrls;
 
     //todo make it support PlayerModel
     private MediaData(String url) {
         this.url = url;
         imageUrls = new ArrayList<>();
+    }
+
+    private void setExoPlayerConfig(JSONObject exoPlayerConfig) {
+        this.exoPlayerConfig = exoPlayerConfig;
     }
 
     private void setStreamType(int streamType) {
@@ -91,22 +99,29 @@ public class MediaData {
         this.position = position;
     }
 
-    MediaInfo createMediaInfo() {
+    public MediaInfo createMediaInfo() {
         MediaMetadata mediaMetadata = new MediaMetadata(mediaType);
 
         if (!TextUtils.isEmpty(title)) mediaMetadata.putString(MediaMetadata.KEY_TITLE, title);
-        if (!TextUtils.isEmpty(subtitle)) mediaMetadata.putString(MediaMetadata.KEY_SUBTITLE, subtitle);
+        if (!TextUtils.isEmpty(subtitle))
+            mediaMetadata.putString(MediaMetadata.KEY_SUBTITLE, subtitle);
 
         for (String imageUrl : imageUrls) {
             mediaMetadata.addImage(new WebImage(Uri.parse(imageUrl)));
         }
-
-        return new MediaInfo.Builder(url)
+        MediaInfo.Builder builder = new MediaInfo.Builder(url)
                 .setStreamType(streamType)
                 .setContentType(contentType)
                 .setStreamDuration(streamDuration)
-                .setMetadata(mediaMetadata)
-                .build();
+                .setMetadata(mediaMetadata);
+        if (exoPlayerConfig != null)
+            builder.setCustomData(exoPlayerConfig);
+
+        MediaInfo mediaInfo = builder.build();
+        //GlobalFunctions.Companion.logger("MediaInfo", gson.toJson(mediaInfo));
+        if (mediaInfo.getCustomData() != null)
+            GlobalFunctions.Companion.logger("MediaInfo Custom", mediaInfo.getCustomData().toString());
+        return mediaInfo;
     }
 
     public static class Builder {
@@ -114,6 +129,7 @@ public class MediaData {
 
         /**
          * Create the MediaData builder
+         *
          * @param url String url of media data
          */
         public Builder(String url) {
@@ -122,6 +138,7 @@ public class MediaData {
 
         /**
          * Sets the stream type. Required.
+         *
          * @param streamType One of {@link #STREAM_TYPE_NONE}, {@link #STREAM_TYPE_BUFFERED}, {@link #STREAM_TYPE_LIVE}
          * @return this instance for chain calls
          */
@@ -132,6 +149,7 @@ public class MediaData {
 
         /**
          * Sets the content type. Required.
+         *
          * @param contentType Valid content type, supported by Google Cast
          * @return this instance for chain calls
          */
@@ -141,7 +159,20 @@ public class MediaData {
         }
 
         /**
+         * Sets the Load Request UserAgent
+         *
+         * @param exoPlayerConfig Request Config
+         * @return this instance for chain calls
+         */
+        public Builder setExoPlayerConfig(JSONObject exoPlayerConfig) {
+            mediaData.setExoPlayerConfig(exoPlayerConfig);
+            return this;
+        }
+
+
+        /**
          * Sets stream duration.
+         *
          * @param streamDuration Valid stream duration
          * @return this instance for chain calls
          */
@@ -152,6 +183,7 @@ public class MediaData {
 
         /**
          * Sets the title.
+         *
          * @param title any String
          * @return this instance for chain calls
          */
@@ -162,6 +194,7 @@ public class MediaData {
 
         /**
          * Sets the subtitle.
+         *
          * @param subtitle any String
          * @return this instance for chain calls
          */
@@ -172,8 +205,9 @@ public class MediaData {
 
         /**
          * Sets the media type.
+         *
          * @param mediaType One of {@link #MEDIA_TYPE_GENERIC}, {@link #MEDIA_TYPE_MOVIE}, {@link #MEDIA_TYPE_TV_SHOW}, {@link #MEDIA_TYPE_MUSIC_TRACK},
-         * {@link #MEDIA_TYPE_PHOTO}, {@link #MEDIA_TYPE_USER}
+         *                  {@link #MEDIA_TYPE_PHOTO}, {@link #MEDIA_TYPE_USER}
          * @return this instance for chain calls
          */
         public Builder setMediaType(@MediaType int mediaType) {
@@ -183,6 +217,7 @@ public class MediaData {
 
         /**
          * Adds the photo url
+         *
          * @param photoUrl valid url to image
          * @return this instance for chain calls
          */
@@ -193,6 +228,7 @@ public class MediaData {
 
         /**
          * Sets up playing on start
+         *
          * @param autoPlay True if the media file should start automatically
          * @return this instance for chain calls
          */
@@ -203,6 +239,7 @@ public class MediaData {
 
         /**
          * Sets the start position
+         *
          * @param position Start position of video in milliseconds
          * @return this instance for chain calls
          */

@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.mediarouter.app.MediaRouteButton;
 
 class CastyNoOp extends Casty {
-    private CastyPlayer castyPlayer;
+    private final CastyPlayer castyPlayer;
 
     CastyNoOp() {
         castyPlayer = new CastyPlayerNoOp();

@@ -2,6 +2,7 @@ package com.stream.jmxplayer.casty;
 
 import android.content.Context;
 
+import com.google.android.gms.cast.LaunchOptions;
 import com.google.android.gms.cast.framework.CastOptions;
 import com.google.android.gms.cast.framework.OptionsProvider;
 import com.google.android.gms.cast.framework.SessionProvider;
@@ -29,10 +30,14 @@ public class CastOptionProvider implements OptionsProvider {
                     .setNotificationOptions(notificationOptions)
                     .setExpandedControllerActivityClassName(ExpandedControlsActivity.class.getName())
                     .build();
+            LaunchOptions launchOptions = new LaunchOptions.Builder()
+                    .setRelaunchIfRunning(true)
+                    .setAndroidReceiverCompatible(true).build();
 
             return new CastOptions.Builder()
                     .setReceiverApplicationId(Casty.receiverId)
                     .setCastMediaOptions(mediaOptions)
+                    .setLaunchOptions(launchOptions)
                     .build();
         } else {
             return customCastOptions;

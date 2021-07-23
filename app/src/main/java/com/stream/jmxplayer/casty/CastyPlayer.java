@@ -3,9 +3,15 @@ package com.stream.jmxplayer.casty;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.cast.MediaError;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadRequestData;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.stream.jmxplayer.utils.GlobalFunctions;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 public class CastyPlayer {
     interface OnMediaLoadedListener {
@@ -174,8 +180,24 @@ public class CastyPlayer {
         if (!inBackground) {
             remoteMediaClient.registerCallback(createRemoteMediaClientListener());
         }
-        MediaLoadRequestData mediaLoadRequestData = new MediaLoadRequestData.Builder().setMediaInfo(mediaInfo).setAutoplay(autoPlay).setCurrentTime(position).build();
-        remoteMediaClient.load(mediaLoadRequestData);
+        MediaLoadRequestData mediaLoadRequestData = new MediaLoadRequestData.Builder()
+                .setMediaInfo(mediaInfo)
+                .setAutoplay(autoPlay)
+                //.setCredentials("1234")
+                //.setAtvCredentials("1235")
+                .setCurrentTime(position).build();
+        remoteMediaClient.load(mediaLoadRequestData).setResultCallback(mediaChannelResult -> {
+            MediaError mediaError = mediaChannelResult.getMediaError();
+            String log = "";
+            if (mediaError != null) {
+                log = log + mediaError.toJson().toString();
+            }
+            JSONObject cd = mediaChannelResult.getCustomData();
+            if (cd != null) {
+                log = log + cd.toString();
+            }
+            GlobalFunctions.Companion.logger("MediaLoadCallback", log);
+        });
         return true;
     }
 

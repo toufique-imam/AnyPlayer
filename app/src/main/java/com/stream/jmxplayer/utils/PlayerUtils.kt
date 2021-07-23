@@ -23,6 +23,7 @@ import com.stream.jmxplayer.model.PlayerModel.Companion.cookieIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.descriptionIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.drmStringIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.headerIntent
+import com.stream.jmxplayer.model.PlayerModel.Companion.imageIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.languageIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.linkIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.mainLinkIntent
@@ -31,6 +32,7 @@ import com.stream.jmxplayer.model.PlayerModel.Companion.titleIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.typeIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.userAgentIntent
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import org.json.JSONObject
 
 
 class PlayerUtils {
@@ -39,19 +41,19 @@ class PlayerUtils {
             val uriNow = Uri.parse(link)
             when (Util.inferContentType(uriNow)) {
                 C.TYPE_HLS -> {
-                    return "video/webm"
+                    return "application/x-mpegurl"
                 }
                 C.TYPE_DASH -> {
-                    return "video/webm"
+                    return "application/dash+xml"
                 }
                 C.TYPE_SS -> {
                     return "video/mp4"
                 }
                 C.TYPE_OTHER -> {
-                    return "video/mp4"
+                    return "application/x-mpegurl"
                 }
                 else -> {
-                    return "video/mp4"
+                    return "video/webm"
                 }
             }
         }
@@ -60,15 +62,37 @@ class PlayerUtils {
             val builder = MediaData.Builder(playerModel.link)
                 .setContentType(getMimeType(playerModel.link))
                 .setTitle(playerModel.title)
+            val configNow = JSONObject()
+            if (playerModel.userAgent.isNotEmpty())
+                configNow.put(userAgentIntent, playerModel.userAgent)
+            if (playerModel.drmSting.isNotEmpty()) {
+                configNow.put(drmStringIntent, playerModel.drmSting)
+            }
+            if (playerModel.cookies.isNotEmpty()) {
+                configNow.put(cookieIntent, playerModel.cookies)
+            }
+            configNow.put(typeIntent, playerModel.streamType)
+
+            for (key in playerModel.headers.keys) {
+                configNow.put(key, playerModel.headers[key])
+            }
+
             if (playerModel.streamType == 1) {
                 builder.setStreamType(MediaData.STREAM_TYPE_LIVE)
-                builder.setMediaType(MediaData.MEDIA_TYPE_TV_SHOW)
+                builder.setMediaType(MediaData.MEDIA_TYPE_GENERIC)
             } else {
                 builder.setStreamType(MediaData.STREAM_TYPE_BUFFERED)
                 builder.setMediaType(MediaData.MEDIA_TYPE_MOVIE)
             }
-            return builder.build()
+            builder.setExoPlayerConfig(configNow)
+            builder.addPhotoUrl(playerModel.image)
+
+
+            val mediaData: MediaData = builder.build()
+            mediaData.createMediaInfo()
+            return mediaData
         }
+
 
         private fun addExtraToIntent(playerModel: PlayerModel, intentNow: Intent): Intent {
             intentNow.putExtra(
@@ -130,6 +154,11 @@ class PlayerUtils {
             if (intent.getStringExtra(mainLinkIntent) != null) {
                 playerModel.mainLink = intent.getStringExtra(mainLinkIntent)!!
             }
+            if (intent.getStringExtra(imageIntent) != null) {
+                playerModel.image = intent.getStringExtra(imageIntent)!!
+            } else {
+                playerModel.image = "https://i.ibb.co/j3g5yrh/main-logo.png"
+            }
             if (intent.getStringExtra(userAgentIntent) != null) {
                 playerModel.userAgent = intent.getStringExtra(userAgentIntent)!!
             } else {
@@ -142,7 +171,7 @@ class PlayerUtils {
                 playerModel.cookies = intent.getStringExtra(cookieIntent)!!
             }
 
-            playerModel.streamType = intent.getIntExtra(cookieIntent, 0)
+            playerModel.streamType = intent.getIntExtra(typeIntent, 0)
 
 
             if (intent.getStringExtra(titleIntent) != null) {

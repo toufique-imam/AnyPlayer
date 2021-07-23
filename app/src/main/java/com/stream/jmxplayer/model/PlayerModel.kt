@@ -24,6 +24,7 @@ params
 class PlayerModel : Serializable {
     companion object {
         const val linkIntent = "LINK"
+        const val imageIntent = "IMAGE"
         const val userAgentIntent = "USER_AGENT"
         const val drmStringIntent = "DRM"
         const val cookieIntent = "COOKIE"
@@ -39,6 +40,7 @@ class PlayerModel : Serializable {
     }
 
     var link: String = ""
+    var image: String = ""
     var mainLink: String = ""
     var userAgent: String = GlobalFunctions.USER_AGENT
     var drmSting: String = ""
@@ -46,7 +48,7 @@ class PlayerModel : Serializable {
     var title: String = "JMX Player"
     var description: String = "JMX Player"
     var mLanguage: String = "default"
-    var streamType : Int = 0
+    var streamType: Int = 0
     var headers: HashMap<String, String> = HashMap()
 
 
@@ -60,6 +62,7 @@ class PlayerModel : Serializable {
                 + titleIntent + " : " + title + "\n"
                 + descriptionIntent + " : " + description + "\n"
                 + languageIntent + " : " + mLanguage + "\n"
+                + imageIntent + " : " + image + "\n"
                 )
     }
 

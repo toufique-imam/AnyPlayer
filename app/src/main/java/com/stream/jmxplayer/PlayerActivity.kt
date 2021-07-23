@@ -23,6 +23,7 @@ import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
+import com.google.android.gms.cast.framework.CastSession
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
@@ -110,18 +111,35 @@ class PlayerActivity : AppCompatActivity(),
         setUpMenuButton()
         setUpPlayerViewControl()
 
-        casty = Casty.create(this)
-        casty.setUpMediaRouteButton(castButton)
 
+        casty = Casty.create(this)
+        //Casty.configure("8639B975")
+        casty.setUpMediaRouteButton(castButton)
+        casty.setOnCastSessionUpdatedListener { castSession ->
+            if (castSession != null) {
+                logger(
+                    "on session updated",
+                    castSession.sessionId + " " + castSession.applicationConnectionResult
+                )
+                logger(
+                    "on session updated",
+                    castSession.applicationStatus + " " + castSession.castDevice
+                )
+                logger(
+                    "on session updated",
+                    castSession.category + " " + castSession.activeInputState + " " + castSession.applicationMetadata
+                )
+            }
+        }
         casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
                 toaster(this@PlayerActivity, "connected")
                 casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModel))
-
             }
 
             override fun onDisconnected() {
                 toaster(this@PlayerActivity, "disconnected")
+                hideSystemUi()
             }
         })
 
@@ -132,11 +150,13 @@ class PlayerActivity : AppCompatActivity(),
         }
 
         unityAdUtils = UnityAdUtils(this)
+
     }
 
 
     private fun setUpOrientation() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         if (Build.VERSION.SDK_INT < 30) {
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -148,10 +168,15 @@ class PlayerActivity : AppCompatActivity(),
                 controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
                 controller.systemBarsBehavior =
                     WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
             }
         }
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
+        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+            if ((visibility and View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                hideSystemUi()
+            }
+        }
     }
 
     override fun onStart() {
@@ -664,6 +689,7 @@ class PlayerActivity : AppCompatActivity(),
                     }
                 playerModel = PlayerModel(titleNow, urlNow, userAgentNow)
                 logger("playerModelUser", playerModel.toString())
+                PlayerUtils.createMediaData(playerModel)
                 alertDialog.dismiss()
                 adActivity(3)
             }
