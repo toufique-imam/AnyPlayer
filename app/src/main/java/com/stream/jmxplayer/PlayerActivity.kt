@@ -23,7 +23,6 @@ import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
-import com.google.android.gms.cast.framework.CastSession
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
@@ -32,12 +31,12 @@ import com.stream.jmxplayer.model.EAspectRatio
 import com.stream.jmxplayer.model.EResizeMode
 import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.MAnimationUtils
 import com.stream.jmxplayer.utils.PlayerUtils
-import com.stream.jmxplayer.utils.UnityAdUtils
 import kotlin.math.max
 import kotlin.system.exitProcess
 
@@ -86,7 +85,7 @@ class PlayerActivity : AppCompatActivity(),
     private var aspectRatio: EAspectRatio = EAspectRatio.ASPECT_MATCH
     private var resizeMode: EResizeMode = EResizeMode.FIT
 
-    lateinit var unityAdUtils: UnityAdUtils
+    lateinit var adMobAdUtils: AdMobAdUtils
     lateinit var iAdListener: IAdListener
 
     /*
@@ -129,12 +128,14 @@ class PlayerActivity : AppCompatActivity(),
                     "on session updated",
                     castSession.category + " " + castSession.activeInputState + " " + castSession.applicationMetadata
                 )
+
             }
         }
         casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
                 toaster(this@PlayerActivity, "connected")
                 casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModel))
+
             }
 
             override fun onDisconnected() {
@@ -149,8 +150,7 @@ class PlayerActivity : AppCompatActivity(),
             autoPlay = savedInstanceState.getBoolean(_autoPlay)
         }
 
-        unityAdUtils = UnityAdUtils(this)
-
+        adMobAdUtils = AdMobAdUtils(this)
     }
 
 
@@ -375,7 +375,7 @@ class PlayerActivity : AppCompatActivity(),
 
             override fun onAdLoaded() {
                 alertDialogLoading.dismiss()
-                unityAdUtils.showAd(this@PlayerActivity)
+                adMobAdUtils.showAd()
             }
 
             override fun onAdError(error: String) {
@@ -385,8 +385,8 @@ class PlayerActivity : AppCompatActivity(),
             }
         }
         workAfterAdActivity(bundle, true)
-        unityAdUtils.addListener(iAdListener)
-        unityAdUtils.loadAd()
+        adMobAdUtils.setAdListener(iAdListener)
+        adMobAdUtils.loadAd()
     }
 
     private fun showDownloadDialog() {
@@ -634,6 +634,7 @@ class PlayerActivity : AppCompatActivity(),
     /*
     PlayerModel Input / Parsing
      */
+
     private fun getDataFromIntent() {
         val intent: Intent
         if (getIntent() != null) {

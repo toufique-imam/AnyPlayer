@@ -1,22 +1,22 @@
 package com.stream.jmxplayer
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.MobileAds
 import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.PlayerUtils
-import com.stream.jmxplayer.utils.UnityAdUtils
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var intentNow: Intent
-    var unityAdUtils: UnityAdUtils? = null
+    var adMobAdUtils: AdMobAdUtils? = null
     lateinit var iAdListener: IAdListener
     private lateinit var playerModel: PlayerModel
     private lateinit var alertDialogLoading: AlertDialog
@@ -30,13 +30,13 @@ class SplashActivity : AppCompatActivity() {
         playerModel = PlayerUtils.parseIntent(intentNow)
 
         alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
-        unityAdUtils = UnityAdUtils(this)
 
-        //if (moPubUtils != null)
-        //    moPubUtils.setAdEventListener(adEventListener);
-        Handler(Looper.myLooper()!!).postDelayed({
-            adActivity(this)
-        }, 1000)
+        MobileAds.initialize(this) {
+            adMobAdUtils = AdMobAdUtils(this)
+            Handler(Looper.myLooper()!!).postDelayed({
+                adActivity()
+            }, 500)
+        }
     }
 
 
@@ -51,8 +51,8 @@ class SplashActivity : AppCompatActivity() {
 
     }
 
-    private fun adActivity(activity: Activity) {
-        if (unityAdUtils == null) {
+    private fun adActivity() {
+        if (adMobAdUtils == null) {
             workAfterAdActivity()
         }
         iAdListener = object : IAdListener {
@@ -68,7 +68,7 @@ class SplashActivity : AppCompatActivity() {
 
             override fun onAdLoaded() {
                 alertDialogLoading.dismiss()
-                unityAdUtils?.showAd(activity)
+                adMobAdUtils?.showAd()
             }
 
             override fun onAdError(error: String) {
@@ -78,10 +78,9 @@ class SplashActivity : AppCompatActivity() {
             }
         }
 
-        if (unityAdUtils != null) {
-            //workAfterAdActivity()
-            unityAdUtils!!.addListener(iAdListener)
-            unityAdUtils!!.loadAd()
+        if (adMobAdUtils != null) {
+            adMobAdUtils!!.setAdListener(iAdListener)
+            adMobAdUtils!!.loadAd()
         } else {
             workAfterAdActivity()
         }

@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.stream.jmxplayer.casty.MediaData
 import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.model.PlayerModel.Companion.DIRECT_PUT
 import com.stream.jmxplayer.model.PlayerModel.Companion.cookieIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.descriptionIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.drmStringIntent
@@ -113,6 +114,7 @@ class PlayerUtils {
                 headerNow.add(value)
             }
             intentNow.putExtra(headerIntent, headerNow.toTypedArray())
+            intentNow.putExtra(DIRECT_PUT, playerModel)
             return intentNow
         }
 

@@ -44,6 +44,7 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
 
     private CastSession castSession;
     private CastyPlayer castyPlayer;
+    CastContext castContext;
     private Activity activity;
     private IntroductoryOverlay introductionOverlay;
 
@@ -65,6 +66,11 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
     public static void configure(@NonNull CastOptions castOptions) {
         Casty.customCastOptions = castOptions;
     }
+
+    public CastContext getCastContext() {
+        return castContext;
+    }
+
 
     /**
      * Creates the Casty object.
@@ -93,7 +99,8 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
         sessionManagerListener = createSessionManagerListener();
         castyPlayer = new CastyPlayer(this);
         activity.getApplication().registerActivityLifecycleCallbacks(createActivityCallbacks());
-        CastContext.getSharedInstance(activity).addCastStateListener(createCastStateListener());
+        castContext = CastContext.getSharedInstance(activity);
+        castContext.addCastStateListener(createCastStateListener());
     }
 
     /**
@@ -331,19 +338,17 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
     }
 
     private void registerSessionManagerListener() {
-        CastContext.getSharedInstance(activity)
-                .getSessionManager()
-                .addSessionManagerListener(sessionManagerListener, CastSession.class);
+        castContext.getSessionManager().addSessionManagerListener(sessionManagerListener, CastSession.class);
     }
 
     private void unregisterSessionManagerListener() {
-        CastContext.getSharedInstance(activity)
+        castContext
                 .getSessionManager()
                 .removeSessionManagerListener(sessionManagerListener, CastSession.class);
     }
 
     private void handleCurrentCastSession() {
-        CastSession newCastSession = CastContext.getSharedInstance(activity).getSessionManager().getCurrentCastSession();
+        CastSession newCastSession = castContext.getSessionManager().getCurrentCastSession();
         if (castSession == null) {
             if (newCastSession != null) {
                 onConnected(newCastSession);
