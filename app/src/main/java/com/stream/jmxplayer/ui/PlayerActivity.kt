@@ -23,7 +23,6 @@ import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
-import com.google.android.gms.cast.MediaError
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
@@ -44,7 +43,6 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.MAnimationUtils
 import com.stream.jmxplayer.utils.PlayerUtils
-import org.json.JSONObject
 import kotlin.math.max
 import kotlin.system.exitProcess
 
@@ -103,15 +101,7 @@ class PlayerActivity : AppCompatActivity(),
 
     lateinit var adMobAdUtils: AdMobAdUtils
     lateinit var iAdListener: IAdListener
-    private var mLocation: PlaybackLocation = PlaybackLocation.LOCAL
     private var mPlaybackState: PlaybackState = PlaybackState.PLAYING
-
-    /**
-     * indicates whether we are doing a local or a remote playback
-     */
-    enum class PlaybackLocation {
-        LOCAL, REMOTE
-    }
 
     /**
      * List of various states that we can be in
@@ -120,7 +110,7 @@ class PlayerActivity : AppCompatActivity(),
         PLAYING, PAUSED, BUFFERING, IDLE
     }
 
-    fun loadRemoteMedia() {
+    private fun loadRemoteMedia() {
         if (mCastSession == null) return
         val remoteMediaClient = mCastSession!!.remoteMediaClient ?: return
         remoteMediaClient.registerCallback(object : RemoteMediaClient.Callback() {
@@ -143,7 +133,7 @@ class PlayerActivity : AppCompatActivity(),
     fun onApplicationDisconnected() {
         //    updatePlaybackLocation(PlaybackLocation.LOCAL)
         mPlaybackState = PlaybackState.IDLE
-        mLocation = PlaybackLocation.LOCAL
+        //mLocation = PlaybackLocation.LOCAL
         //updatePlayButton(mPlaybackState)
     }
 
@@ -282,11 +272,6 @@ class PlayerActivity : AppCompatActivity(),
             mSessionManagerListener,
             CastSession::class.java
         )
-        //TODO("intentToJoin")
-        if (mCastSession == null) {
-            mCastSession = CastContext.getSharedInstance(this).sessionManager
-                .currentCastSession
-        }
         super.onResume()
         logger("Came here", "onResume")
         // start in pure full screen

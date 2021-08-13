@@ -39,7 +39,7 @@ class CastOptionsProvider : OptionsProvider {
             .build()
     }
 
-    override fun getAdditionalSessionProviders(p0: Context): MutableList<SessionProvider> {
-        TODO("Not yet implemented")
+    override fun getAdditionalSessionProviders(p0: Context): MutableList<SessionProvider>? {
+        return null
     }
 }
