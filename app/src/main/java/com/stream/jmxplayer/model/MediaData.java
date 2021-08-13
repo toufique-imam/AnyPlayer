@@ -1,4 +1,4 @@
-package com.stream.jmxplayer.casty;
+package com.stream.jmxplayer.model;
 
 import android.net.Uri;
 import android.text.TextUtils;
@@ -52,8 +52,8 @@ public class MediaData {
     private String title;
     private String subtitle;
 
-    boolean autoPlay = true;
-    long position;
+    public boolean autoPlay = true;
+    public long position;
 
     private final List<String> imageUrls;
 

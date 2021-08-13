@@ -1,4 +1,4 @@
-package com.stream.jmxplayer.casty;
+package com.stream.jmxplayer.ui;
 
 import android.view.Menu;
 

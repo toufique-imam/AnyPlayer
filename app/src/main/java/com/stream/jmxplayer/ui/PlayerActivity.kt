@@ -1,4 +1,4 @@
-package com.stream.jmxplayer
+package com.stream.jmxplayer.ui
 
 
 import android.content.Intent
@@ -23,10 +23,17 @@ import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
+import com.google.android.gms.cast.MediaError
+import com.google.android.gms.cast.MediaLoadRequestData
+import com.google.android.gms.cast.framework.CastButtonFactory
+import com.google.android.gms.cast.framework.CastContext
+import com.google.android.gms.cast.framework.CastSession
+import com.google.android.gms.cast.framework.SessionManagerListener
+import com.google.android.gms.cast.framework.media.RemoteMediaClient
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
-import com.stream.jmxplayer.casty.Casty
+import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.EAspectRatio
 import com.stream.jmxplayer.model.EResizeMode
 import com.stream.jmxplayer.model.IAdListener
@@ -37,8 +44,10 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.MAnimationUtils
 import com.stream.jmxplayer.utils.PlayerUtils
+import org.json.JSONObject
 import kotlin.math.max
 import kotlin.system.exitProcess
+
 
 class PlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
@@ -60,7 +69,14 @@ class PlayerActivity : AppCompatActivity(),
     private var errorCount = 0
 
     private var mPlayer: SimpleExoPlayer? = null
-    private lateinit var casty: Casty
+
+    //private lateinit var casty: Casty
+    //CastConnect
+    var mCastSession: CastSession? = null
+    lateinit var mCastContext: CastContext
+
+    // lateinit var mCastStateListener: CastStateListener
+    var mSessionManagerListener = MySessionManagerListener()
 
     private var currentWindow = 0
     private var playbackPosition = 0L
@@ -87,6 +103,100 @@ class PlayerActivity : AppCompatActivity(),
 
     lateinit var adMobAdUtils: AdMobAdUtils
     lateinit var iAdListener: IAdListener
+    private var mLocation: PlaybackLocation = PlaybackLocation.LOCAL
+    private var mPlaybackState: PlaybackState = PlaybackState.PLAYING
+
+    /**
+     * indicates whether we are doing a local or a remote playback
+     */
+    enum class PlaybackLocation {
+        LOCAL, REMOTE
+    }
+
+    /**
+     * List of various states that we can be in
+     */
+    enum class PlaybackState {
+        PLAYING, PAUSED, BUFFERING, IDLE
+    }
+
+    fun loadRemoteMedia() {
+        if (mCastSession == null) return
+        val remoteMediaClient = mCastSession!!.remoteMediaClient ?: return
+        remoteMediaClient.registerCallback(object : RemoteMediaClient.Callback() {
+            override fun onStatusUpdated() {
+                val intent = Intent(this@PlayerActivity, ExpandedControlsActivity::class.java)
+                startActivity(intent)
+                remoteMediaClient.unregisterCallback(this)
+            }
+        })
+        val mediaInfo = PlayerUtils.createMediaData(playerModel)
+        remoteMediaClient.load(
+            MediaLoadRequestData.Builder()
+                .setMediaInfo(mediaInfo.createMediaInfo())
+                .setAutoplay(true)
+                .build()
+        )
+    }
+
+
+    fun onApplicationDisconnected() {
+        //    updatePlaybackLocation(PlaybackLocation.LOCAL)
+        mPlaybackState = PlaybackState.IDLE
+        mLocation = PlaybackLocation.LOCAL
+        //updatePlayButton(mPlaybackState)
+    }
+
+    fun onApplicationConnected(session: CastSession) {
+        mCastSession = session
+        if (mPlaybackState == PlaybackState.PLAYING) {
+            mPlayer!!.pause()
+            loadRemoteMedia()
+            return
+        } else {
+            mPlaybackState = PlaybackState.IDLE
+            //      updatePlaybackLocation(PlaybackLocation.REMOTE)
+        }
+        //    updatePlayButton(mPlaybackState)
+    }
+
+    inner class MySessionManagerListener : SessionManagerListener<CastSession> {
+        override fun onSessionStarting(session: CastSession) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onSessionStarted(session: CastSession, sessionId: String) {
+            onApplicationConnected(session)
+        }
+
+        override fun onSessionStartFailed(session: CastSession, p1: Int) {
+            onApplicationDisconnected()
+        }
+
+        override fun onSessionEnding(session: CastSession) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onSessionEnded(session: CastSession, p1: Int) {
+            onApplicationDisconnected()
+        }
+
+        override fun onSessionResuming(session: CastSession, p1: String) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onSessionResumed(session: CastSession, p1: Boolean) {
+            onApplicationConnected(session)
+        }
+
+        override fun onSessionResumeFailed(session: CastSession, p1: Int) {
+            onApplicationDisconnected()
+        }
+
+        override fun onSessionSuspended(session: CastSession, p1: Int) {
+            TODO("Not yet implemented")
+        }
+    }
 
     /*
     Life Cycle
@@ -110,7 +220,13 @@ class PlayerActivity : AppCompatActivity(),
         setUpMenuButton()
         setUpPlayerViewControl()
 
+        mCastContext = CastContext.getSharedInstance(this)
+        mCastSession = mCastContext.sessionManager.currentCastSession
 
+        CastButtonFactory.setUpMediaRouteButton(this, castButton)
+
+
+/*
         casty = Casty.create(this)
         //Casty.configure("8639B975")
         casty.setUpMediaRouteButton(castButton)
@@ -142,7 +258,7 @@ class PlayerActivity : AppCompatActivity(),
                 toaster(this@PlayerActivity, "disconnected")
                 hideSystemUi()
             }
-        })
+        })*/
 
         if (savedInstanceState != null) {
             playbackPosition = savedInstanceState.getLong(_playbackPosition, 0)
@@ -151,32 +267,6 @@ class PlayerActivity : AppCompatActivity(),
         }
 
         adMobAdUtils = AdMobAdUtils(this)
-    }
-
-
-    private fun setUpOrientation() {
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-        if (Build.VERSION.SDK_INT < 30) {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-            )
-        } else {
-            val controller = window.insetsController
-            if (controller != null) {
-                controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                controller.systemBarsBehavior =
-                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-
-            }
-        }
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
-            if ((visibility and View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                hideSystemUi()
-            }
-        }
     }
 
     override fun onStart() {
@@ -188,6 +278,15 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     override fun onResume() {
+        mCastContext.sessionManager.addSessionManagerListener(
+            mSessionManagerListener,
+            CastSession::class.java
+        )
+        //TODO("intentToJoin")
+        if (mCastSession == null) {
+            mCastSession = CastContext.getSharedInstance(this).sessionManager
+                .currentCastSession
+        }
         super.onResume()
         logger("Came here", "onResume")
         // start in pure full screen
@@ -197,26 +296,11 @@ class PlayerActivity : AppCompatActivity(),
         }
     }
 
-    private fun allFindViewByID() {
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.nav_view)
-        mPlayerView = findViewById(R.id.media_view)
-        forwardButton = mPlayerView.findViewById(R.id.exo_ffwd)
-        rewindButton = mPlayerView.findViewById(R.id.exo_rew)
-        playButton = mPlayerView.findViewById(R.id.exo_play)
-        pauseButton = mPlayerView.findViewById(R.id.exo_pause)
-        backButton = findViewById(R.id.exo_back)
-
-        playerTitle = findViewById(R.id.textView_title_exo)
-        playerDesc = findViewById(R.id.textView_desc_exo)
-        playerLang = findViewById(R.id.textView_language_exo)
-
-        menuButton = findViewById(R.id.exo_menu)
-        castButton = findViewById(R.id.exo_custom_cast)
-
-    }
-
     override fun onPause() {
+        mCastContext.sessionManager.removeSessionManagerListener(
+            mSessionManagerListener,
+            CastSession::class.java
+        )
         super.onPause()
         logger("Came here", "onPause")
         if (Util.SDK_INT <= 23) {
@@ -243,6 +327,50 @@ class PlayerActivity : AppCompatActivity(),
         outState.putLong(_playbackPosition, playbackPosition)
         outState.putInt(_currentWindowIndex, currentWindow)
         outState.putBoolean(_autoPlay, autoPlay)
+    }
+
+    private fun setUpOrientation() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        if (Build.VERSION.SDK_INT < 30) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        } else {
+            val controller = window.insetsController
+            if (controller != null) {
+                controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                controller.systemBarsBehavior =
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+            }
+        }
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+            if ((visibility and View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                hideSystemUi()
+            }
+        }
+    }
+
+    private fun allFindViewByID() {
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.nav_view)
+        mPlayerView = findViewById(R.id.media_view)
+        forwardButton = mPlayerView.findViewById(R.id.exo_ffwd)
+        rewindButton = mPlayerView.findViewById(R.id.exo_rew)
+        playButton = mPlayerView.findViewById(R.id.exo_play)
+        pauseButton = mPlayerView.findViewById(R.id.exo_pause)
+        backButton = findViewById(R.id.exo_back)
+
+        playerTitle = findViewById(R.id.textView_title_exo)
+        playerDesc = findViewById(R.id.textView_desc_exo)
+        playerLang = findViewById(R.id.textView_language_exo)
+
+        menuButton = findViewById(R.id.exo_menu)
+        castButton = findViewById(R.id.exo_custom_cast)
+
     }
 
     /*
@@ -432,7 +560,6 @@ class PlayerActivity : AppCompatActivity(),
     /*
     View SetUps
      */
-
 
     private fun setUpPlayerViewControl() {
 

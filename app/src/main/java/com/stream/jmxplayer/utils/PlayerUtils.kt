@@ -17,7 +17,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
-import com.stream.jmxplayer.casty.MediaData
+import com.stream.jmxplayer.model.MediaData
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.model.PlayerModel.Companion.DIRECT_PUT
 import com.stream.jmxplayer.model.PlayerModel.Companion.cookieIntent
@@ -86,6 +86,7 @@ class PlayerUtils {
                 builder.setMediaType(MediaData.MEDIA_TYPE_MOVIE)
             }
             builder.setExoPlayerConfig(configNow)
+            builder.addPhotoUrl(playerModel.image)
             builder.addPhotoUrl(playerModel.image)
 
 

@@ -7,10 +7,10 @@ import com.google.android.gms.cast.MediaError;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadRequestData;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
-import com.google.android.gms.common.api.ResultCallback;
+import com.stream.jmxplayer.model.MediaData;
+import com.stream.jmxplayer.ui.ExpandedControlsActivity;
 import com.stream.jmxplayer.utils.GlobalFunctions;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class CastyPlayer {

@@ -27,6 +27,7 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.stream.jmxplayer.R;
+import com.stream.jmxplayer.ui.ExpandedControlsActivity;
 import com.stream.jmxplayer.utils.GlobalFunctions;
 
 import org.jetbrains.annotations.NotNull;

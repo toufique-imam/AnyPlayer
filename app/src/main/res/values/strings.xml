@@ -1,4 +1,5 @@
 <resources>
+    <string name="receiver_id">8639B975</string>
     <string name="app_name">JMX Player</string>
     <string name="rotate">Orientacion de pantalla</string>
     <string name="resize">Ajuste Pantalla</string>

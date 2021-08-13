@@ -3,6 +3,7 @@ package com.stream.jmxplayer.casty;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.cast.MediaInfo;
+import com.stream.jmxplayer.model.MediaData;
 
 class CastyPlayerNoOp extends CastyPlayer {
     @Override
