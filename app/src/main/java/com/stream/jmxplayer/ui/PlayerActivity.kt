@@ -152,39 +152,45 @@ class PlayerActivity : AppCompatActivity(),
 
     inner class MySessionManagerListener : SessionManagerListener<CastSession> {
         override fun onSessionStarting(session: CastSession) {
-            TODO("Not yet implemented")
+            toaster(this@PlayerActivity, "onSessionStarting")
         }
 
         override fun onSessionStarted(session: CastSession, sessionId: String) {
+            toaster(this@PlayerActivity, "onSessionStarted $sessionId")
             onApplicationConnected(session)
         }
 
         override fun onSessionStartFailed(session: CastSession, p1: Int) {
+            toaster(this@PlayerActivity, "onSessionStartFailed $p1")
             onApplicationDisconnected()
         }
 
         override fun onSessionEnding(session: CastSession) {
-            TODO("Not yet implemented")
+            toaster(this@PlayerActivity, "onSessionEnding")
         }
 
         override fun onSessionEnded(session: CastSession, p1: Int) {
+            toaster(this@PlayerActivity, "onSessionEnded $p1")
             onApplicationDisconnected()
         }
 
         override fun onSessionResuming(session: CastSession, p1: String) {
-            TODO("Not yet implemented")
+            toaster(this@PlayerActivity, "onSessionResuming $p1")
+
         }
 
         override fun onSessionResumed(session: CastSession, p1: Boolean) {
+            toaster(this@PlayerActivity, "onSessionResumed $p1")
             onApplicationConnected(session)
         }
 
         override fun onSessionResumeFailed(session: CastSession, p1: Int) {
+            toaster(this@PlayerActivity, "onSessionResumeFailed $p1")
             onApplicationDisconnected()
         }
 
         override fun onSessionSuspended(session: CastSession, p1: Int) {
-            TODO("Not yet implemented")
+            toaster(this@PlayerActivity, "onSessionSuspended $p1")
         }
     }
 
@@ -800,7 +806,7 @@ class PlayerActivity : AppCompatActivity(),
                     } else {
                         userAgent.text.toString()
                     }
-                playerModel = PlayerModel(titleNow, urlNow, userAgentNow)
+                playerModel = PlayerModel(title = titleNow, link = urlNow, userAgent = userAgentNow)
                 logger("playerModelUser", playerModel.toString())
                 PlayerUtils.createMediaData(playerModel)
                 alertDialog.dismiss()

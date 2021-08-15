@@ -7,6 +7,7 @@ import android.os.Looper
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.cast.framework.CastContext
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
@@ -21,12 +22,15 @@ class SplashActivity : AppCompatActivity() {
     lateinit var iAdListener: IAdListener
     private lateinit var playerModel: PlayerModel
     private lateinit var alertDialogLoading: AlertDialog
+    private var mCastContext: CastContext? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
         logger("Splash", "came here")
+        mCastContext = CastContext.getSharedInstance(this)
+
         intentNow = intent
         playerModel = PlayerUtils.parseIntent(intentNow)
 
@@ -49,8 +53,8 @@ class SplashActivity : AppCompatActivity() {
         intentNext.putExtra(PlayerModel.DIRECT_PUT, playerModel)
         startActivity(intentNext)
         finish()
-
     }
+
 
     private fun adActivity() {
         if (adMobAdUtils == null) {

@@ -21,63 +21,64 @@ params
 ======================
  */
 
-class PlayerModel : Serializable {
+class PlayerModel(
+    var id: Long = 0L,
+    var link: String = "",
+    var image: String = "",
+    var mainLink: String = "",
+    var userAgent: String = GlobalFunctions.USER_AGENT,
+    var drmSting: String = "",
+    var cookies: String = "",
+    var title: String = "JMX Player",
+    var description: String = "JMX Player",
+    var mLanguage: String = "default",
+    var cardImageUrl: String = "",
+    var streamType: Int = 0,
+    var headers: HashMap<String, String> = HashMap()
+) : Serializable {
     companion object {
         const val linkIntent = "LINK"
         const val imageIntent = "IMAGE"
+        const val cardImageIntent = "CARD_IMAGE"
         const val userAgentIntent = "USER_AGENT"
         const val drmStringIntent = "DRM"
         const val cookieIntent = "COOKIE"
         const val languageIntent = "LANGUAGE"
+        const val typeIntent = "STREAM_TYPE"
         const val headerIntent = "HEADERS"
         const val titleIntent = "TITLE"
         const val descriptionIntent = "DESCRIPTION"
         const val mainLinkIntent = "MAIN_LINK"
-        const val typeIntent = "STREAM_TYPE"
         const val playerLatinoDomain = "app.playerlatino.live"
         const val DIRECT_PUT = "MODEL"
 
     }
-
-    var link: String = ""
-    var image: String = ""
-    var mainLink: String = ""
-    var userAgent: String = GlobalFunctions.USER_AGENT
-    var drmSting: String = ""
-    var cookies: String = ""
-    var title: String = "JMX Player"
-    var description: String = "JMX Player"
-    var mLanguage: String = "default"
-    var streamType: Int = 0
-    var headers: HashMap<String, String> = HashMap()
-
-
+//    constructor(title: String, link: String, userAgent: String) : this() {
+//        this.title = title
+//        this.link = link
+//        this.userAgent = userAgent
+//        mainLink = link
+//        drmSting = ""
+//        cookies = ""
+//        streamType = 0
+//        description = "I love JMX Player"
+//        headers["User-Agent"] = userAgent
+//        headers["referer"] = mainLink
+//    }
     override fun toString(): String {
-        return (linkIntent + " : " + link + "\n"
-                + mainLinkIntent + " : " + mainLink + "\n"
-                + typeIntent + " : " + streamType + "\n"
-                + userAgentIntent + " : " + userAgent + "\n"
-                + drmStringIntent + " : " + drmSting + "\n"
-                + cookieIntent + " : " + cookies + "\n"
-                + titleIntent + " : " + title + "\n"
-                + descriptionIntent + " : " + description + "\n"
-                + languageIntent + " : " + mLanguage + "\n"
-                + imageIntent + " : " + image + "\n"
-                )
-    }
+        return "Movie{" +
+                "id=" + id +
+                ", $titleIntent='" + title + '\'' +
+                ", $userAgentIntent='" + userAgent + '\'' +
+                ", $drmStringIntent='" + drmSting + '\'' +
+                ", $cookieIntent='" + cookies + '\'' +
+                ", $languageIntent='" + mLanguage + '\'' +
+                ", $descriptionIntent='" + description + '\'' +
+                ", $mainLinkIntent='" + mainLinkIntent + '\'' +
+                ", $linkIntent='" + link + '\'' +
+                ", $imageIntent='" + image + '\'' +
+                ", $cardImageIntent='" + cardImageUrl + '\'' +
+                '}'
 
-    constructor()
-
-    constructor(title: String, link: String, userAgent: String) {
-        this.title = title
-        this.link = link
-        this.userAgent = userAgent
-        mainLink = link
-        drmSting = ""
-        cookies = ""
-        streamType = 0
-        description = "I love JMX Player"
-        headers["User-Agent"] = userAgent
-        headers["referer"] = mainLink
     }
 }

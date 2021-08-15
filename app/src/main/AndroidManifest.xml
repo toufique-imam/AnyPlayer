@@ -42,13 +42,13 @@
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.stream.jmxplayer.castconnect.CastOptionsProvider" />
+            android:value="com.stream.jmxplayercast.castconnect.CastOptionsProvider" />
 
         <activity
-            android:name=".ui.ExpandedControlsActivity"
+            android:name="com.stream.jmxplayer.ui.ExpandedControlsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".ui.SplashActivity"
+            android:name="com.stream.jmxplayer.ui.SplashActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@drawable/circle_cropped_logo"
             android:launchMode="singleTask">
@@ -70,7 +70,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.PlayerActivity"
+            android:name="com.stream.jmxplayer.ui.PlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@drawable/circle_cropped_logo">
 

@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.stream.jmxplayer",
+  "applicationId": "com.stream.jmxplayercast",
   "variantName": "release",
   "elements": [
     {

@@ -64,6 +64,8 @@ class PlayerUtils {
                 .setContentType(getMimeType(playerModel.link))
                 .setTitle(playerModel.title)
             val configNow = JSONObject()
+            configNow.put(languageIntent, playerModel.mLanguage)
+            configNow.put(descriptionIntent, playerModel.description)
             if (playerModel.userAgent.isNotEmpty())
                 configNow.put(userAgentIntent, playerModel.userAgent)
             if (playerModel.drmSting.isNotEmpty()) {
