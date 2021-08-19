@@ -23,16 +23,11 @@ import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
-import com.google.android.gms.cast.MediaLoadRequestData
-import com.google.android.gms.cast.framework.CastButtonFactory
-import com.google.android.gms.cast.framework.CastContext
-import com.google.android.gms.cast.framework.CastSession
-import com.google.android.gms.cast.framework.SessionManagerListener
-import com.google.android.gms.cast.framework.media.RemoteMediaClient
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.stream.jmxplayer.R
+import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.EAspectRatio
 import com.stream.jmxplayer.model.EResizeMode
 import com.stream.jmxplayer.model.IAdListener
@@ -68,13 +63,7 @@ class PlayerActivity : AppCompatActivity(),
 
     private var mPlayer: SimpleExoPlayer? = null
 
-    //private lateinit var casty: Casty
-    //CastConnect
-    var mCastSession: CastSession? = null
-    lateinit var mCastContext: CastContext
-
-    // lateinit var mCastStateListener: CastStateListener
-    var mSessionManagerListener = MySessionManagerListener()
+    private lateinit var casty: Casty
 
     private var currentWindow = 0
     private var playbackPosition = 0L
@@ -100,99 +89,7 @@ class PlayerActivity : AppCompatActivity(),
     private var resizeMode: EResizeMode = EResizeMode.FIT
 
     lateinit var adMobAdUtils: AdMobAdUtils
-    lateinit var iAdListener: IAdListener
-    private var mPlaybackState: PlaybackState = PlaybackState.PLAYING
-
-    /**
-     * List of various states that we can be in
-     */
-    enum class PlaybackState {
-        PLAYING, PAUSED, BUFFERING, IDLE
-    }
-
-    private fun loadRemoteMedia() {
-        if (mCastSession == null) return
-        val remoteMediaClient = mCastSession!!.remoteMediaClient ?: return
-        remoteMediaClient.registerCallback(object : RemoteMediaClient.Callback() {
-            override fun onStatusUpdated() {
-                val intent = Intent(this@PlayerActivity, ExpandedControlsActivity::class.java)
-                startActivity(intent)
-                remoteMediaClient.unregisterCallback(this)
-            }
-        })
-        val mediaInfo = PlayerUtils.createMediaData(playerModel)
-        remoteMediaClient.load(
-            MediaLoadRequestData.Builder()
-                .setMediaInfo(mediaInfo.createMediaInfo())
-                .setAutoplay(true)
-                .build()
-        )
-    }
-
-
-    fun onApplicationDisconnected() {
-        //    updatePlaybackLocation(PlaybackLocation.LOCAL)
-        mPlaybackState = PlaybackState.IDLE
-        //mLocation = PlaybackLocation.LOCAL
-        //updatePlayButton(mPlaybackState)
-    }
-
-    fun onApplicationConnected(session: CastSession) {
-        mCastSession = session
-        if (mPlaybackState == PlaybackState.PLAYING) {
-            mPlayer!!.pause()
-            loadRemoteMedia()
-            return
-        } else {
-            mPlaybackState = PlaybackState.IDLE
-            //      updatePlaybackLocation(PlaybackLocation.REMOTE)
-        }
-        //    updatePlayButton(mPlaybackState)
-    }
-
-    inner class MySessionManagerListener : SessionManagerListener<CastSession> {
-        override fun onSessionStarting(session: CastSession) {
-            toaster(this@PlayerActivity, "onSessionStarting")
-        }
-
-        override fun onSessionStarted(session: CastSession, sessionId: String) {
-            toaster(this@PlayerActivity, "onSessionStarted $sessionId")
-            onApplicationConnected(session)
-        }
-
-        override fun onSessionStartFailed(session: CastSession, p1: Int) {
-            toaster(this@PlayerActivity, "onSessionStartFailed $p1")
-            onApplicationDisconnected()
-        }
-
-        override fun onSessionEnding(session: CastSession) {
-            toaster(this@PlayerActivity, "onSessionEnding")
-        }
-
-        override fun onSessionEnded(session: CastSession, p1: Int) {
-            toaster(this@PlayerActivity, "onSessionEnded $p1")
-            onApplicationDisconnected()
-        }
-
-        override fun onSessionResuming(session: CastSession, p1: String) {
-            toaster(this@PlayerActivity, "onSessionResuming $p1")
-
-        }
-
-        override fun onSessionResumed(session: CastSession, p1: Boolean) {
-            toaster(this@PlayerActivity, "onSessionResumed $p1")
-            onApplicationConnected(session)
-        }
-
-        override fun onSessionResumeFailed(session: CastSession, p1: Int) {
-            toaster(this@PlayerActivity, "onSessionResumeFailed $p1")
-            onApplicationDisconnected()
-        }
-
-        override fun onSessionSuspended(session: CastSession, p1: Int) {
-            toaster(this@PlayerActivity, "onSessionSuspended $p1")
-        }
-    }
+    private lateinit var iAdListener: IAdListener
 
     /*
     Life Cycle
@@ -216,13 +113,6 @@ class PlayerActivity : AppCompatActivity(),
         setUpMenuButton()
         setUpPlayerViewControl()
 
-        mCastContext = CastContext.getSharedInstance(this)
-        mCastSession = mCastContext.sessionManager.currentCastSession
-
-        CastButtonFactory.setUpMediaRouteButton(this, castButton)
-
-
-/*
         casty = Casty.create(this)
         //Casty.configure("8639B975")
         casty.setUpMediaRouteButton(castButton)
@@ -230,15 +120,15 @@ class PlayerActivity : AppCompatActivity(),
             if (castSession != null) {
                 logger(
                     "on session updated",
-                    castSession.sessionId + " " + castSession.applicationConnectionResult
+                    castSession.sessionId ?: "nullSid" + " " + castSession.applicationConnectionResult
                 )
                 logger(
                     "on session updated",
-                    castSession.applicationStatus + " " + castSession.castDevice
+                    castSession.applicationStatus?:"nullAppStat" + " " + castSession.castDevice
                 )
                 logger(
                     "on session updated",
-                    castSession.category + " " + castSession.activeInputState + " " + castSession.applicationMetadata
+                    castSession.category?:"nullCategory" + " " + castSession.activeInputState + " " + castSession.applicationMetadata
                 )
 
             }
@@ -254,7 +144,7 @@ class PlayerActivity : AppCompatActivity(),
                 toaster(this@PlayerActivity, "disconnected")
                 hideSystemUi()
             }
-        })*/
+        })
 
         if (savedInstanceState != null) {
             playbackPosition = savedInstanceState.getLong(_playbackPosition, 0)
@@ -274,10 +164,6 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     override fun onResume() {
-        mCastContext.sessionManager.addSessionManagerListener(
-            mSessionManagerListener,
-            CastSession::class.java
-        )
         super.onResume()
         logger("Came here", "onResume")
         // start in pure full screen
@@ -288,10 +174,6 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     override fun onPause() {
-        mCastContext.sessionManager.removeSessionManagerListener(
-            mSessionManagerListener,
-            CastSession::class.java
-        )
         super.onPause()
         logger("Came here", "onPause")
         if (Util.SDK_INT <= 23) {

@@ -13,13 +13,11 @@ import com.stream.jmxplayer.ui.ExpandedControlsActivity
 
 class CastOptionsProvider : OptionsProvider {
     private val actions = ArrayList<String>()
-    private val intActions = intArrayOf(1, 2)
+    private val intActions = intArrayOf(0, 1)
     override fun getCastOptions(context: Context): CastOptions {
         actions.clear()
-        actions.add(MediaIntentReceiver.ACTION_SKIP_NEXT)
         actions.add(MediaIntentReceiver.ACTION_TOGGLE_PLAYBACK)
         actions.add(MediaIntentReceiver.ACTION_STOP_CASTING)
-        actions.add(MediaIntentReceiver.ACTION_SKIP_NEXT)
         val className = ExpandedControlsActivity::class.java.name
         val notificationOptions = NotificationOptions.Builder()
             .setActions(actions, intActions)
