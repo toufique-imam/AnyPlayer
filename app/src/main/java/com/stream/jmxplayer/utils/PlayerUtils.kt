@@ -34,8 +34,10 @@ import com.stream.jmxplayer.model.PlayerModel.Companion.playerLatinoDomain
 import com.stream.jmxplayer.model.PlayerModel.Companion.titleIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.typeIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.userAgentIntent
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.CAST_SERVER_PORT
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import org.json.JSONObject
+import java.net.URL
 
 
 class PlayerUtils {
@@ -62,9 +64,20 @@ class PlayerUtils {
         }
 
         fun createMediaData(playerModel: PlayerModel): MediaData {
+            if (playerModel.streamType == 2) {
+                val ipAddresses = GlobalFunctions.getIpAddress()
+                try {
+                    var baseUrl = URL("http", ipAddresses, CAST_SERVER_PORT, "")
+                    val videoUrl = baseUrl.toString() + "/video?id=" + playerModel.id;
+                    playerModel.link = videoUrl
+                } catch (e: Exception) {
+                    logger("createMediaData2", e.localizedMessage + "")
+                }
+            }
             val builder = MediaData.Builder(playerModel.link)
                 .setContentType(getMimeType(playerModel.link))
                 .setTitle(playerModel.title)
+
             val configNow = JSONObject()
             configNow.put(languageIntent, playerModel.mLanguage)
             configNow.put(descriptionIntent, playerModel.description)

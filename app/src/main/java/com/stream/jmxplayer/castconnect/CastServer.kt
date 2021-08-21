@@ -1,6 +1,7 @@
 package com.stream.jmxplayer.castconnect
 
 import android.content.Context
+import android.widget.Toast
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.CAST_SERVER_PORT
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
@@ -27,6 +28,8 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
     override fun serve(
         session: IHTTPSession
     ): Response {
+        Toast.makeText(context, session.uri + " " + session.parameters, Toast.LENGTH_LONG).show()
+
         val id = session.parameters[PARAM_ID].toString()
         this.videoNow = MediaFileUtils.getMovieUri(context, id.toLong())
         videoNow ?: return errorResponse()
