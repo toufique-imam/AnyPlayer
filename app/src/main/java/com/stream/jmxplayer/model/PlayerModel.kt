@@ -29,6 +29,7 @@ class PlayerModel(
     var userAgent: String = GlobalFunctions.USER_AGENT,
     var drmSting: String = "",
     var cookies: String = "",
+    val duration: Int = 0,
     var title: String = "JMX Player",
     var description: String = "JMX Player",
     var mLanguage: String = "default",
@@ -53,7 +54,8 @@ class PlayerModel(
         const val DIRECT_PUT = "MODEL"
 
     }
-//    constructor(title: String, link: String, userAgent: String) : this() {
+
+    //    constructor(title: String, link: String, userAgent: String) : this() {
 //        this.title = title
 //        this.link = link
 //        this.userAgent = userAgent

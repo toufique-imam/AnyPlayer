@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -15,6 +16,7 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.stream.jmxplayer.model.MediaData
@@ -66,6 +68,7 @@ class PlayerUtils {
             val configNow = JSONObject()
             configNow.put(languageIntent, playerModel.mLanguage)
             configNow.put(descriptionIntent, playerModel.description)
+            configNow.put("LOCAL", false)
             if (playerModel.userAgent.isNotEmpty())
                 configNow.put(userAgentIntent, playerModel.userAgent)
             if (playerModel.drmSting.isNotEmpty()) {
@@ -92,9 +95,7 @@ class PlayerUtils {
             builder.addPhotoUrl(playerModel.image)
 
 
-            val mediaData: MediaData = builder.build()
-            mediaData.createMediaInfo()
-            return mediaData
+            return builder.build()
         }
 
 
@@ -205,7 +206,7 @@ class PlayerUtils {
             }
             playerModel.headers["user-agent"] = playerModel.userAgent
             playerModel.headers["User-Agent"] = playerModel.userAgent
-            //Log.e("playerUtils", playerModel.toString())
+            logger("playerUtils", playerModel.toString())
             return playerModel
         }
 
@@ -233,10 +234,11 @@ class PlayerUtils {
             playerModel: PlayerModel,
             errorCount: Int
         ): MediaSource {
-            val mediaSourceFactory = createMediaSourceFactory(activity, playerModel, errorCount)
             val uriNow = Uri.parse(playerModel.link)
             val mediaItem = MediaItem.Builder()
                 .setUri(uriNow)
+
+            val mediaSourceFactory = createMediaSourceFactory(activity, playerModel, errorCount)
             if (playerModel.drmSting.isNotEmpty()) {
                 val uUID = Util.getDrmUuid(C.WIDEVINE_UUID.toString())
                 mediaItem.setDrmUuid(uUID)
@@ -252,7 +254,14 @@ class PlayerUtils {
             errorCount: Int
         ): MediaSourceFactory {
             logger("createMediaSource", playerModel.toString())
+            if (playerModel.streamType == 2) {
+                return ProgressiveMediaSource.Factory(
+                    DefaultDataSourceFactory(activity, "ua"),
+                    DefaultExtractorsFactory()
+                )
+            }
             val httpDataSourceFactory = createDataSourceFactory(activity, playerModel)
+
             val uriNow = Uri.parse(playerModel.link)
             when (Util.inferContentType(uriNow)) {
                 C.TYPE_DASH -> {

@@ -3,6 +3,7 @@ package com.stream.jmxplayer.utils
 import android.app.Activity
 import androidx.appcompat.app.AlertDialog
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
@@ -13,6 +14,7 @@ import me.drakeet.support.toast.ToastCompat
 
 class GlobalFunctions {
     companion object {
+        const val CAST_SERVER_PORT = 5050
         fun toaster(activity: Activity, message: String) {
             ToastCompat.makeText(activity, message, Toast.LENGTH_SHORT).show()
         }

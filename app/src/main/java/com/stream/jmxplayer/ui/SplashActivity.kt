@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.util.UriUtil
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.cast.framework.CastContext
 import com.stream.jmxplayer.R
@@ -15,6 +16,7 @@ import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.PlayerUtils
+import java.util.regex.Pattern
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var intentNow: Intent
@@ -34,24 +36,31 @@ class SplashActivity : AppCompatActivity() {
         intentNow = intent
         playerModel = PlayerUtils.parseIntent(intentNow)
 
-        alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
 
-        MobileAds.initialize(this) {
-            adMobAdUtils = AdMobAdUtils(this)
-            Handler(Looper.myLooper()!!).postDelayed({
-                adActivity()
-            }, 500)
-        }
+        alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
+workAfterAdActivity()
+//        MobileAds.initialize(this) {
+//            adMobAdUtils = AdMobAdUtils(this)
+//            Handler(Looper.myLooper()!!).postDelayed({
+//                adActivity()
+//            }, 500)
+//        }
     }
 
 
+
     private fun workAfterAdActivity() {
-        val intentNext = Intent(this, PlayerActivity::class.java)
-        intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        intentNext.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intentNext.putExtra(PlayerModel.DIRECT_PUT, playerModel)
-        startActivity(intentNext)
+        if (playerModel.link.isEmpty() || playerModel.link.equals("null")) {
+            val intent = Intent(this, BrowserActivity::class.java)
+            startActivity(intent)
+        } else {
+            val intentNext = Intent(this, PlayerActivity::class.java)
+            intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intentNext.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intentNext.putExtra(PlayerModel.DIRECT_PUT, playerModel)
+            startActivity(intentNext)
+        }
         finish()
     }
 

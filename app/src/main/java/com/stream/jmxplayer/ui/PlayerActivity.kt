@@ -27,17 +27,17 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.stream.jmxplayer.R
+import com.stream.jmxplayer.castconnect.CastServer
 import com.stream.jmxplayer.casty.Casty
-import com.stream.jmxplayer.model.EAspectRatio
-import com.stream.jmxplayer.model.EResizeMode
-import com.stream.jmxplayer.model.IAdListener
-import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.model.*
+import com.stream.jmxplayer.model.PlayerModel.Companion.DIRECT_PUT
 import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.MAnimationUtils
 import com.stream.jmxplayer.utils.PlayerUtils
+import java.io.IOException
 import kotlin.math.max
 import kotlin.system.exitProcess
 
@@ -91,6 +91,8 @@ class PlayerActivity : AppCompatActivity(),
     lateinit var adMobAdUtils: AdMobAdUtils
     private lateinit var iAdListener: IAdListener
 
+    var castServer: CastServer? = null
+
     /*
     Life Cycle
      */
@@ -120,15 +122,17 @@ class PlayerActivity : AppCompatActivity(),
             if (castSession != null) {
                 logger(
                     "on session updated",
-                    castSession.sessionId ?: "nullSid" + " " + castSession.applicationConnectionResult
+                    castSession.sessionId
+                        ?: "nullSid" + " " + castSession.applicationConnectionResult
                 )
                 logger(
                     "on session updated",
-                    castSession.applicationStatus?:"nullAppStat" + " " + castSession.castDevice
+                    castSession.applicationStatus ?: "nullAppStat" + " " + castSession.castDevice
                 )
                 logger(
                     "on session updated",
-                    castSession.category?:"nullCategory" + " " + castSession.activeInputState + " " + castSession.applicationMetadata
+                    castSession.category
+                        ?: "nullCategory" + " " + castSession.activeInputState + " " + castSession.applicationMetadata
                 )
 
             }
@@ -136,12 +140,14 @@ class PlayerActivity : AppCompatActivity(),
         casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
                 toaster(this@PlayerActivity, "connected")
+                startCastServer()
                 casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModel))
 
             }
 
             override fun onDisconnected() {
                 toaster(this@PlayerActivity, "disconnected")
+                stopCastServer()
                 hideSystemUi()
             }
         })
@@ -244,6 +250,19 @@ class PlayerActivity : AppCompatActivity(),
         menuButton = findViewById(R.id.exo_menu)
         castButton = findViewById(R.id.exo_custom_cast)
 
+    }
+
+    private fun startCastServer() {
+        castServer = CastServer(this)
+        try {
+            castServer!!.start()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun stopCastServer() {
+        castServer?.stop()
     }
 
     /*
@@ -639,7 +658,7 @@ class PlayerActivity : AppCompatActivity(),
         val intent: Intent
         if (getIntent() != null) {
             intent = getIntent()
-            playerModel = intent.getSerializableExtra(PlayerModel.DIRECT_PUT) as PlayerModel
+            playerModel = intent.getSerializableExtra(DIRECT_PUT) as PlayerModel
         } else {
             userInputStream()
         }
