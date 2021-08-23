@@ -3,9 +3,7 @@ package com.stream.jmxplayer.ui
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.res.Configuration
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Patterns
@@ -20,7 +18,6 @@ import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.BehindLiveWindowException
 import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.button.MaterialButton
@@ -31,12 +28,9 @@ import com.stream.jmxplayer.castconnect.CastServer
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.*
 import com.stream.jmxplayer.model.PlayerModel.Companion.DIRECT_PUT
-import com.stream.jmxplayer.utils.AdMobAdUtils
-import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
-import com.stream.jmxplayer.utils.MAnimationUtils
-import com.stream.jmxplayer.utils.PlayerUtils
 import java.io.IOException
 import kotlin.math.max
 import kotlin.system.exitProcess
@@ -46,52 +40,6 @@ class PlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
     Player.Listener,
     AnalyticsListener {
-
-
-    private val _autoPlay = "autoplay"
-    private val _currentWindowIndex = "current_window_index"
-    private val _playbackPosition = "playback_position"
-
-    private lateinit var alertDialogLoading: AlertDialog
-    private lateinit var playerModel: PlayerModel
-    private lateinit var downloader: String
-    private lateinit var btnClick: String
-
-    private var autoPlay = true
-    private var inErrorState = false
-    private var errorCount = 0
-
-    private var mPlayer: SimpleExoPlayer? = null
-
-    private lateinit var casty: Casty
-
-    private var currentWindow = 0
-    private var playbackPosition = 0L
-
-    private lateinit var animationUtils: MAnimationUtils
-    private lateinit var playerTitle: TextView
-    private lateinit var playerDesc: TextView
-    private lateinit var playerLang: TextView
-
-    private lateinit var mPlayerView: PlayerView
-    private lateinit var backButton: ImageButton
-    private lateinit var menuButton: ImageButton
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView: NavigationView
-
-    private lateinit var forwardButton: ImageButton
-    private lateinit var rewindButton: ImageButton
-    private lateinit var playButton: ImageButton
-    private lateinit var pauseButton: ImageButton
-    private lateinit var castButton: MediaRouteButton
-
-    private var aspectRatio: EAspectRatio = EAspectRatio.ASPECT_MATCH
-    private var resizeMode: EResizeMode = EResizeMode.FIT
-
-    lateinit var adMobAdUtils: AdMobAdUtils
-    private lateinit var iAdListener: IAdListener
-
-    var castServer: CastServer? = null
 
     /*
     Life Cycle
@@ -104,7 +52,8 @@ class PlayerActivity : AppCompatActivity(),
         setUpOrientation()
         alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
         getDataFromIntent()
-
+        downloaderUtils = DownloaderUtils(this, playerModel)
+        resizeUtils = ResizeUtils(this)
         animationUtils = MAnimationUtils(this)
         allFindViewByID()
         setUpDrawer()
@@ -114,7 +63,7 @@ class PlayerActivity : AppCompatActivity(),
 
         setUpMenuButton()
         setUpPlayerViewControl()
-
+        startCastServer()
         casty = Casty.create(this)
         //Casty.configure("8639B975")
         casty.setUpMediaRouteButton(castButton)
@@ -140,14 +89,12 @@ class PlayerActivity : AppCompatActivity(),
         casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
                 toaster(this@PlayerActivity, "connected")
-                startCastServer()
                 casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModel))
 
             }
 
             override fun onDisconnected() {
                 toaster(this@PlayerActivity, "disconnected")
-                stopCastServer()
                 hideSystemUi()
             }
         })
@@ -166,6 +113,7 @@ class PlayerActivity : AppCompatActivity(),
         super.onStart()
         if (Util.SDK_INT > 23) {
             initPlayer()
+            logger("MediaData", PlayerUtils.createMediaData(playerModel).toString())
         }
     }
 
@@ -176,6 +124,7 @@ class PlayerActivity : AppCompatActivity(),
         hideSystemUi()
         if (Util.SDK_INT <= 23) {
             initPlayer()
+            // startCastServer()
         }
     }
 
@@ -184,6 +133,7 @@ class PlayerActivity : AppCompatActivity(),
         logger("Came here", "onPause")
         if (Util.SDK_INT <= 23) {
             releasePlayer()
+            //stopCastServer()
         }
     }
 
@@ -193,19 +143,7 @@ class PlayerActivity : AppCompatActivity(),
         if (Util.SDK_INT > 23) {
             releasePlayer()
         }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        logger("onConfigChanged", "here")
-        //setTitleText(playerModel.title, playerTitle)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putLong(_playbackPosition, playbackPosition)
-        outState.putInt(_currentWindowIndex, currentWindow)
-        outState.putBoolean(_autoPlay, autoPlay)
+        stopCastServer()
     }
 
     private fun setUpOrientation() {
@@ -255,91 +193,14 @@ class PlayerActivity : AppCompatActivity(),
     private fun startCastServer() {
         castServer = CastServer(this)
         try {
-            castServer!!.start()
+            castServer?.start()
         } catch (e: IOException) {
-            e.printStackTrace()
+            logger(TAG, e.localizedMessage)
         }
     }
 
     private fun stopCastServer() {
         castServer?.stop()
-    }
-
-    /*
-    Download and Ads
-     */
-    private fun downloadWithADM() {
-        val appInstalled = GlobalFunctions.appInstalledOrNot(this, "com.dv.adm")
-        val appInstalled2 = GlobalFunctions.appInstalledOrNot(this, "com.dv.adm.pay")
-        val appInstalled3 = GlobalFunctions.appInstalledOrNot(this, "com.dv.adm.old")
-
-        val str3: String
-        if (appInstalled || appInstalled2 || appInstalled3) {
-            str3 = when {
-                appInstalled2 -> {
-                    "com.dv.adm.pay"
-                }
-                appInstalled -> {
-                    "com.dv.adm"
-                }
-                else -> {
-                    "com.dv.adm.old"
-                }
-            }
-
-            downloadAction(str3)
-
-        } else {
-            str3 = "com.dv.adm"
-            //prompt to download ADM
-            marketAction(str3)
-        }
-    }
-
-    private fun downloadAction(str3: String) {
-        try {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.parse(playerModel.link), "application/x-mpegURL")
-            intent.`package` = str3
-            if (playerModel.cookies.isNotEmpty()) {
-                intent.putExtra("Cookie", playerModel.cookies)
-                intent.putExtra("cookie", playerModel.cookies)
-                intent.putExtra("Cookies", playerModel.cookies)
-                intent.putExtra("cookie", playerModel.cookies)
-            }
-            startActivity(intent)
-            return
-        } catch (e: Exception) {
-            return
-        }
-    }
-
-    private fun marketAction(str3: String) {
-        try {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=$str3")
-                )
-            )
-        } catch (e: Exception) {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=$str3")
-                )
-            )
-        }
-    }
-
-    private fun downloadWithIDM() {
-        val appInstalled = GlobalFunctions.appInstalledOrNot(this, "idm.internet.download.manager")
-        val str3 = "idm.internet.download.manager"
-        if (appInstalled) {
-            downloadAction(str3)
-        } else {
-            marketAction(str3)
-        }
     }
 
     private fun goAction() {
@@ -359,11 +220,8 @@ class PlayerActivity : AppCompatActivity(),
 
     private fun workAfterAdActivity(state: Bundle, beforeAd: Boolean) {
         val stateNow = state.getInt(BUNDLE_STATE, 0)
-        if (stateNow == 1) {
-            downloadWithIDM()
-        } else if (stateNow == 2) {
-            downloadWithADM()
-        } else if (stateNow == 3 && beforeAd) {
+        if (stateNow < 3) downloaderUtils.downloadVideo(stateNow)
+        else if (stateNow == 3 && beforeAd) {
             newPlayModel(state)
         } else if (stateNow == 4) {
             mPlayer?.pause()
@@ -410,43 +268,13 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun showDownloadDialog() {
-        val dialogueView: View = layoutInflater.inflate(R.layout.custom_dialogue_download, null)
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setTitle("Descargar con")
-        builder.setView(dialogueView)
-        val positiveButton: Button = dialogueView.findViewById(R.id.button_exit_ac)
-        val negativeButton: Button = dialogueView.findViewById(R.id.button_exit_wa)
-
-        val alertDialog: AlertDialog = builder.create()
-        val radioGroup: RadioGroup = dialogueView.findViewById(R.id.radio_group_download)
-
-        downloader = ""
-
-        radioGroup.setOnCheckedChangeListener { group, checkedId ->
-            val radioButtonNow: RadioButton = group.findViewById(checkedId)
-            downloader = if (radioButtonNow.text.toString().trim() == "ADM") {
-                "ADM"
-            } else {
-                "IDM"
-            }
-        }
-        positiveButton.setOnClickListener {
-            if (downloader.isEmpty()) {
-                toaster(this, "Please Select an app to download")
-            } else {
-                btnClick = downloader
-                alertDialog.dismiss()
+        downloaderUtils.showDownloadDialog(this::hideSystemUi, object : IResultListener {
+            override fun workResult(result: Any) {
+                btnClick = result as String
                 goAction()
-            }
-        }
-        negativeButton.setOnClickListener {
-            alertDialog.dismiss()
-        }
-        alertDialog.setOnDismissListener {
-            hideSystemUi()
-        }
 
-        alertDialog.show()
+            }
+        })
     }
 
     /*
@@ -538,72 +366,15 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun changeResize() {
-        resizeMode = EResizeMode.next(resizeMode.valueStr)
-        toaster(this, resizeMode.valueStr)
-        setResize()
-        setAspectRatio()
-    }
-
-    private fun setResize() {
-        when (resizeMode) {
-            EResizeMode.FILL -> mPlayerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
-            EResizeMode.ZOOM -> mPlayerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-            else -> mPlayerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
-        }
+        resizeUtils.changeResize()
+        mPlayerView.resizeMode = resizeUtils.setResize()
+        mPlayerView.layoutParams = resizeUtils.setAspectRatio(requestedOrientation)
     }
 
     private fun changeAspectRatio() {
-        aspectRatio = EAspectRatio.next(aspectRatio.valueStr)
-        toaster(this, aspectRatio.valueStr)
-        setResize()
-        setAspectRatio()
-    }
-
-    private fun setAspectRatio() {
-        val width = GlobalFunctions.getScreenWidth(this)
-        val height = GlobalFunctions.getScreenHeight(this)
-
-        val orientationNow = requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        val params: FrameLayout.LayoutParams
-
-        when (aspectRatio) {
-            EAspectRatio.ASPECT_1_1 -> {
-                params = if (orientationNow) {
-                    FrameLayout.LayoutParams(width, width)
-                } else {
-                    FrameLayout.LayoutParams(height, height)
-                }
-
-            }
-            EAspectRatio.ASPECT_4_3 -> {
-                params = if (orientationNow) {
-                    FrameLayout.LayoutParams(width, (3 * width) / 4)
-                } else {
-                    FrameLayout.LayoutParams((height * 4) / 3, height)
-                }
-            }
-            EAspectRatio.ASPECT_16_9 -> {
-                params = if (orientationNow) {
-                    FrameLayout.LayoutParams(width, (16 * width) / 9)
-                } else {
-                    FrameLayout.LayoutParams((height * 9) / 16, height)
-                }
-            }
-            EAspectRatio.ASPECT_MATCH -> {
-                params = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-            }
-            else -> {
-                params = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-            }
-        }
-        params.gravity = Gravity.CENTER
-        mPlayerView.layoutParams = params
+        resizeUtils.changeAspectRatio()
+        mPlayerView.resizeMode = resizeUtils.setResize()
+        mPlayerView.layoutParams = resizeUtils.setAspectRatio(requestedOrientation)
     }
 
     /*
@@ -632,12 +403,13 @@ class PlayerActivity : AppCompatActivity(),
             }
             R.id.menu_resize -> {
                 changeResize()
-                item.title = resources.getString(R.string.resize) + " : " + resizeMode.valueStr
+                item.title =
+                    resources.getString(R.string.resize) + " : " + resizeUtils.resizeMode.valueStr
             }
             R.id.menu_aspect_ratio -> {
                 changeAspectRatio()
                 item.title =
-                    resources.getString(R.string.aspect_ratio) + " : " + aspectRatio.valueStr
+                    resources.getString(R.string.aspect_ratio) + " : " + resizeUtils.aspectRatio.valueStr
             }
             R.id.menu_custom_stream -> {
                 mPlayer?.pause()
@@ -679,8 +451,10 @@ class PlayerActivity : AppCompatActivity(),
 
         alertDialogueBuilder.setTitle("Stream Personal")
         val alertDialog = alertDialogueBuilder.create()
-        val title: TextInputEditText = dialogueView.findViewById(R.id.text_view_custom_stream_name)
-        val link: TextInputEditText = dialogueView.findViewById(R.id.text_view_custom_stream_url)
+        val title: TextInputEditText =
+            dialogueView.findViewById(R.id.text_view_custom_stream_name)
+        val link: TextInputEditText =
+            dialogueView.findViewById(R.id.text_view_custom_stream_url)
         val userAgent: TextInputEditText =
             dialogueView.findViewById(R.id.text_view_custom_stream_user_agent)
 
@@ -688,7 +462,8 @@ class PlayerActivity : AppCompatActivity(),
         val cancel: MaterialButton = dialogueView.findViewById(R.id.button_stream_cancel)
 
         accept.setOnClickListener {
-            if (link.text == null || link.text.toString().isEmpty() || !Patterns.WEB_URL.matcher(
+            if (link.text == null || link.text.toString()
+                    .isEmpty() || !Patterns.WEB_URL.matcher(
                     link.text.toString()
                 ).matches()
             ) {
@@ -696,18 +471,20 @@ class PlayerActivity : AppCompatActivity(),
                 link.requestFocus()
             } else {
                 val urlNow = link.text.toString()
-                val titleNow: String = if (title.text == null || title.text.toString().isEmpty()) {
-                    resources.getString(R.string.app_name)
-                } else {
-                    title.text.toString()
-                }
+                val titleNow: String =
+                    if (title.text == null || title.text.toString().isEmpty()) {
+                        resources.getString(R.string.app_name)
+                    } else {
+                        title.text.toString()
+                    }
                 val userAgentNow: String =
                     if (userAgent.text == null || userAgent.text.toString().isEmpty()) {
                         GlobalFunctions.USER_AGENT
                     } else {
                         userAgent.text.toString()
                     }
-                playerModel = PlayerModel(title = titleNow, link = urlNow, userAgent = userAgentNow)
+                playerModel =
+                    PlayerModel(title = titleNow, link = urlNow, userAgent = userAgentNow)
                 logger("playerModelUser", playerModel.toString())
                 PlayerUtils.createMediaData(playerModel)
                 alertDialog.dismiss()
@@ -882,6 +659,50 @@ class PlayerActivity : AppCompatActivity(),
         if (inErrorState) updateResumePosition()
     }
 
+    private val _autoPlay = "autoplay"
+    private val _currentWindowIndex = "current_window_index"
+    private val _playbackPosition = "playback_position"
+
+    private lateinit var alertDialogLoading: AlertDialog
+    private lateinit var playerModel: PlayerModel
+    private lateinit var btnClick: String
+
+    private var autoPlay = true
+    private var inErrorState = false
+    private var errorCount = 0
+
+    private var mPlayer: SimpleExoPlayer? = null
+
+    private lateinit var casty: Casty
+
+    private var currentWindow = 0
+    private var playbackPosition = 0L
+
+    private lateinit var animationUtils: MAnimationUtils
+    private lateinit var playerTitle: TextView
+    private lateinit var playerDesc: TextView
+    private lateinit var playerLang: TextView
+
+    private lateinit var mPlayerView: PlayerView
+    private lateinit var backButton: ImageButton
+    private lateinit var menuButton: ImageButton
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+
+    private lateinit var forwardButton: ImageButton
+    private lateinit var rewindButton: ImageButton
+    private lateinit var playButton: ImageButton
+    private lateinit var pauseButton: ImageButton
+    private lateinit var castButton: MediaRouteButton
+
+    lateinit var adMobAdUtils: AdMobAdUtils
+    private lateinit var iAdListener: IAdListener
+
+    var castServer: CastServer? = null
+    private lateinit var downloaderUtils: DownloaderUtils
+    private lateinit var resizeUtils: ResizeUtils
+
+
     companion object {
         const val BUNDLE_MODEL = "PLAY_MODEL"
         const val BUNDLE_STATE = "STATE_MODEL"
@@ -911,44 +732,3 @@ class PlayerActivity : AppCompatActivity(),
         }
     }
 }
-
-
-/*
-archive
-
-private fun buildMediaSource(uri: Uri): MediaSource {
-    val userAgent = GlobalFunctions.USER_AGENT
-    val httpDataSource = DefaultHttpDataSource.Factory()
-        .setUserAgent(userAgent)
-    val reqProp = HashMap<String, String>()
-    if (uri.toString().contains("drive")) {
-        reqProp.put("cookie", _playerModel.cookies)
-    } else {
-        if (xModel.referer != null) {
-            reqProp.put("Referer", xModel.referer)
-        }
-    }
-    httpDataSource.setDefaultRequestProperties(_playerModel.headers)
-    return buildMediaSource(uri, httpDataSource)
-}
-private fun buildMediaSource(
-    uri: Uri,
-    httpDataSource: DefaultHttpDataSource.Factory
-): MediaSource {
-    val mediaItem = MediaItem.fromUri(uri)
-    @C.ContentType val type = Util.inferContentType(uri)
-    return when (type) {
-        C.TYPE_DASH -> DashMediaSource.Factory(httpDataSource)
-            .createMediaSource(mediaItem)
-        C.TYPE_SS -> SsMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
-        C.TYPE_HLS -> HlsMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
-        C.TYPE_OTHER -> {
-            ProgressiveMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
-        }
-        else -> {
-            ProgressiveMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
-        }
-    }
-}
-
-*/

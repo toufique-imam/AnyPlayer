@@ -29,6 +29,7 @@ class CastOptionsProvider : OptionsProvider {
             .build()
         val launchOptions = LaunchOptions.Builder()
             .setAndroidReceiverCompatible(true)
+            .setRelaunchIfRunning(true)
             .build()
         return CastOptions.Builder()
             .setLaunchOptions(launchOptions)

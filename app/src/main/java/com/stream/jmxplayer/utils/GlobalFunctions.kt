@@ -15,7 +15,7 @@ import java.util.*
 
 class GlobalFunctions {
     companion object {
-        public fun getIpAddress(): String {
+        fun getIpAddress(): String {
             try {
                 val interfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
                 for (intf in interfaces) {
@@ -32,18 +32,17 @@ class GlobalFunctions {
                 }
             } catch (e: Exception) {
                 logger("IPAddress", e.localizedMessage + "")
-            } finally {
-                return ""
             }
+            return "localhost"
         }
 
-        const val CAST_SERVER_PORT = 5050
+        const val CAST_SERVER_PORT = 8080
         fun toaster(activity: Activity, message: String) {
             ToastCompat.makeText(activity, message, Toast.LENGTH_SHORT).show()
         }
 
-        fun logger(TAG: String, message: String) {
-            Log.e(TAG, message)
+        fun logger(TAG: String, message: String?) {
+            Log.e(TAG, message ?: "Message")
         }
 
         const val USER_AGENT =

@@ -125,7 +125,7 @@ class GalleryAdapter(val onClick: (PlayerModel) -> Unit) :
                     }
                     notifyItemRangeInserted(0, galleryData.size)
                 } catch (e: Exception) {
-                    logger("Adapter", e.localizedMessage + "")
+                    logger("Adapter", e.localizedMessage)
                 }
             }
 

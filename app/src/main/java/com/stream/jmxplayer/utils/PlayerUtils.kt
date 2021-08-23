@@ -67,9 +67,11 @@ class PlayerUtils {
             if (playerModel.streamType == 2) {
                 val ipAddresses = GlobalFunctions.getIpAddress()
                 try {
-                    var baseUrl = URL("http", ipAddresses, CAST_SERVER_PORT, "")
-                    val videoUrl = baseUrl.toString() + "/video?id=" + playerModel.id;
+                    val baseUrl = URL("http", ipAddresses, CAST_SERVER_PORT, "")
+                    val videoUrl = baseUrl.toString() + "/video?id=" + playerModel.id
                     playerModel.link = videoUrl
+                    logger("baseUrl", baseUrl.toString())
+                    logger("VideoUrl", videoUrl)
                 } catch (e: Exception) {
                     logger("createMediaData2", e.localizedMessage + "")
                 }
