@@ -67,6 +67,14 @@ class PlayerModel(
 //        headers["User-Agent"] = userAgent
 //        headers["referer"] = mainLink
 //    }
+    private fun headerString(): String {
+        val stringBuilder = StringBuilder()
+        for (i in headers.keys) {
+            stringBuilder.append("$i : ${headers[i]} \n")
+        }
+        return stringBuilder.toString()
+    }
+
     override fun toString(): String {
         return "Movie{" +
                 "id=" + id +
@@ -80,6 +88,8 @@ class PlayerModel(
                 ", $linkIntent='" + link + '\'' +
                 ", $imageIntent='" + image + '\'' +
                 ", $cardImageIntent='" + cardImageUrl + '\'' +
+                ", $typeIntent='" + streamType + '\'' +
+                ", $headerIntent='" + headerString() + '\'' +
                 '}'
 
     }

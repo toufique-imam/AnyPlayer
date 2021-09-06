@@ -74,7 +74,7 @@ class PlayerUtils {
                     logger("baseUrl", baseUrl.toString())
                     logger("VideoUrl", videoUrl)
                 } catch (e: Exception) {
-                    logger("createMediaData2", e.localizedMessage + "")
+                    logger("createMediaData2", e.localizedMessage ?: "")
                 }
             }
             val builder = MediaData.Builder(linkNow)
@@ -113,7 +113,6 @@ class PlayerUtils {
 
             return builder.build()
         }
-
 
         private fun addExtraToIntent(playerModel: PlayerModel, intentNow: Intent): Intent {
             intentNow.putExtra(
@@ -174,7 +173,7 @@ class PlayerUtils {
                 playerModel.link = intent.data.toString()
             }
             if (intent.getStringExtra(mainLinkIntent) != null) {
-                playerModel.mainLink = intent.getStringExtra(mainLinkIntent)!!
+                playerModel.mainLink = intent.getStringExtra(mainLinkIntent) ?: playerModel.link
             }
             if (intent.getStringExtra(imageIntent) != null) {
                 playerModel.image = intent.getStringExtra(imageIntent)!!
@@ -216,11 +215,11 @@ class PlayerUtils {
             }
             if (playerModel.cookies.isNotEmpty()) {
                 playerModel.headers["Cookies"] = playerModel.cookies
-                playerModel.headers["cookies"] = playerModel.cookies
+                //playerModel.headers["cookies"] = playerModel.cookies
                 playerModel.headers["Cookie"] = playerModel.cookies
-                playerModel.headers["cookie"] = playerModel.cookies
+                //playerModel.headers["cookie"] = playerModel.cookies
             }
-            playerModel.headers["user-agent"] = playerModel.userAgent
+            //playerModel.headers["user-agent"] = playerModel.userAgent
             playerModel.headers["User-Agent"] = playerModel.userAgent
             logger("playerUtils", playerModel.toString())
             return playerModel
@@ -277,6 +276,11 @@ class PlayerUtils {
                 )
             }
             val httpDataSourceFactory = createDataSourceFactory(activity, playerModel)
+            logger(
+                "httpDataSourceFactory", "" +
+                        httpDataSourceFactory.defaultRequestProperties.snapshot
+            )
+
 
             val uriNow = Uri.parse(playerModel.link)
             when (Util.inferContentType(uriNow)) {
@@ -288,7 +292,7 @@ class PlayerUtils {
                 }
                 C.TYPE_HLS -> {
                     return HlsMediaSource.Factory(httpDataSourceFactory)
-                    //.setAllowChunklessPreparation(true)
+                        .setAllowChunklessPreparation(true)
                 }
                 C.TYPE_SS -> {
                     return SsMediaSource.Factory(httpDataSourceFactory)
@@ -298,7 +302,7 @@ class PlayerUtils {
                 C.TYPE_OTHER -> {
                     if (playerModel.link.contains(playerLatinoDomain)) {
                         return HlsMediaSource.Factory(httpDataSourceFactory)
-                        //.setAllowChunklessPreparation(true)
+                            .setAllowChunklessPreparation(true)
 
                     }
                     return if (errorCount % 2 == 0) {
@@ -306,7 +310,7 @@ class PlayerUtils {
 
                     } else {
                         HlsMediaSource.Factory(httpDataSourceFactory)
-                        //.setAllowChunklessPreparation(true)
+                            .setAllowChunklessPreparation(true)
 
                     }
                 }

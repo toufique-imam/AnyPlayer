@@ -64,7 +64,7 @@ class PlayerActivity : AppCompatActivity(),
         setUpMenuButton()
         setUpPlayerViewControl()
         startCastServer()
-        casty = Casty.create(this)
+        casty = Casty.create(this).withMiniController()
         //Casty.configure("8639B975")
         casty.setUpMediaRouteButton(castButton)
         casty.setOnCastSessionUpdatedListener { castSession ->
@@ -90,7 +90,7 @@ class PlayerActivity : AppCompatActivity(),
             override fun onConnected() {
                 toaster(this@PlayerActivity, "connected")
                 casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModel))
-
+                startCastServer()
             }
 
             override fun onDisconnected() {
@@ -143,7 +143,7 @@ class PlayerActivity : AppCompatActivity(),
         if (Util.SDK_INT > 23) {
             releasePlayer()
         }
-        stopCastServer()
+        //stopCastServer()
     }
 
     private fun setUpOrientation() {
@@ -191,7 +191,7 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun startCastServer() {
-        logger("CAST_SERVER" , "Here")
+        logger("CAST_SERVER", "Here")
         castServer = CastServer(this)
         try {
             castServer.start()

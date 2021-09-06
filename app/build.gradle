@@ -13,8 +13,8 @@ android {
         applicationId "com.stream.jmxplayer"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 11
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -70,6 +70,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.7'
 
     //cast
-    implementation 'androidx.mediarouter:mediarouter:1.2.4'
+    implementation 'androidx.mediarouter:mediarouter:1.2.5'
     implementation 'com.google.android.gms:play-services-cast-framework:20.0.0'
 }
