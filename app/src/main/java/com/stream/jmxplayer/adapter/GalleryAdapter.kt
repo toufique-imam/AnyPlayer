@@ -98,13 +98,13 @@ class GalleryAdapter(val onClick: (PlayerModel) -> Unit) :
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filterStr = constraint.toString().lowercase()
+                val filterStr = constraint.toString().toLowerCase()
                 var filtered = ArrayList<PlayerModel>()
                 if (filterStr.isEmpty()) {
                     filtered = mainData
                 } else {
                     for (i in mainData) {
-                        if (i.title.lowercase().contains(filterStr)) {
+                        if (i.title.toLowerCase().contains(filterStr)) {
                             filtered.add(i)
                         }
                     }

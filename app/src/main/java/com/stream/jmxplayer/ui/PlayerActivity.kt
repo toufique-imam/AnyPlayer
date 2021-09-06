@@ -191,16 +191,17 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun startCastServer() {
+        logger("CAST_SERVER" , "Here")
         castServer = CastServer(this)
         try {
-            castServer?.start()
+            castServer.start()
         } catch (e: IOException) {
-            logger(TAG, e.localizedMessage)
+            logger("CAST_SERVER", e.localizedMessage)
         }
     }
 
     private fun stopCastServer() {
-        castServer?.stop()
+        castServer.stop()
     }
 
     private fun goAction() {
@@ -698,7 +699,7 @@ class PlayerActivity : AppCompatActivity(),
     lateinit var adMobAdUtils: AdMobAdUtils
     private lateinit var iAdListener: IAdListener
 
-    var castServer: CastServer? = null
+    private lateinit var castServer: CastServer
     private lateinit var downloaderUtils: DownloaderUtils
     private lateinit var resizeUtils: ResizeUtils
 

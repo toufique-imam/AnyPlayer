@@ -2,12 +2,8 @@ package com.stream.jmxplayer.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.exoplayer2.util.UriUtil
-import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.cast.framework.CastContext
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
@@ -16,7 +12,6 @@ import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.PlayerUtils
-import java.util.regex.Pattern
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var intentNow: Intent
@@ -38,7 +33,7 @@ class SplashActivity : AppCompatActivity() {
 
 
         alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
-workAfterAdActivity()
+        workAfterAdActivity()
 //        MobileAds.initialize(this) {
 //            adMobAdUtils = AdMobAdUtils(this)
 //            Handler(Looper.myLooper()!!).postDelayed({
@@ -48,12 +43,12 @@ workAfterAdActivity()
     }
 
 
-
     private fun workAfterAdActivity() {
-        if (playerModel.link.isEmpty() || playerModel.link.equals("null")) {
+        if (playerModel.link.isEmpty() || playerModel.link == "null") {
             val intent = Intent(this, BrowserActivity::class.java)
             startActivity(intent)
         } else {
+            logger("Splash PlayerModel", playerModel.toString())
             val intentNext = Intent(this, PlayerActivity::class.java)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

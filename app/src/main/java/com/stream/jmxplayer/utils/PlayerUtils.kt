@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
+import com.stream.jmxplayer.castconnect.CAST_SERVER_PORT
 import com.stream.jmxplayer.model.MediaData
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.model.PlayerModel.Companion.DIRECT_PUT
@@ -34,7 +35,6 @@ import com.stream.jmxplayer.model.PlayerModel.Companion.playerLatinoDomain
 import com.stream.jmxplayer.model.PlayerModel.Companion.titleIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.typeIntent
 import com.stream.jmxplayer.model.PlayerModel.Companion.userAgentIntent
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.CAST_SERVER_PORT
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import org.json.JSONObject
 import java.net.URL
@@ -64,20 +64,21 @@ class PlayerUtils {
         }
 
         fun createMediaData(playerModel: PlayerModel): MediaData {
+            var linkNow = playerModel.link
             if (playerModel.streamType == 2) {
-                val ipAddresses = GlobalFunctions.getIpAddress()
+                val ipAddresses = GlobalFunctions.getIPAddress(true)
                 try {
                     val baseUrl = URL("http", ipAddresses, CAST_SERVER_PORT, "")
                     val videoUrl = baseUrl.toString() + "/video?id=" + playerModel.id
-                    playerModel.link = videoUrl
+                    linkNow = videoUrl
                     logger("baseUrl", baseUrl.toString())
                     logger("VideoUrl", videoUrl)
                 } catch (e: Exception) {
                     logger("createMediaData2", e.localizedMessage + "")
                 }
             }
-            val builder = MediaData.Builder(playerModel.link)
-                .setContentType(getMimeType(playerModel.link))
+            val builder = MediaData.Builder(linkNow)
+                .setContentType(getMimeType(linkNow))
                 .setTitle(playerModel.title)
 
             val configNow = JSONObject()

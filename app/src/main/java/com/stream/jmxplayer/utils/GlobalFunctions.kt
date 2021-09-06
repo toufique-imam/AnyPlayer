@@ -1,6 +1,7 @@
 package com.stream.jmxplayer.utils
 
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.DisplayMetrics
@@ -10,33 +11,55 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.stream.jmxplayer.R
 import me.drakeet.support.toast.ToastCompat
+import java.lang.Exception
+import java.net.InetAddress
 import java.net.NetworkInterface
 import java.util.*
 
 class GlobalFunctions {
     companion object {
-        fun getIpAddress(): String {
+        private fun processAddress(useIPv4: Boolean, address: InetAddress): String? {
+            val hostAddress = address.hostAddress
+            val isIPv4 = hostAddress.indexOf(':') < 0
+            if (useIPv4) {
+                if (isIPv4) {
+                    return hostAddress
+                }
+            } else {
+                if (!isIPv4) {
+                    val endIndex = hostAddress.indexOf('%') // drop ip6 zone suffix
+                    return if (endIndex < 0) {
+                        hostAddress.toUpperCase()
+                    } else {
+                        hostAddress.substring(0, endIndex).toUpperCase()
+                    }
+                }
+            }
+            return null
+        }
+
+        fun getIPAddress(useIPv4: Boolean): String {
             try {
                 val interfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
-                for (intf in interfaces) {
-                    val address = Collections.list(intf.inetAddresses)
-                    for (addr in address) {
-                        if (addr.isLoopbackAddress) {
-                            val sAddr = addr.hostAddress
-                            val isIPv4 = sAddr.indexOf(':') < 0
-                            if (isIPv4) {
-                                return sAddr
+                interfaces.forEach { netInterface ->
+                    val addresses = netInterface.inetAddresses
+                    while (addresses.hasMoreElements()) {
+                        val address = addresses.nextElement()
+                        if (!address.isLoopbackAddress) {
+                            val result = processAddress(useIPv4, address)
+                            if (result != null) {
+                                Log.e("IPAddress", result)
+                                return result
                             }
                         }
                     }
                 }
-            } catch (e: Exception) {
-                logger("IPAddress", e.localizedMessage + "")
+            }catch (e : Exception){
+
             }
-            return "localhost"
+            return "0.0.0.0"
         }
 
-        const val CAST_SERVER_PORT = 8080
         fun toaster(activity: Activity, message: String) {
             ToastCompat.makeText(activity, message, Toast.LENGTH_SHORT).show()
         }

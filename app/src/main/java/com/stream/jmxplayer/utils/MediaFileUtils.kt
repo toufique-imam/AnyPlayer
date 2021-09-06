@@ -8,6 +8,7 @@ import android.os.Build
 import android.provider.MediaStore
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -22,6 +23,20 @@ class MediaFileUtils {
             } else {
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI
             }
+        }
+
+        fun getRealPathFromURI(context: Context, contentUri: Uri): String {
+            val projection = arrayOf(MediaStore.Video.Media.DATA)
+            logger("Querying", contentUri.toString())
+            //toaster(context, "Querying $contentUri")
+            return context.contentResolver.query(contentUri, projection, null, null, null)?.use {
+                val dataIndex = it.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+                if (it.moveToFirst()) {
+                    it.getString(dataIndex)
+                } else {
+                    ""
+                }
+            } ?: throw IllegalStateException("Unable to query $contentUri, system returned null.")
         }
 
         fun getAllMovieData(context: Context): MutableList<PlayerModel> {
