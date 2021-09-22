@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 
 class GalleryAdapter(val onClick: (PlayerModel) -> Unit) :
@@ -32,53 +33,6 @@ class GalleryAdapter(val onClick: (PlayerModel) -> Unit) :
         return GalleryItemViewHolder(viewNow)
     }
 
-    private fun milliSecondToString(duration: Int): String {
-        val seconds = (duration / (1000)) % 60
-        val minutes = (duration / (60 * 1000)) % 60
-        val hours = (duration / (1000 * 60 * 60)) % 24
-        val ans = StringBuilder()
-        when {
-            hours > 9 -> {
-                ans.append(hours);
-            }
-            hours > 0 -> {
-                ans.append("0")
-                ans.append(hours)
-            }
-            else -> {
-                ans.append("00");
-            }
-        }
-        ans.append(":")
-
-        when {
-            minutes > 9 -> {
-                ans.append(minutes);
-            }
-            minutes > 0 -> {
-                ans.append("0")
-                ans.append(minutes)
-            }
-            else -> {
-                ans.append("00");
-            }
-        }
-        ans.append(":")
-        when {
-            seconds > 9 -> {
-                ans.append(seconds);
-            }
-            seconds > 0 -> {
-                ans.append("0")
-                ans.append(seconds)
-            }
-            else -> {
-                ans.append("00");
-            }
-        }
-        return ans.toString()
-    }
-
     override fun onBindViewHolder(holder: GalleryItemViewHolder, position: Int) {
         val playerModel = galleryData[position]
         Glide.with(holder.imageView)
@@ -86,13 +40,18 @@ class GalleryAdapter(val onClick: (PlayerModel) -> Unit) :
             .thumbnail(0.33f)
             .centerCrop()
             .into(holder.imageView)
-        holder.durationView.text = milliSecondToString(playerModel.duration)
+        holder.durationView.text = GlobalFunctions.milliSecondToString(playerModel.duration)
         holder.titleView.text = playerModel.title
         holder.imageView.setOnClickListener { onClick(playerModel) }
     }
 
+
     override fun getItemCount(): Int {
         return galleryData.size
+    }
+
+    override fun getItemId(position: Int): Long {
+        return PlayerModel.getId(mainData[position].link, mainData[position].title)
     }
 
     override fun getFilter(): Filter {

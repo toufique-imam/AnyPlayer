@@ -6,7 +6,6 @@ import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Patterns
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -20,20 +19,16 @@ import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.textfield.TextInputEditText
 import com.stream.jmxplayer.R
-import com.stream.jmxplayer.castconnect.CastServer
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.*
 import com.stream.jmxplayer.model.PlayerModel.Companion.DIRECT_PUT
+import com.stream.jmxplayer.model.db.HistoryDatabase
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
-import java.io.IOException
 import kotlin.math.max
-import kotlin.system.exitProcess
 
 
 class PlayerActivity : AppCompatActivity(),
@@ -51,19 +46,33 @@ class PlayerActivity : AppCompatActivity(),
         setContentView(R.layout.activity_player)
         setUpOrientation()
         alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
+
+        historyDB = HistoryDatabase.getInstance(this)
         getDataFromIntent()
+
         downloaderUtils = DownloaderUtils(this, playerModel)
         resizeUtils = ResizeUtils(this)
         animationUtils = MAnimationUtils(this)
         allFindViewByID()
         setUpDrawer()
-
         setUpAppBar()
         setUpAppBarTexts(playerModel.title, playerModel.description, playerModel.mLanguage)
 
+        initCast()
         setUpMenuButton()
+
         setUpPlayerViewControl()
-        startCastServer()
+
+        if (savedInstanceState != null) {
+            playbackPosition = savedInstanceState.getLong(_playbackPosition, 0)
+            currentWindow = savedInstanceState.getInt(_currentWindowIndex)
+            autoPlay = savedInstanceState.getBoolean(_autoPlay)
+        }
+
+        adMobAdUtils = AdMobAdUtils(this)
+    }
+
+    private fun initCast() {
         casty = Casty.create(this).withMiniController()
         //Casty.configure("8639B975")
         casty.setUpMediaRouteButton(castButton)
@@ -90,7 +99,7 @@ class PlayerActivity : AppCompatActivity(),
             override fun onConnected() {
                 toaster(this@PlayerActivity, "connected")
                 casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModel))
-                startCastServer()
+                //startCastServer()
             }
 
             override fun onDisconnected() {
@@ -98,14 +107,6 @@ class PlayerActivity : AppCompatActivity(),
                 hideSystemUi()
             }
         })
-
-        if (savedInstanceState != null) {
-            playbackPosition = savedInstanceState.getLong(_playbackPosition, 0)
-            currentWindow = savedInstanceState.getInt(_currentWindowIndex)
-            autoPlay = savedInstanceState.getBoolean(_autoPlay)
-        }
-
-        adMobAdUtils = AdMobAdUtils(this)
     }
 
     override fun onStart() {
@@ -190,19 +191,6 @@ class PlayerActivity : AppCompatActivity(),
 
     }
 
-    private fun startCastServer() {
-        logger("CAST_SERVER", "Here")
-        castServer = CastServer(this)
-        try {
-            castServer.start()
-        } catch (e: IOException) {
-            logger("CAST_SERVER", e.localizedMessage)
-        }
-    }
-
-    private fun stopCastServer() {
-        castServer.stop()
-    }
 
     private fun goAction() {
         if (btnClick == "ADM") {
@@ -307,10 +295,7 @@ class PlayerActivity : AppCompatActivity(),
 
     private fun setUpAppBar() {
         backButton.setOnClickListener {
-            finish()
-            finishAffinity()
-            exitProcess(0)
-
+            onBackPressed()
         }
         backButton.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
@@ -412,13 +397,13 @@ class PlayerActivity : AppCompatActivity(),
                 item.title =
                     resources.getString(R.string.aspect_ratio) + " : " + resizeUtils.aspectRatio.valueStr
             }
-            R.id.menu_custom_stream -> {
-                mPlayer?.pause()
-                userInputStream()
-            }
-            R.id.menu_m3u -> {
-                toaster(this, "NOT YET DONE")
-            }
+//            R.id.menu_custom_stream -> {
+//                mPlayer?.pause()
+//                userInputStream()
+//            }
+//            R.id.menu_m3u -> {
+//                toaster(this, "NOT YET DONE")
+//            }
         }
         return true
     }
@@ -432,75 +417,9 @@ class PlayerActivity : AppCompatActivity(),
         if (getIntent() != null) {
             intent = getIntent()
             playerModel = intent.getSerializableExtra(DIRECT_PUT) as PlayerModel
-        } else {
-            userInputStream()
+            val playerDao = historyDB.playerModelDao()
+            playerDao.insertModel(playerModel)
         }
-    }
-
-    private fun userInputStream() {
-        if (drawerLayout.isDrawerOpen(Gravity.RIGHT)) {
-            drawerLayout.closeDrawer(Gravity.RIGHT)
-        }
-        hideSystemUi()
-
-        val dialogueView: View = layoutInflater.inflate(
-            R.layout.custom_dialogue_user_stream, null
-        )
-
-        val alertDialogueBuilder =
-            AlertDialog.Builder(this).setView(dialogueView)
-
-        alertDialogueBuilder.setTitle("Stream Personal")
-        val alertDialog = alertDialogueBuilder.create()
-        val title: TextInputEditText =
-            dialogueView.findViewById(R.id.text_view_custom_stream_name)
-        val link: TextInputEditText =
-            dialogueView.findViewById(R.id.text_view_custom_stream_url)
-        val userAgent: TextInputEditText =
-            dialogueView.findViewById(R.id.text_view_custom_stream_user_agent)
-
-        val accept: MaterialButton = dialogueView.findViewById(R.id.button_stream_confirm)
-        val cancel: MaterialButton = dialogueView.findViewById(R.id.button_stream_cancel)
-
-        accept.setOnClickListener {
-            if (link.text == null || link.text.toString()
-                    .isEmpty() || !Patterns.WEB_URL.matcher(
-                    link.text.toString()
-                ).matches()
-            ) {
-                link.error = resources.getString(R.string.enter_stream_link)
-                link.requestFocus()
-            } else {
-                val urlNow = link.text.toString()
-                val titleNow: String =
-                    if (title.text == null || title.text.toString().isEmpty()) {
-                        resources.getString(R.string.app_name)
-                    } else {
-                        title.text.toString()
-                    }
-                val userAgentNow: String =
-                    if (userAgent.text == null || userAgent.text.toString().isEmpty()) {
-                        GlobalFunctions.USER_AGENT
-                    } else {
-                        userAgent.text.toString()
-                    }
-                playerModel =
-                    PlayerModel(title = titleNow, link = urlNow, userAgent = userAgentNow)
-                logger("playerModelUser", playerModel.toString())
-                PlayerUtils.createMediaData(playerModel)
-                alertDialog.dismiss()
-                adActivity(3)
-            }
-        }
-
-        cancel.setOnClickListener {
-            alertDialog.dismiss()
-        }
-        alertDialog.setOnDismissListener {
-            hideSystemUi()
-        }
-
-        alertDialog.show()
     }
 
     /*
@@ -699,9 +618,10 @@ class PlayerActivity : AppCompatActivity(),
     lateinit var adMobAdUtils: AdMobAdUtils
     private lateinit var iAdListener: IAdListener
 
-    private lateinit var castServer: CastServer
     private lateinit var downloaderUtils: DownloaderUtils
     private lateinit var resizeUtils: ResizeUtils
+
+    private lateinit var historyDB: HistoryDatabase
 
 
     companion object {

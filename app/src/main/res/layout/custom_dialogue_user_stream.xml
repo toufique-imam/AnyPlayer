@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
                 android:text="@string/reject"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/Red"
                 android:textSize="12sp"
                 app:backgroundTint="@color/White" />
         </LinearLayout>

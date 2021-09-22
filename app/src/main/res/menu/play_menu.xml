@@ -20,15 +20,15 @@
             android:title="@string/aspect_ratio"
             android:visible="true" />
     </group>
-    <item android:title="Personalize">
-        <menu>
-            <item
-                android:id="@+id/menu_custom_stream"
-                android:title="Stream Personal" />
-            <item
-                android:id="@+id/menu_m3u"
-                android:title="Stream M3U Playlist" />
-        </menu>
-    </item>
+<!--    <item android:title="Personalize">-->
+<!--        <menu>-->
+<!--            <item-->
+<!--                android:id="@+id/menu_custom_stream"-->
+<!--                android:title="Stream Personal" />-->
+<!--            <item-->
+<!--                android:id="@+id/menu_m3u"-->
+<!--                android:title="Stream M3U Playlist" />-->
+<!--        </menu>-->
+<!--    </item>-->
 
 </menu>

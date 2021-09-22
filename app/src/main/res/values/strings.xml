@@ -11,12 +11,15 @@
     <string name="aspect_ratio">Relación de aspecto</string>
     <string name="download_video">Guardar en el dispositivo</string>
     <string name="open_with">Abrir con...</string>
-    <string name="enter_ua">Ingrese al agente de usuario de su transmisión</string>
-    <string name="user_agent">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36</string>
+    <string name="enter_ua">User-Agent</string>
+    <string name="enter_header">Encabezados adicionales</string>
+    <string name="how_to_header">separe la clave y los valores con una coma, vea la sugerencia como ejemplo</string>
+    <string name="how_to_header_whint">separe la clave y los valores con una coma, vea la sugerencia como ejemplo , ex : Origin,jmxplayer.com,Referer,www.jmxplayer.com</string>
+    <string name="user_agent">JMX Player 1.2</string>
     <string name="stream_link">http://tv2.ebox.live:8080/live/nk-six.m3u8</string>
-    <string name="enter_stream_link">Ingrese su enlace de transmisión</string>
+    <string name="enter_stream_link">Enlace de transmisión</string>
     <string name="your_stream_name">Nombre de transmisión personalizado</string>
-    <string name="enter_stream_name">Ingrese su nombre de transmisión</string>
+    <string name="enter_stream_name">Nombre de Transmisión</string>
     <string name="accept">ACEPTAR</string>
     <string name="reject">CANCELAR</string>
     <string name="splash_logo">splash_logo</string>
@@ -36,4 +39,8 @@
     <string name="play_button">play button</string>
     <string name="ADMOB_ID">ca-app-pub-3940256099942544~3347511713</string>
     <string name="Interstitial_AD_ID">ca-app-pub-3940256099942544/1033173712</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="coverimage">coverImage</string>
+    <string name="optional">Opcional</string>
 </resources>

@@ -8,7 +8,6 @@ import android.os.Build
 import android.provider.MediaStore
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit

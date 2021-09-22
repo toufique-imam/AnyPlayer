@@ -13,8 +13,8 @@ android {
         applicationId "com.stream.jmxplayer"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 11
-        versionName "1.1"
+        versionCode 12
+        versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -72,4 +72,11 @@ dependencies {
     //cast
     implementation 'androidx.mediarouter:mediarouter:1.2.5'
     implementation 'com.google.android.gms:play-services-cast-framework:20.0.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    //room
+    implementation "androidx.room:room-runtime:2.3.0"
+    kapt "androidx.room:room-compiler:2.3.0"
+    implementation "android.arch.persistence.room:rxjava2:1.1.1"
 }

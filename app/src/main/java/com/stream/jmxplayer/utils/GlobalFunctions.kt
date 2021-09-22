@@ -1,23 +1,59 @@
 package com.stream.jmxplayer.utils
 
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
 import android.view.WindowInsets
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.stream.jmxplayer.R
 import me.drakeet.support.toast.ToastCompat
-import java.lang.Exception
 import java.net.InetAddress
+import java.net.MalformedURLException
 import java.net.NetworkInterface
+import java.net.URL
 import java.util.*
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 
 class GlobalFunctions {
     companion object {
+        const val DEFAULT_STREAM_NAME = "JMX Stream"
+        fun getNameFromUrl(url: String): String {
+            if (url.isEmpty()) return DEFAULT_STREAM_NAME
+            try {
+                val resource = URL(url)
+                val host = resource.host
+                if (host.isNotEmpty() && url.endsWith(host)) {
+                    return DEFAULT_STREAM_NAME
+                }
+            } catch (e: MalformedURLException) {
+                return DEFAULT_STREAM_NAME
+            }
+            val startIndex = url.lastIndexOf('/') + 1
+            val len = url.length
+            var lastQMpos = url.lastIndexOf('?')
+            if (lastQMpos == -1) {
+                lastQMpos = len
+            }
+            var lastHashPos = url.lastIndexOf('#')
+            if (lastHashPos == -1) lastHashPos = len
+            val endIndex = lastHashPos.coerceAtMost(lastQMpos)
+            return url.substring(startIndex, endIndex)
+        }
+
+        fun getGridSpanCount(activity: Activity): Int {
+            val view: View = activity.layoutInflater.inflate(R.layout.gallery_item, null)
+            view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            val size = ceil(view.measuredWidth / 100.0) * 100
+            val xInches = (getScreenWidth(activity) / size).toInt()
+            return min(10, max(2, xInches))
+        }
+
         private fun processAddress(useIPv4: Boolean, address: InetAddress): String? {
             val hostAddress = address.hostAddress
             val isIPv4 = hostAddress.indexOf(':') < 0
@@ -54,7 +90,7 @@ class GlobalFunctions {
                         }
                     }
                 }
-            }catch (e : Exception){
+            } catch (e: Exception) {
 
             }
             return "0.0.0.0"
@@ -119,6 +155,53 @@ class GlobalFunctions {
                 .setView(dialogueView)
                 .setCancelable(false)
                 .create()
+        }
+
+        fun milliSecondToString(duration: Int): String {
+            val seconds = (duration / (1000)) % 60
+            val minutes = (duration / (60 * 1000)) % 60
+            val hours = (duration / (1000 * 60 * 60)) % 24
+            val ans = StringBuilder()
+            when {
+                hours > 9 -> {
+                    ans.append(hours)
+                }
+                hours > 0 -> {
+                    ans.append("0")
+                    ans.append(hours)
+                }
+                else -> {
+                    ans.append("00")
+                }
+            }
+            ans.append(":")
+
+            when {
+                minutes > 9 -> {
+                    ans.append(minutes)
+                }
+                minutes > 0 -> {
+                    ans.append("0")
+                    ans.append(minutes)
+                }
+                else -> {
+                    ans.append("00")
+                }
+            }
+            ans.append(":")
+            when {
+                seconds > 9 -> {
+                    ans.append(seconds)
+                }
+                seconds > 0 -> {
+                    ans.append("0")
+                    ans.append(seconds)
+                }
+                else -> {
+                    ans.append("00")
+                }
+            }
+            return ans.toString()
         }
     }
 }

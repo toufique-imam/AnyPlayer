@@ -48,6 +48,7 @@ class SplashActivity : AppCompatActivity() {
             val intent = Intent(this, BrowserActivity::class.java)
             startActivity(intent)
         } else {
+            playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             logger("Splash PlayerModel", playerModel.toString())
             val intentNext = Intent(this, PlayerActivity::class.java)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

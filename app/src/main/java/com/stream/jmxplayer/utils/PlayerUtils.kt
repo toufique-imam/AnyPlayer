@@ -205,22 +205,24 @@ class PlayerUtils {
                 playerModel.mLanguage = intent.getStringExtra(languageIntent)!!
             }
             val headerNow = intent.getStringArrayExtra(headerIntent)
-
+            val hashMap = HashMap<String, String>()
             if (headerNow != null) {
                 var index = 1
                 while (index < headerNow.size) {
-                    playerModel.headers[headerNow[index - 1]] = headerNow[index]
+                    hashMap[headerNow[index - 1]] = headerNow[index]
                     index += 2
                 }
             }
             if (playerModel.cookies.isNotEmpty()) {
-                playerModel.headers["Cookies"] = playerModel.cookies
+                hashMap["Cookies"] = playerModel.cookies
                 //playerModel.headers["cookies"] = playerModel.cookies
-                playerModel.headers["Cookie"] = playerModel.cookies
+                hashMap["Cookie"] = playerModel.cookies
                 //playerModel.headers["cookie"] = playerModel.cookies
             }
             //playerModel.headers["user-agent"] = playerModel.userAgent
-            playerModel.headers["User-Agent"] = playerModel.userAgent
+            hashMap["User-Agent"] = playerModel.userAgent
+            playerModel.headers = hashMap
+            playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             logger("playerUtils", playerModel.toString())
             return playerModel
         }
@@ -349,3 +351,69 @@ class PlayerUtils {
         }
     }
 }
+/*
+    private fun userInputStream() {
+        if (drawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+            drawerLayout.closeDrawer(Gravity.RIGHT)
+        }
+        hideSystemUi()
+
+        val dialogueView: View = layoutInflater.inflate(
+            R.layout.custom_dialogue_user_stream, null
+        )
+
+        val alertDialogueBuilder =
+            AlertDialog.Builder(this).setView(dialogueView)
+
+        alertDialogueBuilder.setTitle("Stream Personal")
+        val alertDialog = alertDialogueBuilder.create()
+        val title: TextInputEditText =
+            dialogueView.findViewById(R.id.text_view_custom_stream_name)
+        val link: TextInputEditText =
+            dialogueView.findViewById(R.id.text_view_custom_stream_url)
+        val userAgent: TextInputEditText =
+            dialogueView.findViewById(R.id.text_view_custom_stream_user_agent)
+
+        val accept: MaterialButton = dialogueView.findViewById(R.id.button_stream_confirm)
+        val cancel: MaterialButton = dialogueView.findViewById(R.id.button_stream_cancel)
+
+        accept.setOnClickListener {
+            if (link.text == null || link.text.toString()
+                    .isEmpty() || !Patterns.WEB_URL.matcher(
+                    link.text.toString()
+                ).matches()
+            ) {
+                link.error = resources.getString(R.string.enter_stream_link)
+                link.requestFocus()
+            } else {
+                val urlNow = link.text.toString()
+                val titleNow: String =
+                    if (title.text == null || title.text.toString().isEmpty()) {
+                        resources.getString(R.string.app_name)
+                    } else {
+                        title.text.toString()
+                    }
+                val userAgentNow: String =
+                    if (userAgent.text == null || userAgent.text.toString().isEmpty()) {
+                        GlobalFunctions.USER_AGENT
+                    } else {
+                        userAgent.text.toString()
+                    }
+                playerModel =
+                    PlayerModel(title = titleNow, link = urlNow, userAgent = userAgentNow)
+                logger("playerModelUser", playerModel.toString())
+                PlayerUtils.createMediaData(playerModel)
+                alertDialog.dismiss()
+                adActivity(3)
+            }
+        }
+
+        cancel.setOnClickListener {
+            alertDialog.dismiss()
+        }
+        alertDialog.setOnDismissListener {
+            hideSystemUi()
+        }
+
+        alertDialog.show()
+    }*/
