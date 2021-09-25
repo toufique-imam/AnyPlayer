@@ -12,6 +12,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.mediarouter.app.MediaRouteButton
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.BehindLiveWindowException
@@ -21,10 +23,12 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.navigation.NavigationView
 import com.stream.jmxplayer.R
+import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.*
-import com.stream.jmxplayer.model.PlayerModel.Companion.DIRECT_PUT
+import com.stream.jmxplayer.model.PlayerModel.Companion.SELECTED_MODEL
 import com.stream.jmxplayer.model.db.HistoryDatabase
+import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
@@ -36,6 +40,59 @@ class PlayerActivity : AppCompatActivity(),
     Player.Listener,
     AnalyticsListener {
 
+    private val _autoPlay = "autoplay"
+    private val _currentWindowIndex = "current_window_index"
+    private val _playbackPosition = "playback_position"
+
+    private lateinit var alertDialogLoading: AlertDialog
+    private lateinit var playerModelNow: PlayerModel
+
+    //private var playList = ArrayList<PlayerModel>()
+    private lateinit var btnClick: String
+
+    private var autoPlay = true
+    private var inErrorState = false
+    private var errorCount = 0
+
+    private var mPlayer: SimpleExoPlayer? = null
+
+    private lateinit var casty: Casty
+
+    private var currentWindow = 0
+    private var playbackPosition = 0L
+
+    private lateinit var animationUtils: MAnimationUtils
+    private lateinit var playerTitle: TextView
+    private lateinit var playerDesc: TextView
+    private lateinit var playerLang: TextView
+
+    private lateinit var mPlayerView: PlayerView
+    private lateinit var backButton: ImageButton
+    private lateinit var menuButton: ImageButton
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+
+    private lateinit var forwardButton: ImageButton
+    private lateinit var rewindButton: ImageButton
+    private lateinit var playButton: ImageButton
+    private lateinit var pauseButton: ImageButton
+    private lateinit var nextButton: ImageButton
+    private lateinit var previousButton: ImageButton
+    private lateinit var castButton: MediaRouteButton
+
+    private lateinit var recyclerViewPlayList: RecyclerView
+    private lateinit var galleryAdapter: GalleryAdapter
+    //lateinit var behavior: BottomSheetBehavior<RecyclerView>
+
+    lateinit var adMobAdUtils: AdMobAdUtils
+    private lateinit var iAdListener: IAdListener
+
+    private lateinit var downloaderUtils: DownloaderUtils
+    private lateinit var resizeUtils: ResizeUtils
+
+    private lateinit var historyDB: HistoryDatabase
+
+    var idxNow = 0
     /*
     Life Cycle
      */
@@ -50,17 +107,16 @@ class PlayerActivity : AppCompatActivity(),
         historyDB = HistoryDatabase.getInstance(this)
         getDataFromIntent()
 
-        downloaderUtils = DownloaderUtils(this, playerModel)
+        downloaderUtils = DownloaderUtils(this, playerModelNow)
         resizeUtils = ResizeUtils(this)
         animationUtils = MAnimationUtils(this)
         allFindViewByID()
         setUpDrawer()
         setUpAppBar()
-        setUpAppBarTexts(playerModel.title, playerModel.description, playerModel.mLanguage)
-
+        updateTexts()
         initCast()
         setUpMenuButton()
-
+        initPlaylist()
         setUpPlayerViewControl()
 
         if (savedInstanceState != null) {
@@ -98,7 +154,7 @@ class PlayerActivity : AppCompatActivity(),
         casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
                 toaster(this@PlayerActivity, "connected")
-                casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModel))
+                casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
                 //startCastServer()
             }
 
@@ -113,8 +169,7 @@ class PlayerActivity : AppCompatActivity(),
         logger("Came here", "onStart")
         super.onStart()
         if (Util.SDK_INT > 23) {
-            initPlayer()
-            logger("MediaData", PlayerUtils.createMediaData(playerModel).toString())
+            initPlayer(false)
         }
     }
 
@@ -124,7 +179,7 @@ class PlayerActivity : AppCompatActivity(),
         // start in pure full screen
         hideSystemUi()
         if (Util.SDK_INT <= 23) {
-            initPlayer()
+            initPlayer(false)
             // startCastServer()
         }
     }
@@ -173,6 +228,7 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun allFindViewByID() {
+        recyclerViewPlayList = findViewById(R.id.recycler_playlist)
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         mPlayerView = findViewById(R.id.media_view)
@@ -189,6 +245,36 @@ class PlayerActivity : AppCompatActivity(),
         menuButton = findViewById(R.id.exo_menu)
         castButton = findViewById(R.id.exo_custom_cast)
 
+        nextButton = findViewById(R.id.playlistNext)
+        previousButton = findViewById(R.id.playlistPrev)
+        recyclerViewAutoHide()
+
+    }
+
+    fun recyclerViewAutoHide() {
+        mPlayerView.setOnClickListener {
+            if (recyclerViewPlayList.visibility == View.VISIBLE) {
+                recyclerViewPlayList.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun initPlaylist() {
+        galleryAdapter = GalleryAdapter(
+            2,
+            { _, pos ->
+                idxNow = pos
+                updatePlayerModel()
+            }, { _, _ ->
+
+            }
+        )
+        galleryAdapter.setHasStableIds(true)
+        recyclerViewPlayList.also { viewR ->
+            viewR.layoutManager = GridLayoutManager(this, 1)
+            viewR.adapter = galleryAdapter
+        }
+        galleryAdapter.updateData(PlayListAll)
     }
 
 
@@ -200,21 +286,11 @@ class PlayerActivity : AppCompatActivity(),
         }
     }
 
-    private fun newPlayModel(state: Bundle) {
-        errorCount = 0
-        playerModel = state.getSerializable(BUNDLE_MODEL) as PlayerModel
-        autoPlay = false
-        initPlayer()
-    }
-
-    private fun workAfterAdActivity(state: Bundle, beforeAd: Boolean) {
-        val stateNow = state.getInt(BUNDLE_STATE, 0)
-        if (stateNow < 3) downloaderUtils.downloadVideo(stateNow)
-        else if (stateNow == 3 && beforeAd) {
-            newPlayModel(state)
-        } else if (stateNow == 4) {
+    private fun workAfterAdActivity(state: Int) {
+        if (state < 3) downloaderUtils.downloadVideo(state)
+        else if (state == 4) {
             mPlayer?.pause()
-            val intentNow = PlayerUtils.createViewIntent(playerModel)
+            val intentNow = PlayerUtils.createViewIntent(playerModelNow)
             if (intentNow.resolveActivity(packageManager) != null) {
                 startActivity(intentNow)
             } else {
@@ -224,16 +300,11 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun adActivity(state: Int) {
-        val bundle = Bundle()
-        bundle.putInt(BUNDLE_STATE, state)
-        if (state == 3)
-            bundle.putSerializable(BUNDLE_MODEL, playerModel)
         iAdListener = object : IAdListener {
             override fun onAdActivityDone(result: String) {
                 alertDialogLoading.dismiss()
                 logger("Ad", result)
-                workAfterAdActivity(bundle, false)
-
+                workAfterAdActivity(state)
             }
 
             override fun onAdLoadingStarted() {
@@ -248,10 +319,9 @@ class PlayerActivity : AppCompatActivity(),
             override fun onAdError(error: String) {
                 alertDialogLoading.dismiss()
                 logger("Ad ", error)
-                workAfterAdActivity(bundle, false)
+                workAfterAdActivity(state)
             }
         }
-        workAfterAdActivity(bundle, true)
         adMobAdUtils.setAdListener(iAdListener)
         adMobAdUtils.loadAd()
     }
@@ -269,6 +339,13 @@ class PlayerActivity : AppCompatActivity(),
     /*
     View SetUps
      */
+    private fun updateTexts() {
+        setUpAppBarTexts(
+            playerModelNow.title,
+            playerModelNow.description,
+            playerModelNow.mLanguage
+        )
+    }
 
     private fun setUpPlayerViewControl() {
 
@@ -290,8 +367,29 @@ class PlayerActivity : AppCompatActivity(),
             R.drawable.ic_baseline_pause_circle_red_filled_24,
             R.drawable.ic_baseline_pause_circle_filled_24
         )
-
+        nextButton.setOnClickListener {
+            idxNow++
+            if (PlayListAll.isNotEmpty())
+                idxNow %= PlayListAll.size
+            updatePlayerModel()
+        }
+        previousButton.setOnClickListener {
+            idxNow--
+            if (PlayListAll.isNotEmpty()) {
+                idxNow += PlayListAll.size
+                idxNow %= PlayListAll.size
+            }
+            updatePlayerModel()
+        }
     }
+
+    private fun updatePlayerModel() {
+        playerModelNow = PlayListAll[idxNow]
+        updateTexts()
+        addSource(playerModelNow)
+        preparePlayer()
+    }
+
 
     private fun setUpAppBar() {
         backButton.setOnClickListener {
@@ -354,14 +452,14 @@ class PlayerActivity : AppCompatActivity(),
     private fun changeResize() {
         resizeUtils.changeResize()
         mPlayerView.resizeMode = resizeUtils.setResize()
-        mPlayerView.layoutParams = resizeUtils.setAspectRatio(requestedOrientation)
+        // mPlayerView.layoutParams = resizeUtils.setAspectRatio(requestedOrientation)
     }
 
-    private fun changeAspectRatio() {
-        resizeUtils.changeAspectRatio()
-        mPlayerView.resizeMode = resizeUtils.setResize()
-        mPlayerView.layoutParams = resizeUtils.setAspectRatio(requestedOrientation)
-    }
+//    private fun changeAspectRatio() {
+//        resizeUtils.changeAspectRatio()
+//        mPlayerView.resizeMode = resizeUtils.setResize()
+//        mPlayerView.layoutParams = resizeUtils.setAspectRatio(requestedOrientation)
+//    }
 
     /*
     nav setUp
@@ -392,33 +490,42 @@ class PlayerActivity : AppCompatActivity(),
                 item.title =
                     resources.getString(R.string.resize) + " : " + resizeUtils.resizeMode.valueStr
             }
-            R.id.menu_aspect_ratio -> {
-                changeAspectRatio()
-                item.title =
-                    resources.getString(R.string.aspect_ratio) + " : " + resizeUtils.aspectRatio.valueStr
+            R.id.menu_playlist -> {
+                if (recyclerViewPlayList.visibility == View.VISIBLE) {
+                    recyclerViewPlayList.visibility = View.GONE
+                } else {
+                    recyclerViewPlayList.visibility = View.VISIBLE
+                }
             }
-//            R.id.menu_custom_stream -> {
-//                mPlayer?.pause()
-//                userInputStream()
-//            }
-//            R.id.menu_m3u -> {
-//                toaster(this, "NOT YET DONE")
+//            R.id.menu_aspect_ratio -> {
+//                changeAspectRatio()
+//                item.title =
+//                    resources.getString(R.string.aspect_ratio) + " : " + resizeUtils.aspectRatio.valueStr
 //            }
         }
-        return true
+        return false
     }
 
     /*
     PlayerModel Input / Parsing
      */
 
+    private fun addToHistory(playerModel: PlayerModel) {
+        val playerDao = historyDB.playerModelDao()
+        playerDao.insertModel(playerModel)
+    }
+
     private fun getDataFromIntent() {
         val intent: Intent
         if (getIntent() != null) {
             intent = getIntent()
-            playerModel = intent.getSerializableExtra(DIRECT_PUT) as PlayerModel
-            val playerDao = historyDB.playerModelDao()
-            playerDao.insertModel(playerModel)
+            idxNow = intent.getIntExtra(SELECTED_MODEL, 0)
+            if (PlayListAll.size > idxNow)
+                playerModelNow = PlayListAll[idxNow]
+            else if (PlayListAll.isNotEmpty()) {
+                playerModelNow = PlayListAll[0]
+                idxNow = 0
+            }
         }
     }
 
@@ -460,7 +567,22 @@ class PlayerActivity : AppCompatActivity(),
         }
     }
 
-    private fun initPlayer() {
+
+    private fun addSource(playerModel: PlayerModel) {
+        val mediaSource = PlayerUtils.createMediaSource(this, playerModel, errorCount)
+        mPlayer?.setMediaSource(mediaSource)
+    }
+
+    private fun preparePlayer() {
+        mPlayer?.prepare()
+        if (autoPlay) {
+            mPlayer?.play()
+        } else {
+            mPlayer?.pause()
+        }
+    }
+
+    private fun initPlayer(fromError: Boolean) {
         inErrorState = false
         if (mPlayer == null) {
             mPlayer = PlayerUtils.createPlayer(this)
@@ -469,15 +591,9 @@ class PlayerActivity : AppCompatActivity(),
             mPlayer?.addAnalyticsListener(this)
             mPlayerView.player = mPlayer
         }
-        val mediaSource = PlayerUtils.createMediaSource(this, playerModel, errorCount)
-        mPlayer?.setMediaSource(mediaSource)
-        mPlayer?.prepare()
-        if (autoPlay) {
-            mPlayer?.play()
-        } else {
-            mPlayer?.pause()
-        }
-        setUpAppBarTexts(playerModel.title, playerModel.description, playerModel.mLanguage)
+        if (!fromError)
+            addSource(playerModelNow)
+        preparePlayer()
     }
 
     private fun releasePlayer() {
@@ -506,9 +622,10 @@ class PlayerActivity : AppCompatActivity(),
         loadEventInfo: LoadEventInfo,
         mediaLoadData: MediaLoadData
     ) {
+        addToHistory(playerModelNow)
         logger("Loading", loadEventInfo.uri.toString())
         if (loadEventInfo.uri.toString() == MAGNA_TV_BLOCKED) {
-            playerModel.link = ""
+            playerModelNow.link = ""
             inErrorState = true
             releasePlayer()
             toaster(this, SERVER_ERROR_TEXT)
@@ -557,72 +674,31 @@ class PlayerActivity : AppCompatActivity(),
             inErrorState = false
             autoPlay = true
             clearResumePosition()
-            initPlayer()
+            //mPlayer?.next()
+            initPlayer(true)
             return
         }
         if (isRendererError(error)) {
             inErrorState = false
             clearResumePosition()
-            initPlayer()
+            //mPlayer?.next()
+            initPlayer(true)
             return
         }
         toaster(this, SERVER_ERROR_TEXT + " " + error.type)
         if (isBehindLiveWindow(error)) {
             clearResumePosition()
-            initPlayer()
+            //mPlayer?.next()
+            initPlayer(true)
         } else {
-            updateResumePosition()
+            mPlayer?.next()
+//            updateResumePosition()
         }
     }
 
     override fun onPositionDiscontinuity(reason: Int) {
         if (inErrorState) updateResumePosition()
     }
-
-    private val _autoPlay = "autoplay"
-    private val _currentWindowIndex = "current_window_index"
-    private val _playbackPosition = "playback_position"
-
-    private lateinit var alertDialogLoading: AlertDialog
-    private lateinit var playerModel: PlayerModel
-    private lateinit var btnClick: String
-
-    private var autoPlay = true
-    private var inErrorState = false
-    private var errorCount = 0
-
-    private var mPlayer: SimpleExoPlayer? = null
-
-    private lateinit var casty: Casty
-
-    private var currentWindow = 0
-    private var playbackPosition = 0L
-
-    private lateinit var animationUtils: MAnimationUtils
-    private lateinit var playerTitle: TextView
-    private lateinit var playerDesc: TextView
-    private lateinit var playerLang: TextView
-
-    private lateinit var mPlayerView: PlayerView
-    private lateinit var backButton: ImageButton
-    private lateinit var menuButton: ImageButton
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView: NavigationView
-
-    private lateinit var forwardButton: ImageButton
-    private lateinit var rewindButton: ImageButton
-    private lateinit var playButton: ImageButton
-    private lateinit var pauseButton: ImageButton
-    private lateinit var castButton: MediaRouteButton
-
-    lateinit var adMobAdUtils: AdMobAdUtils
-    private lateinit var iAdListener: IAdListener
-
-    private lateinit var downloaderUtils: DownloaderUtils
-    private lateinit var resizeUtils: ResizeUtils
-
-    private lateinit var historyDB: HistoryDatabase
-
 
     companion object {
         const val BUNDLE_MODEL = "PLAY_MODEL"

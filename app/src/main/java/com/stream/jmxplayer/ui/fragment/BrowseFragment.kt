@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
-import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.ui.LocalVideoViewModel
 import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
@@ -64,11 +64,13 @@ class BrowseFragment : Fragment() {
         grantPermissionButton = view.findViewById(R.id.grant_permission_button)
         welcomeView = view.findViewById(R.id.welcome_view)
         permissionRationaleView = view.findViewById(R.id.permission_rationale_view)
-        galleryAdapter = GalleryAdapter { video ->
+        galleryAdapter = GalleryAdapter(0, { video, _ ->
             val intent = Intent(context, PlayerActivity::class.java)
-            intent.putExtra(PlayerModel.DIRECT_PUT, video)
+            PlayListAll.clear()
+            PlayListAll.add(video)
+            //intent.putExtra(PlayerModel.DIRECT_PUT, data)
             startActivity(intent)
-        }
+        }, { _, _ -> })
         galleryAdapter.setHasStableIds(true)
         val spanCount = getGridSpanCount(requireActivity())
 

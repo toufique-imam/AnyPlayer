@@ -19,7 +19,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
-import com.stream.jmxplayer.castconnect.CAST_SERVER_PORT
+import com.stream.jmxplayer.castconnect.CastServer.Companion.CAST_SERVER_PORT
 import com.stream.jmxplayer.model.MediaData
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.model.PlayerModel.Companion.DIRECT_PUT
@@ -254,6 +254,7 @@ class PlayerUtils {
             val uriNow = Uri.parse(playerModel.link)
             val mediaItem = MediaItem.Builder()
                 .setUri(uriNow)
+                .setMediaId(playerModel.id.toString())
 
             val mediaSourceFactory = createMediaSourceFactory(activity, playerModel, errorCount)
             if (playerModel.drmSting.isNotEmpty()) {

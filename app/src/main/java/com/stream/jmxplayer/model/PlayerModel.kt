@@ -97,6 +97,7 @@ data class PlayerModel(
         const val mainLinkIntent = "MAIN_LINK"
         const val playerLatinoDomain = "app.playerlatino.live"
         const val DIRECT_PUT = "MODEL"
+        const val SELECTED_MODEL = "SELECTED_MODEL"
         fun getId(link: String, title: String): Long {
             return (link.hashCode() + title.hashCode()).toLong()
         }

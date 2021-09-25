@@ -13,8 +13,8 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.model.db.HistoryDatabase
+import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.ui.PlayerActivity
-import com.stream.jmxplayer.utils.GlobalFunctions
 
 
 /**
@@ -39,20 +39,26 @@ class HistoryFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_browse, container, false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         historyDatabase = HistoryDatabase.getInstance(requireContext())
         gallery = view.findViewById(R.id.gallery)
-        galleryAdapter = GalleryAdapter { video ->
-            val intent = Intent(context, PlayerActivity::class.java)
-            intent.putExtra(PlayerModel.DIRECT_PUT, video)
-            startActivity(intent)
-        }
+        galleryAdapter = GalleryAdapter(
+            1,
+            { video, _ ->
+                val intent = Intent(context, PlayerActivity::class.java)
+                PlayListAll.clear()
+                PlayListAll.add(video)
+                startActivity(intent)
+            }, { video, pos ->
+                deleteHistory(video, pos)
+            }
+        )
         galleryAdapter.setHasStableIds(true)
-        val spanCount = GlobalFunctions.getGridSpanCount(requireActivity())
 
         gallery.also { viewR ->
-            viewR.layoutManager = GridLayoutManager(context, spanCount)
+            viewR.layoutManager = GridLayoutManager(context, 1)
             viewR.adapter = galleryAdapter
         }
         galleryAdapter.updateData(historyDatabase.playerModelDao().getAll())
@@ -84,6 +90,11 @@ class HistoryFragment : Fragment() {
     private fun deleteHistory() {
         historyDatabase.playerModelDao().deleteAll()
         galleryAdapter.updateData(historyDatabase.playerModelDao().getAll())
+    }
+
+    private fun deleteHistory(playerModel: PlayerModel, pos: Int) {
+        historyDatabase.playerModelDao().deleteModel(playerModel)
+        galleryAdapter.deleteData(pos)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =

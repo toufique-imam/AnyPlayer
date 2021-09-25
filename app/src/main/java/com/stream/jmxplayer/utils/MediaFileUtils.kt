@@ -90,6 +90,8 @@ class MediaFileUtils {
                     link = contentUri.toString(), duration = duration,
                     streamType = 2
                 )
+                video.image = video.link
+                video.cardImageUrl = video.link
                 //val video = PlayerModel(id, contentUri, displayName, duration, size, dateModified)
                 videoModels += video
                 logger(TAG, "Added video: $video")

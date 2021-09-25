@@ -12,7 +12,7 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IResultListener
 import com.stream.jmxplayer.model.PlayerModel
 
-class DownloaderUtils(val activity: Activity, val playerModel: PlayerModel) {
+class DownloaderUtils(val activity: Activity, var playerModel: PlayerModel) {
     private var downloader: String = ""
     fun downloadVideo(stateNow: Int) {
         if (stateNow == 1) {
@@ -22,7 +22,11 @@ class DownloaderUtils(val activity: Activity, val playerModel: PlayerModel) {
         }
     }
 
-    fun showDownloadDialog(hideSystemUi: () -> Unit , resultListener: IResultListener, ) {
+    fun updatePlayerModel(playerModel: PlayerModel) {
+        this.playerModel = playerModel
+    }
+
+    fun showDownloadDialog(hideSystemUi: () -> Unit, resultListener: IResultListener) {
         val dialogueView: View =
             activity.layoutInflater.inflate(R.layout.custom_dialogue_download, null)
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)

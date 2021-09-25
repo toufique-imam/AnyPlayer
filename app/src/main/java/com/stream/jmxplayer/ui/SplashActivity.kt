@@ -8,6 +8,7 @@ import com.google.android.gms.cast.framework.CastContext
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
@@ -54,7 +55,9 @@ class SplashActivity : AppCompatActivity() {
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intentNext.putExtra(PlayerModel.DIRECT_PUT, playerModel)
+            PlayListAll.clear()
+            PlayListAll.add(playerModel)
+            //intentNext.putExtra(PlayerModel.DIRECT_PUT, data)
             startActivity(intentNext)
         }
         finish()

@@ -33,7 +33,6 @@ class LocalVideoViewModel(application: Application) : AndroidViewModel(applicati
     }
 }
 
-private const val TAG = "MainActivityVM"
 private fun ContentResolver.registerObserver(
     uri: Uri,
     observer: (selfChange: Boolean) -> Unit

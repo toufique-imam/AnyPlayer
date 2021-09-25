@@ -161,6 +161,9 @@ class GlobalFunctions {
             val seconds = (duration / (1000)) % 60
             val minutes = (duration / (60 * 1000)) % 60
             val hours = (duration / (1000 * 60 * 60)) % 24
+            if (seconds == 0 && minutes == 0 && hours == 0) {
+                return ""
+            }
             val ans = StringBuilder()
             when {
                 hours > 9 -> {

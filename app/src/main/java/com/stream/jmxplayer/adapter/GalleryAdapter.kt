@@ -1,7 +1,9 @@
 package com.stream.jmxplayer.adapter
 
+import android.graphics.Color
 import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -12,7 +14,10 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 
-class GalleryAdapter(val onClick: (PlayerModel) -> Unit) :
+class GalleryAdapter(
+    val type: Int, val onClick: (PlayerModel, Int) -> Unit,
+    val onDelete: (PlayerModel, Int) -> Unit
+) :
     RecyclerView.Adapter<GalleryItemViewHolder>(), Filterable {
     private var galleryData = ArrayList<PlayerModel>()
     private var mainData = ArrayList<PlayerModel>()
@@ -27,22 +32,55 @@ class GalleryAdapter(val onClick: (PlayerModel) -> Unit) :
         notifyItemRangeInserted(0, data.size)
     }
 
+    fun deleteData(position: Int) {
+        if (position != -1 && position < galleryData.size) {
+            mainData.remove(galleryData.removeAt(position))
+            notifyItemRemoved(position)
+        }
+    }
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryItemViewHolder {
         val viewNow =
-            LayoutInflater.from(parent.context).inflate(R.layout.gallery_item, null, false)
-        return GalleryItemViewHolder(viewNow)
+            if (type == 0) {
+                LayoutInflater.from(parent.context).inflate(R.layout.gallery_item, null, false)
+            } else {
+                LayoutInflater.from(parent.context).inflate(R.layout.history_item, null, false)
+            }
+
+        return GalleryItemViewHolder(viewNow).apply {
+            if (type != 0) {
+                initHistory()
+            }
+            if (type > 1) {
+                hideButton()
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: GalleryItemViewHolder, position: Int) {
         val playerModel = galleryData[position]
         Glide.with(holder.imageView)
-            .load(Uri.parse(playerModel.link))
+            .load(Uri.parse(playerModel.image))
             .thumbnail(0.33f)
+            .placeholder(R.drawable.main_logo)
             .centerCrop()
             .into(holder.imageView)
-        holder.durationView.text = GlobalFunctions.milliSecondToString(playerModel.duration)
+        val timerText = GlobalFunctions.milliSecondToString(playerModel.duration)
+        if (timerText.isEmpty()) holder.durationView.visibility = View.GONE
+        else holder.durationView.text = timerText
         holder.titleView.text = playerModel.title
-        holder.imageView.setOnClickListener { onClick(playerModel) }
+        if (type > 1) {
+            holder.titleView.setTextColor(Color.WHITE)
+            holder.durationView.setTextColor(Color.WHITE)
+        }
+        holder.itemView.setOnClickListener { onClick(playerModel, position) }
+        if (type == 1) {
+            holder.playButton.setOnClickListener { onClick(playerModel, position) }
+            holder.deleteButton.setOnClickListener {
+                onDelete(playerModel, position)
+            }
+        }
     }
 
 

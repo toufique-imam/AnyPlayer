@@ -79,4 +79,6 @@ dependencies {
     implementation "androidx.room:room-runtime:2.3.0"
     kapt "androidx.room:room-compiler:2.3.0"
     implementation "android.arch.persistence.room:rxjava2:1.1.1"
+    //volley
+    implementation 'com.android.volley:volley:1.2.1'
 }

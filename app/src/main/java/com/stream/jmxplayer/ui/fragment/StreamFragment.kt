@@ -23,6 +23,7 @@ class StreamFragment : Fragment() {
     private lateinit var viewPager2: ViewPager2
     private lateinit var collectionAdapter: ViewPagerAdapter
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,15 +49,17 @@ class StreamFragment : Fragment() {
 
 
     class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+        private val userLinkFragment0 = UserLinkFragment.newInstance(0)
+        private val userLinkFragment1 = UserLinkFragment.newInstance(1)
         override fun getItemCount(): Int {
             return 2
         }
 
         override fun createFragment(position: Int): Fragment {
             return if (position == 0) {
-                UserLinkFragment()
+                userLinkFragment0
             } else {
-                M3UPlaylistFragment()
+                userLinkFragment1
             }
         }
 
