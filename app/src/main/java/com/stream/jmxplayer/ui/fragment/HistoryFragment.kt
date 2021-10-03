@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
+import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.model.db.HistoryDatabase
 import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
@@ -26,7 +27,7 @@ class HistoryFragment : Fragment() {
 
     private lateinit var gallery: RecyclerView
     lateinit var galleryAdapter: GalleryAdapter
-    lateinit var historyDatabase: HistoryDatabase
+    private lateinit var historyDatabase: HistoryDatabase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -36,16 +37,16 @@ class HistoryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_browse, container, false)
+        return inflater.inflate(R.layout.fragment_list_view, container, false)
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         historyDatabase = HistoryDatabase.getInstance(requireContext())
-        gallery = view.findViewById(R.id.gallery)
+        gallery = view.findViewById(R.id.recycler_gallery)
         galleryAdapter = GalleryAdapter(
-            1,
+            GalleryItemViewHolder.SINGLE_DELETE,
             { video, _ ->
                 val intent = Intent(context, PlayerActivity::class.java)
                 PlayListAll.clear()

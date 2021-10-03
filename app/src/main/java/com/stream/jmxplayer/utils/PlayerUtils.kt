@@ -65,11 +65,17 @@ class PlayerUtils {
 
         fun createMediaData(playerModel: PlayerModel): MediaData {
             var linkNow = playerModel.link
-            if (playerModel.streamType == 2) {
+            if (PlayerModel.isLocal(playerModel.streamType)) {
                 val ipAddresses = GlobalFunctions.getIPAddress(true)
                 try {
                     val baseUrl = URL("http", ipAddresses, CAST_SERVER_PORT, "")
-                    val videoUrl = baseUrl.toString() + "/video?id=" + playerModel.id
+                    val paramString =
+                        when (playerModel.streamType) {
+                            PlayerModel.STREAM_OFFLINE_VIDEO -> "/video?id="
+                            PlayerModel.STREAM_OFFLINE_AUDIO -> "/audio?id="
+                            else -> "/image?id="
+                        }
+                    val videoUrl = baseUrl.toString() + paramString + playerModel.id
                     linkNow = videoUrl
                     logger("baseUrl", baseUrl.toString())
                     logger("VideoUrl", videoUrl)
@@ -78,7 +84,14 @@ class PlayerUtils {
                 }
             }
             val builder = MediaData.Builder(linkNow)
-                .setContentType(getMimeType(linkNow))
+                .setContentType(
+                    when (playerModel.streamType) {
+                        //todo music and image mimetype
+                        PlayerModel.STREAM_OFFLINE_AUDIO -> ""
+                        PlayerModel.STREAM_OFFLINE_IMAGE -> ""
+                        else -> getMimeType(linkNow)
+                    }
+                )
                 .setTitle(playerModel.title)
 
             val configNow = JSONObject()
@@ -99,17 +112,23 @@ class PlayerUtils {
                 configNow.put(key, playerModel.headers[key])
             }
 
-            if (playerModel.streamType == 1) {
+            if (playerModel.streamType == PlayerModel.STREAM_ONLINE_LIVE) {
                 builder.setStreamType(MediaData.STREAM_TYPE_LIVE)
                 builder.setMediaType(MediaData.MEDIA_TYPE_GENERIC)
-            } else {
+            } else if (playerModel.streamType == PlayerModel.STREAM_ONLINE_GENERAL) {
                 builder.setStreamType(MediaData.STREAM_TYPE_BUFFERED)
                 builder.setMediaType(MediaData.MEDIA_TYPE_MOVIE)
+            } else if (PlayerModel.isLocal(playerModel.streamType)) {
+                builder.setStreamType(MediaData.STREAM_TYPE_BUFFERED)
+                when (playerModel.streamType) {
+                    PlayerModel.STREAM_OFFLINE_VIDEO -> builder.setMediaType(MediaData.MEDIA_TYPE_MOVIE)
+                    PlayerModel.STREAM_OFFLINE_AUDIO -> builder.setMediaType(MediaData.MEDIA_TYPE_MUSIC_TRACK)
+                    PlayerModel.STREAM_OFFLINE_IMAGE -> builder.setMediaType(MediaData.MEDIA_TYPE_PHOTO)
+                }
             }
             builder.setExoPlayerConfig(configNow)
             builder.addPhotoUrl(playerModel.image)
             builder.addPhotoUrl(playerModel.image)
-
 
             return builder.build()
         }
@@ -150,22 +169,7 @@ class PlayerUtils {
 
 
         fun parseIntent(intent: Intent): PlayerModel {
-            /*
-                params for intent
-                ======================
-                1. Link:String (LINK)
-                2. User_agent:String (USER_AGENT)
-                3. DRM:String (DRM)
-                4. cookies:String (COOKIES)
-                5. mainLink:String (MAIN_LINK)
-                ======================
-                1. title:String (TITLE)
-                2. description:String (DESCRIPTION)
-                3. mLanguage:String (LANGUAGE)
-                ======================
-                1. header_source_req:String[] (HEADERS)
-                ======================
-             */
+
             val playerModel = PlayerModel()
             if (intent.getStringExtra(linkIntent) != null) {
                 playerModel.link = intent.getStringExtra(linkIntent)!!
@@ -272,18 +276,13 @@ class PlayerUtils {
             errorCount: Int
         ): MediaSourceFactory {
             logger("createMediaSource", playerModel.toString())
-            if (playerModel.streamType == 2) {
+            if (PlayerModel.isLocal(playerModel.streamType)) {
                 return ProgressiveMediaSource.Factory(
                     DefaultDataSourceFactory(activity, "ua"),
                     DefaultExtractorsFactory()
                 )
             }
             val httpDataSourceFactory = createDataSourceFactory(activity, playerModel)
-            logger(
-                "httpDataSourceFactory", "" +
-                        httpDataSourceFactory.defaultRequestProperties.snapshot
-            )
-
 
             val uriNow = Uri.parse(playerModel.link)
             when (Util.inferContentType(uriNow)) {
@@ -299,14 +298,11 @@ class PlayerUtils {
                 }
                 C.TYPE_SS -> {
                     return SsMediaSource.Factory(httpDataSourceFactory)
-
-
                 }
                 C.TYPE_OTHER -> {
                     if (playerModel.link.contains(playerLatinoDomain)) {
                         return HlsMediaSource.Factory(httpDataSourceFactory)
                             .setAllowChunklessPreparation(true)
-
                     }
                     return if (errorCount % 2 == 0) {
                         ProgressiveMediaSource.Factory(httpDataSourceFactory)
@@ -314,22 +310,20 @@ class PlayerUtils {
                     } else {
                         HlsMediaSource.Factory(httpDataSourceFactory)
                             .setAllowChunklessPreparation(true)
-
                     }
                 }
                 else -> {
                     return ProgressiveMediaSource.Factory(httpDataSourceFactory)
-
                 }
             }
         }
 
         fun createPlayer(activity: Activity): SimpleExoPlayer {
             val loadControl = DefaultLoadControl()
+            //DefaultLoadControl.Builder().setBufferDurationsMs(25000, 90000, 1500, 2000).build()
             val trackSelector = DefaultTrackSelector(activity)
             trackSelector.setParameters(
                 trackSelector.parameters.buildUpon()
-                    .setMaxVideoSizeSd()
                     .setPreferredTextLanguage("es")
                     .setPreferredAudioLanguage("es")
             )

@@ -37,7 +37,7 @@ class StreamFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         //init views
         tabLayout = view.findViewById(R.id.tab_custom_stream)
-        viewPager2 = view.findViewById(R.id.viewpager)
+        viewPager2 = view.findViewById(R.id.viewpager_stream)
         tabLayout.tabMode = TabLayout.MODE_FIXED
 
         collectionAdapter = ViewPagerAdapter(this)

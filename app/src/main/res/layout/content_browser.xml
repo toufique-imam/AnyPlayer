@@ -35,7 +35,7 @@
             android:layout_height="128dp"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_baseline_phonelink_black_lock_24"
-            app:tint="@color/ForestGreen" />
+            app:tint="@color/ic_launcher_background" />
 
         <TextView
             android:id="@+id/permission_required_text"
@@ -73,7 +73,7 @@
             android:layout_height="128dp"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_baseline_video_library_24"
-            app:tint="@color/ForestGreen" />
+            app:tint="@color/ic_launcher_background" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/open_album"

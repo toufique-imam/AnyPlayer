@@ -148,16 +148,4 @@
         </LinearLayout>
     </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_play"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="70dp"
-        android:background="@color/TransparentWhite"
-        android:contentDescription="@string/play_button"
-        android:src="@drawable/ic_baseline_play_arrow_24"
-        android:visibility="gone"
-        app:fabSize="mini" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

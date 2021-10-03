@@ -117,11 +117,10 @@ public class MediaData {
         if (exoPlayerConfig != null)
             builder.setCustomData(exoPlayerConfig);
 
-        MediaInfo mediaInfo = builder.build();
         //GlobalFunctions.Companion.logger("MediaInfo", gson.toJson(mediaInfo));
-        if (mediaInfo.getCustomData() != null)
-            GlobalFunctions.Companion.logger("MediaInfo Custom", mediaInfo.getCustomData().toString());
-        return mediaInfo;
+//        if (mediaInfo.getCustomData() != null)
+//            GlobalFunctions.Companion.logger("MediaInfo Custom", mediaInfo.getCustomData().toString());
+        return builder.build();
     }
 
     public static class Builder {

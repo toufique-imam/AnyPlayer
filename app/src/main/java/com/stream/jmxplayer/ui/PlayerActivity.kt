@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.util.Util
 import com.google.android.material.navigation.NavigationView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
+import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.*
 import com.stream.jmxplayer.model.PlayerModel.Companion.SELECTED_MODEL
@@ -251,7 +252,7 @@ class PlayerActivity : AppCompatActivity(),
 
     }
 
-    fun recyclerViewAutoHide() {
+    private fun recyclerViewAutoHide() {
         mPlayerView.setOnClickListener {
             if (recyclerViewPlayList.visibility == View.VISIBLE) {
                 recyclerViewPlayList.visibility = View.GONE
@@ -261,7 +262,7 @@ class PlayerActivity : AppCompatActivity(),
 
     private fun initPlaylist() {
         galleryAdapter = GalleryAdapter(
-            2,
+            GalleryItemViewHolder.SINGLE_NO_DELETE,
             { _, pos ->
                 idxNow = pos
                 updatePlayerModel()
@@ -386,6 +387,9 @@ class PlayerActivity : AppCompatActivity(),
     private fun updatePlayerModel() {
         playerModelNow = PlayListAll[idxNow]
         updateTexts()
+        if (casty.isConnected) {
+            casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
+        }
         addSource(playerModelNow)
         preparePlayer()
     }
@@ -591,8 +595,10 @@ class PlayerActivity : AppCompatActivity(),
             mPlayer?.addAnalyticsListener(this)
             mPlayerView.player = mPlayer
         }
-        if (!fromError)
+        if (!fromError) {
+            addToHistory(playerModelNow)
             addSource(playerModelNow)
+        }
         preparePlayer()
     }
 
@@ -622,13 +628,32 @@ class PlayerActivity : AppCompatActivity(),
         loadEventInfo: LoadEventInfo,
         mediaLoadData: MediaLoadData
     ) {
-        addToHistory(playerModelNow)
         logger("Loading", loadEventInfo.uri.toString())
         if (loadEventInfo.uri.toString() == MAGNA_TV_BLOCKED) {
             playerModelNow.link = ""
             inErrorState = true
             releasePlayer()
             toaster(this, SERVER_ERROR_TEXT)
+        }
+    }
+
+    private fun audioTrackSelection() {
+        val len = mPlayer?.currentTrackGroups?.length ?: 0
+        for (i in 0 until len) {
+            val trackNow = mPlayer?.currentTrackGroups?.get(i)
+            val format = trackNow?.getFormat(0)?.sampleMimeType
+            val lang = trackNow?.getFormat(0)?.language
+            val id = trackNow?.getFormat(0)?.id
+            if (trackNow != null) {
+                println("trackNow: ")
+                println(trackNow.getFormat(0))
+            }
+            if (format != null) {
+                if (format.contains("audio") && id != null && lang != null)
+                    println("lang=$lang id=$id")
+                if (id != null && lang != null)
+                    println("format=$format lang=$lang id=$id")
+            }
         }
     }
 
@@ -646,6 +671,7 @@ class PlayerActivity : AppCompatActivity(),
                 stateString = "STATE_BUFFERING"
             }
             ExoPlayer.STATE_READY -> {
+                audioTrackSelection()
                 stateString = "STATE_READY"
             }
             ExoPlayer.STATE_ENDED -> {

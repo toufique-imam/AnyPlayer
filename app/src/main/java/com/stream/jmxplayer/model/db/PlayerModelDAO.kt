@@ -8,6 +8,9 @@ interface PlayerModelDAO {
     @Query("SELECT * FROM playerModel")
     fun getAll(): List<PlayerModel>
 
+    @Query("SELECT * FROM playerModel WHERE streamType = ${PlayerModel.STREAM_M3U}")
+    fun getAllM3U(): List<PlayerModel>
+
     @Query("SELECT * FROM playerModel WHERE id = (:playerId)")
     fun loadByID(playerId: Long): PlayerModel
 

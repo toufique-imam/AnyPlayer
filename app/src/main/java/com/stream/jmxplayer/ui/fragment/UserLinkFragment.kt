@@ -1,6 +1,7 @@
 package com.stream.jmxplayer.ui.fragment
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -8,19 +9,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
+import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.model.db.HistoryDatabase
 import com.stream.jmxplayer.model.db.SharedPreferenceUtils
 import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.m3u.OnScrappingCompleted
 import com.stream.jmxplayer.utils.m3u.Parser
 import com.stream.jmxplayer.utils.m3u.Scrapper
@@ -31,13 +36,16 @@ class UserLinkFragment : Fragment() {
     lateinit var userAgentTextView: TextInputEditText
     lateinit var headersTextView: TextInputEditText
     lateinit var acceptButton: MaterialButton
-    lateinit var recyclerView: RecyclerView
-    lateinit var fabPlay: FloatingActionButton
 
     lateinit var headerTIL: TextInputLayout
     lateinit var userAgentTIL: TextInputLayout
     lateinit var titleTIL: TextInputLayout
     lateinit var optionalTV: TextView
+
+    lateinit var recyclerView: RecyclerView
+    private lateinit var historyDatabase: HistoryDatabase
+    lateinit var galleryAdapter: GalleryAdapter
+    lateinit var m3UDisplayFragment: M3UDisplayFragment
 
     var fragmentType: Int = 0
 
@@ -65,9 +73,9 @@ class UserLinkFragment : Fragment() {
         titleTIL = view.findViewById(R.id.til_stream_name)
         optionalTV = view.findViewById(R.id.tv_optional)
         recyclerView = view.findViewById(R.id.recycler_m3u)
-        fabPlay = view.findViewById(R.id.fab_play)
         if (fragmentType == 1) {
             hideView()
+            m3UDisplayFragment = M3UDisplayFragment.newInstance()
         }
         return view
     }
@@ -77,6 +85,7 @@ class UserLinkFragment : Fragment() {
         userAgentTIL.visibility = View.GONE
         titleTIL.visibility = View.GONE
         optionalTV.visibility = View.GONE
+        recyclerView.visibility = View.VISIBLE
     }
 
 
@@ -84,10 +93,6 @@ class UserLinkFragment : Fragment() {
         PlayListAll.clear()
         PlayListAll.addAll(data)
         val intentNext = Intent(requireActivity(), PlayerActivity::class.java)
-        //intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        //intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        //intentNext.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        //intentNext.putExtra(PlayerModel.DIRECT_PUT, data)
         intentNext.putExtra(PlayerModel.SELECTED_MODEL, selectedIdx)
         startActivity(intentNext)
     }
@@ -124,12 +129,12 @@ class UserLinkFragment : Fragment() {
         if (headers.isNotEmpty()) {
             val headerNow = headers.split(",")
             var index = 1
-            val headers = HashMap<String, String>()
+            val headersPlayer = HashMap<String, String>()
             while (index < headerNow.size) {
-                headers[headerNow[index - 1]] = headerNow[index]
+                headersPlayer[headerNow[index - 1]] = headerNow[index]
                 index += 2
             }
-            model.headers = headers
+            model.headers = headersPlayer
         }
         SharedPreferenceUtils.saveUserLastInput(
             requireContext(),
@@ -145,51 +150,44 @@ class UserLinkFragment : Fragment() {
     }
 
     private fun m3uDataAction(playerModels: ArrayList<PlayerModel>) {
-        val galleryAdapter = GalleryAdapter(
-            0,
-            { _, pos -> startStreaming(data = playerModels, pos) },
-            { _, _ -> })
-        galleryAdapter.setHasStableIds(true)
-        galleryAdapter.updateData(data = playerModels)
-        val spanCount = GlobalFunctions.getGridSpanCount(requireActivity())
-
-        recyclerView.also { viewR ->
-            viewR.layoutManager = GridLayoutManager(context, spanCount)
-            viewR.adapter = galleryAdapter
-        }
-        fabPlay.setOnClickListener {
-            startStreaming(data = playerModels)
-        }
-        recyclerView.visibility = View.VISIBLE
-        fabPlay.visibility = View.VISIBLE
+        PlayListAll.clear()
+        PlayListAll.addAll(playerModels)
+        requireView().findNavController().navigate(R.id.action_streamFragment_to_m3UDisplayFragment)
     }
 
-    private fun userInputM3U() {
-        val urlNow = linkTextView.text.toString()
-        SharedPreferenceUtils.setUserM3U(requireContext(), urlNow)
+    private fun parseM3U(urlNow: String) {
         val scrapper = Scrapper(requireContext(), urlNow)
         val loading = GlobalFunctions.createAlertDialogueLoading(requireActivity())
-        recyclerView.visibility = View.GONE
-        fabPlay.visibility = View.GONE
         scrapper.onFinish(object : OnScrappingCompleted {
             override fun onComplete(response: String) {
                 loading.dismiss()
-                //logger("Parsing", response)
                 val data = Parser.ParseM3UString(response, "User")
-                //startStreaming(data)
                 if (data.isNotEmpty())
                     m3uDataAction(data)
                 else
-                    GlobalFunctions.toaster(requireActivity(), "Empty List/Parsing Failed")
+                    toaster(requireActivity(), "Empty List/Parsing Failed")
             }
 
             override fun onError() {
                 loading.dismiss()
-                GlobalFunctions.toaster(requireActivity(), "Error Occurred")
+                toaster(requireActivity(), "Error Occurred")
             }
         })
         loading.show()
         scrapper.startScrapping()
+    }
+
+    private fun userInputM3U() {
+        val urlNow = linkTextView.text.toString()
+        toaster(requireActivity(), urlNow)
+        SharedPreferenceUtils.setUserM3U(requireContext(), urlNow)
+        val uri = Uri.parse(urlNow)
+        val token = uri.lastPathSegment ?: "User M3U"
+        val playerModel =
+            PlayerModel(link = urlNow, streamType = PlayerModel.STREAM_M3U, title = token)
+        playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
+        historyDatabase.playerModelDao().insertModel(playerModel)
+        galleryAdapter.addData(playerModel)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -203,6 +201,18 @@ class UserLinkFragment : Fragment() {
         } else {
             val userPrevData = SharedPreferenceUtils.getUserM3U(requireContext())
             linkTextView.setText(userPrevData)
+            historyDatabase = HistoryDatabase.getInstance(requireContext())
+            galleryAdapter = GalleryAdapter(GalleryItemViewHolder.M3U_LIST, { video, _ ->
+                parseM3U(video.link)
+            }, { _, _ -> })
+            recyclerView.also { viewR ->
+                viewR.layoutManager =
+                    LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
+                viewR.adapter = galleryAdapter
+            }
+            val data = historyDatabase.playerModelDao().getAllM3U()
+            logger("here", "$data.size")
+            galleryAdapter.updateData(data)
         }
         acceptButton.setOnClickListener {
             if (linkTextView.text == null || linkTextView.text.toString()

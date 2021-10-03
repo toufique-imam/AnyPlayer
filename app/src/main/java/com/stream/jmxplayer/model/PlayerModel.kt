@@ -101,5 +101,17 @@ data class PlayerModel(
         fun getId(link: String, title: String): Long {
             return (link.hashCode() + title.hashCode()).toLong()
         }
+
+        fun isLocal(type: Int): Boolean {
+            return type == STREAM_OFFLINE_VIDEO || type == STREAM_OFFLINE_AUDIO || type == STREAM_OFFLINE_IMAGE
+        }
+
+        const val STREAM_ONLINE_GENERAL = 0
+        const val STREAM_ONLINE_LIVE = 1
+        const val STREAM_OFFLINE_VIDEO = 2
+        const val STREAM_M3U = 3
+
+        const val STREAM_OFFLINE_AUDIO = 4
+        const val STREAM_OFFLINE_IMAGE = 5
     }
 }
