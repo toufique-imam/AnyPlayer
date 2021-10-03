@@ -46,21 +46,31 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
             }
         }
         logger("range", "" + range)
+        logger("uri", "" + uri.toString())
+        val type = when (uri.toString()) {
+            "/audio" -> PlayerModel.STREAM_OFFLINE_AUDIO
+            "/video" -> PlayerModel.STREAM_OFFLINE_VIDEO
+            else -> PlayerModel.STREAM_OFFLINE_IMAGE
+        }
         val response = if (range == null) {
-            getFullResponse(parms)
+            getFullResponse(type, parms)
         } else {
-            getPartialResponse(parms, range)
+            getPartialResponse(type, parms, range)
         }
         response.addHeader("Accept-Ranges", "bytes")
         return response
     }
 
     private fun getFullResponse(
+        type: Int,
         parms: MutableMap<String, String>?
     ): Response {
         val id = parms?.get(PARAM_ID).toString()
-        this.videoNow = MediaFileUtils.getMovieUri(context, id.toLong())
-        val realPath = MediaFileUtils.getRealPathFromURI(context, Uri.parse(this.videoNow!!.link))
+        this.videoNow =
+            MediaFileUtils.getMediaUri(context, id.toLong(), type)
+        val realPath = MediaFileUtils.getRealPathFromURI(
+            context, Uri.parse(this.videoNow!!.link), type
+        )
 
         videoNow ?: return errorResponse()
         if (videoNow != null) {
@@ -73,8 +83,9 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
                 return errorResponse(e.localizedMessage)
             }
             val st = Response.Status.OK
+
             return newFixedLengthResponse(
-                st, MIME_TYPE_VIDEO,
+                st, getMimeType(type),
                 fis, video.length()
             )
         } else {
@@ -82,13 +93,24 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
         }
     }
 
+    private fun getMimeType(type: Int): String {
+        return when (type) {
+            PlayerModel.STREAM_OFFLINE_VIDEO -> MIME_TYPE_VIDEO
+            PlayerModel.STREAM_OFFLINE_AUDIO -> MIME_TYPE_AUDIO
+            else -> MIME_TYPE_IMAGE
+        }
+    }
+
     private fun getPartialResponse(
+        type: Int,
         parms: MutableMap<String, String>?,
         rangeHeader: String
     ): Response {
         val id = parms?.get(PARAM_ID).toString()
-        this.videoNow = MediaFileUtils.getMovieUri(context, id.toLong())
-        val realPath = MediaFileUtils.getRealPathFromURI(context, Uri.parse(this.videoNow!!.link))
+        this.videoNow =
+            MediaFileUtils.getMediaUri(context, id.toLong(), type)
+        val realPath =
+            MediaFileUtils.getRealPathFromURI(context, Uri.parse(this.videoNow!!.link), type)
 
         videoNow ?: return errorResponse()
         if (videoNow != null) {
@@ -97,8 +119,8 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
             logger("rangeHeader", rangeHeader)
             val rangeValue = rangeHeader.trim().substring("bytes=".length)
             val fileLength = video.length()
-            var start: Long
-            var end : Long
+            val start: Long
+            var end: Long
             logger("rangeValue", "$rangeValue :: $fileLength")
 
             if (rangeValue.startsWith("-")) {
@@ -126,11 +148,11 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
                 fis.skip(start)
                 val response = newChunkedResponse(
                     Response.Status.PARTIAL_CONTENT,
-                    MIME_TYPE_VIDEO, fis
+                    getMimeType(type), fis
                 )
                 response.addHeader("Content-Length", contentLen.toString())
                 response.addHeader("Content-Range", "bytes $start-$end/$fileLength")
-                response.addHeader("Content-Type", MIME_TYPE_VIDEO)
+                response.addHeader("Content-Type", getMimeType(type))
                 response
             } else {
                 errorResponse("RangeNotSatisfied")

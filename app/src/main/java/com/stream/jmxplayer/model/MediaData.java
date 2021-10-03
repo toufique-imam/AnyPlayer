@@ -8,7 +8,6 @@ import androidx.annotation.IntDef;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.common.images.WebImage;
-import com.stream.jmxplayer.utils.GlobalFunctions;
 
 import org.json.JSONObject;
 

@@ -8,11 +8,12 @@ import com.google.android.gms.cast.framework.CastContext
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.PlayerUtils
+import com.stream.jmxplayer.utils.SharedPreferenceUtils
+import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var intentNow: Intent
@@ -24,6 +25,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(SharedPreferenceUtils.getTheme(this))
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
         logger("Splash", "came here")

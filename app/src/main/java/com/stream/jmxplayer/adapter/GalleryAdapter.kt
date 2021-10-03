@@ -19,7 +19,7 @@ class GalleryAdapter(
     val onDelete: (PlayerModel, Int) -> Unit
 ) :
     RecyclerView.Adapter<GalleryItemViewHolder>(), Filterable {
-    private var galleryData = ArrayList<PlayerModel>()
+    var galleryData = ArrayList<PlayerModel>()
     private var mainData = ArrayList<PlayerModel>()
 
     fun updateData(data: List<PlayerModel>) {
@@ -70,30 +70,35 @@ class GalleryAdapter(
 
     override fun onBindViewHolder(holder: GalleryItemViewHolder, position: Int) {
         val playerModel = galleryData[position]
-        if (type != GalleryItemViewHolder.M3U_LIST && playerModel.streamType != PlayerModel.STREAM_OFFLINE_AUDIO) {
+        if (type != GalleryItemViewHolder.M3U_LIST) {
             Glide.with(holder.imageView)
                 .load(
                     if (playerModel.streamType != PlayerModel.STREAM_M3U) {
                         Uri.parse(playerModel.image)
                     } else {
-                        R.drawable.playlist_logo
+                        R.drawable.logo_playlist2
                     }
                 )
                 .thumbnail(0.33f)
-                .placeholder(R.drawable.main_logo)
+                .placeholder(
+                    if (playerModel.streamType == PlayerModel.STREAM_OFFLINE_AUDIO) R.drawable.ic_empty_music2
+                    else R.drawable.main_logo
+                )
                 //.centerCrop()
                 .into(holder.imageView)
-
+        }
+        if (type != GalleryItemViewHolder.M3U_LIST) {
             val timerText = GlobalFunctions.milliSecondToString(playerModel.duration)
             if (timerText.isEmpty()) holder.durationView.visibility = View.GONE
-            else holder.durationView.text = timerText
+            else {
+                holder.durationView.visibility = View.VISIBLE
+                holder.durationView.text = timerText
+            }
         }
         if (type == GalleryItemViewHolder.M3U_LIST) {
             holder.durationView.text = playerModel.link
         }
-        if (playerModel.streamType == PlayerModel.STREAM_OFFLINE_AUDIO) {
-            holder.imageView.setImageResource(R.drawable.logo_music)
-        }
+
         holder.titleView.text = playerModel.title
         if (type == GalleryItemViewHolder.SINGLE_NO_DELETE) {
             holder.titleView.setTextColor(Color.WHITE)
@@ -113,7 +118,7 @@ class GalleryAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return PlayerModel.getId(mainData[position].link, mainData[position].title)
+        return PlayerModel.getId(galleryData[position].link, galleryData[position].title)
     }
 
     override fun getFilter(): Filter {

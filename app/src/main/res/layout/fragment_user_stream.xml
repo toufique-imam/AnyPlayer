@@ -134,7 +134,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="5dp"
-                android:nextFocusDown="@id/button_stream_cancel"
                 android:text="@string/accept"
                 android:textColor="@color/Green"
                 android:textSize="12sp"

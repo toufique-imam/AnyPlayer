@@ -13,9 +13,9 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.model.db.SharedPreferenceUtils
 import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.SharedPreferenceUtils
 
 class M3UDisplayFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -76,12 +76,6 @@ class M3UDisplayFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         * @param param Fragment Type.
-         * @return A new instance of fragment UserLinkFragment.
-         */
         @JvmStatic
         fun newInstance() =
             M3UDisplayFragment()

@@ -12,26 +12,55 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MediaFileUtils {
     companion object {
 
         private const val TAG = "MediaFileUtils"
+        fun getAlbumArtUri(albumId: Long): Uri {
+            return ContentUris.withAppendedId(
+                Uri.parse("content://media/external/audio/albumart"),
+                albumId
+            )
+        }
 
-        fun getRealPathFromURI(context: Context, contentUri: Uri): String {
-            val projection = arrayOf(MediaStore.Video.Media.DATA)
+        fun getRealPathFromURI(context: Context, contentUri: Uri, type: Int): String {
+            val projection = if (type == PlayerModel.STREAM_OFFLINE_VIDEO)
+                arrayOf(MediaStore.Video.Media.DATA)
+            else arrayOf(MediaStore.Audio.Media.DATA)
             logger("Querying", contentUri.toString())
             //toaster(context, "Querying $contentUri")
             return context.contentResolver.query(contentUri, projection, null, null, null)?.use {
-                val dataIndex = it.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+                val dataIndex = if (type == PlayerModel.STREAM_OFFLINE_VIDEO)
+                    it.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+                else it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
                 if (it.moveToFirst()) {
                     it.getString(dataIndex)
                 } else {
                     ""
                 }
             } ?: throw IllegalStateException("Unable to query $contentUri, system returned null.")
+        }
+
+        private fun makePlayerModel(
+            id: Long,
+            displayName: String,
+            size: Long,
+            duration: Int,
+            type: Int
+        ): PlayerModel {
+            val contentUri = getContentUri(type, id)
+            val video = PlayerModel(
+                title = displayName, id = id,
+                link = contentUri.toString(), duration = duration,
+                streamType = type
+            )
+            video.image =
+                if (type == PlayerModel.STREAM_OFFLINE_AUDIO) getAlbumArtUri(size).toString() else video.link
+            video.cardImageUrl = video.image
+            logger("makePlayerModel", "$video")
+            return video
         }
 
         suspend fun getAllMediaData(type: Int, context: Context): MutableList<PlayerModel> {
@@ -60,24 +89,13 @@ class MediaFileUtils {
                     logger(TAG, "Found ${cursor.count} videos")
                     while (cursor.moveToNext()) {
                         val id = cursor.getLong(dbIds[0])
-                        val dateModified =
-                            Date(TimeUnit.SECONDS.toMillis(cursor.getLong(dbIds[1])))
-                        val displayName = cursor.getString(dbIds[2])
-                        val size = cursor.getInt(dbIds[3])
-                        val duration = if (type != PlayerModel.STREAM_OFFLINE_IMAGE)
-                            cursor.getInt(dbIds[4])
-                        else -1
-                        val contentUri = getContentUri(type, id)
-                        val video = PlayerModel(
-                            title = displayName, id = id,
-                            link = contentUri.toString(), duration = duration,
-                            streamType = type
-                        )
-                        video.image = video.link
-                        video.cardImageUrl = video.link
-                        //val video = PlayerModel(id, contentUri, displayName, duration, size, dateModified)
-                        videoModels += video
-                        logger(TAG, "Added video: $video")
+                        val displayName = cursor.getString(dbIds[1])
+//                        val dateModified =
+//                            Date(TimeUnit.SECONDS.toMillis(cursor.getLong(dbIds[2])))
+                        val size = cursor.getLong(dbIds[3])
+                        val duration =
+                            if (type != PlayerModel.STREAM_OFFLINE_IMAGE) cursor.getInt(dbIds[4]) else 0
+                        videoModels += makePlayerModel(id, displayName, size, duration, type)
                     }
                     cursor.close()
                 }
@@ -93,56 +111,39 @@ class MediaFileUtils {
                 TimeUnit.MICROSECONDS.toSeconds(formatter.parse("$day.$month.$year")?.time ?: 0)
             }
 
-        fun getMovieUri(context: Context, id: Long): PlayerModel? {
-            val projection = arrayOf(
-                MediaStore.Video.Media._ID,
-                MediaStore.Video.Media.DISPLAY_NAME,
-                MediaStore.Video.Media.DATE_ADDED,
-                MediaStore.Video.Media.DURATION,
-                MediaStore.Video.Media.SIZE
-            )
-            val collection = getCollection(PlayerModel.STREAM_OFFLINE_VIDEO)
+        fun getMediaUri(context: Context, id: Long, type: Int): PlayerModel? {
+            val projection = getProjection(type)
+            val collection = getCollection(type)
 
             val selection = StringBuilder()
-            selection.append(MediaStore.Video.Media._ID + " IN (")
+            when (type) {
+                PlayerModel.STREAM_OFFLINE_VIDEO -> selection.append(MediaStore.Video.Media._ID)
+                PlayerModel.STREAM_OFFLINE_AUDIO -> selection.append(MediaStore.Audio.Media._ID)
+                else -> selection.append(MediaStore.Images.Media._ID)
+            }
+            selection.append(" IN (")
             selection.append(id)
             selection.append(")")
             val cursor = context.contentResolver.query(
                 collection,
                 projection, selection.toString(), null, null
             ) ?: return null
-            val idColumn =
-                cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
-            val dateModifiedColumn =
-                cursor.getColumnIndexOrThrow(
-                    MediaStore.Video.Media.DATE_ADDED
-                )
-            val displayNameColumn =
-                cursor.getColumnIndexOrThrow(
-                    MediaStore.Video.Media.DISPLAY_NAME
-                )
-            val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
-            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
+            val ids = getColumnIndex(type, cursor)
             cursor.moveToFirst()
-            try {
-                val id = cursor.getLong(idColumn)
-                val dateModified =
-                    Date(TimeUnit.SECONDS.toMillis(cursor.getLong(dateModifiedColumn)))
-                val displayName = cursor.getString(displayNameColumn)
-                val duration = cursor.getInt(durationColumn)
-                val size = cursor.getInt(sizeColumn)
-                val contentUri = ContentUris.withAppendedId(
-                    collection,
-                    id
-                )
-                return PlayerModel(
-                    title = displayName, id = id,
-                    link = contentUri.toString(), duration = duration,
-                    streamType = PlayerModel.STREAM_OFFLINE_VIDEO
-                )
+
+            return try {
+                val idNow = cursor.getLong(ids[0])
+                val displayName = cursor.getString(ids[1])
+//                val dateModified =
+//                    Date(TimeUnit.SECONDS.toMillis(cursor.getLong(ids[2])))
+                val size = cursor.getLong(ids[3])
+                val duration =
+                    if (type != PlayerModel.STREAM_OFFLINE_IMAGE) cursor.getInt(ids[4]) else 0
+
+                makePlayerModel(idNow, displayName, size, duration, type)
             } catch (e: Exception) {
                 logger(TAG, "" + e.localizedMessage)
-                return null
+                null
             }
         }
 
@@ -204,24 +205,24 @@ class MediaFileUtils {
                 PlayerModel.STREAM_OFFLINE_VIDEO ->
                     arrayOf(
                         cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID),
-                        cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_ADDED),
                         cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME),
+                        cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_ADDED),
                         cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE),
                         cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
                     )
                 PlayerModel.STREAM_OFFLINE_AUDIO ->
                     arrayOf(
                         cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID),
-                        cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED),
                         cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME),
-                        cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE),
+                        cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED),
+                        cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID),
                         cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
                     )
                 else ->
                     arrayOf(
                         cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID),
-                        cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED),
                         cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME),
+                        cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED),
                         //cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DURATION),
                         cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)
                     )
@@ -250,14 +251,14 @@ class MediaFileUtils {
                         MediaStore.Video.Media.DATE_ADDED,
                         MediaStore.Video.Media.SIZE,
                         MediaStore.Video.Media.DURATION,
-                        )
+                    )
                 }
                 PlayerModel.STREAM_OFFLINE_AUDIO -> {
                     arrayOf(
                         MediaStore.Audio.Media._ID,
                         MediaStore.Audio.Media.DISPLAY_NAME,
                         MediaStore.Audio.Media.DATE_ADDED,
-                        MediaStore.Audio.Media.SIZE,
+                        MediaStore.Audio.Media.ALBUM_ID,
                         MediaStore.Audio.Media.DURATION
                     )
                 }

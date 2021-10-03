@@ -67,15 +67,16 @@ data class PlayerModel(
         return "Movie{" +
                 "id=" + id +
                 ", $titleIntent='" + title + '\'' +
-                ", $userAgentIntent='" + userAgent + '\'' +
-                ", $drmStringIntent='" + drmSting + '\'' +
-                ", $cookieIntent='" + cookies + '\'' +
-                ", $languageIntent='" + mLanguage + '\'' +
-                ", $descriptionIntent='" + description + '\'' +
-                ", $mainLinkIntent='" + mainLinkIntent + '\'' +
+                ", $durationIntent='" + duration + '\'' +
+//                ", $userAgentIntent='" + userAgent + '\'' +
+//                ", $drmStringIntent='" + drmSting + '\'' +
+//                ", $cookieIntent='" + cookies + '\'' +
+//                ", $languageIntent='" + mLanguage + '\'' +
+//                ", $descriptionIntent='" + description + '\'' +
+//                ", $mainLinkIntent='" + mainLinkIntent + '\'' +
                 ", $linkIntent='" + link + '\'' +
                 ", $imageIntent='" + image + '\'' +
-                ", $cardImageIntent='" + cardImageUrl + '\'' +
+//                ", $cardImageIntent='" + cardImageUrl + '\'' +
                 ", $typeIntent='" + streamType + '\'' +
 //                ", $headerIntent='" + headerString() + '\'' +
                 '}'
@@ -86,6 +87,7 @@ data class PlayerModel(
         const val linkIntent = "LINK"
         const val imageIntent = "IMAGE"
         const val cardImageIntent = "CARD_IMAGE"
+        const val durationIntent = "DURATION"
         const val userAgentIntent = "USER_AGENT"
         const val drmStringIntent = "DRM"
         const val cookieIntent = "COOKIE"

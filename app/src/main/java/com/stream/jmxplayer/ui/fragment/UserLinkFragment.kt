@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,13 +20,12 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.model.db.HistoryDatabase
-import com.stream.jmxplayer.model.db.SharedPreferenceUtils
-import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.ui.PlayerActivity
+import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
+import com.stream.jmxplayer.utils.SharedPreferenceUtils
+import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.m3u.OnScrappingCompleted
 import com.stream.jmxplayer.utils.m3u.Parser
 import com.stream.jmxplayer.utils.m3u.Scrapper
@@ -43,7 +43,10 @@ class UserLinkFragment : Fragment() {
     lateinit var optionalTV: TextView
 
     lateinit var recyclerView: RecyclerView
-    private lateinit var historyDatabase: HistoryDatabase
+
+    private val viewModel: DatabaseViewModel by viewModels()
+
+    //private lateinit var historyDatabase: HistoryDatabase
     lateinit var galleryAdapter: GalleryAdapter
     lateinit var m3UDisplayFragment: M3UDisplayFragment
 
@@ -186,7 +189,8 @@ class UserLinkFragment : Fragment() {
         val playerModel =
             PlayerModel(link = urlNow, streamType = PlayerModel.STREAM_M3U, title = token)
         playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
-        historyDatabase.playerModelDao().insertModel(playerModel)
+        viewModel.insertModel(playerModel)
+        //historyDatabase.playerModelDao().insertModel(playerModel)
         galleryAdapter.addData(playerModel)
     }
 
@@ -201,7 +205,7 @@ class UserLinkFragment : Fragment() {
         } else {
             val userPrevData = SharedPreferenceUtils.getUserM3U(requireContext())
             linkTextView.setText(userPrevData)
-            historyDatabase = HistoryDatabase.getInstance(requireContext())
+            //historyDatabase = HistoryDatabase.getInstance(requireContext())
             galleryAdapter = GalleryAdapter(GalleryItemViewHolder.M3U_LIST, { video, _ ->
                 parseM3U(video.link)
             }, { _, _ -> })
@@ -210,9 +214,13 @@ class UserLinkFragment : Fragment() {
                     LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
                 viewR.adapter = galleryAdapter
             }
-            val data = historyDatabase.playerModelDao().getAllM3U()
-            logger("here", "$data.size")
-            galleryAdapter.updateData(data)
+            viewModel.videos.observe(viewLifecycleOwner, { videos ->
+                galleryAdapter.updateData(videos)
+            })
+            viewModel.getAllM3U()
+            //val data = historyDatabase.playerModelDao().getAllM3U()
+            //logger("here", "$data.size")
+            //galleryAdapter.updateData(data)
         }
         acceptButton.setOnClickListener {
             if (linkTextView.text == null || linkTextView.text.toString()
@@ -236,12 +244,6 @@ class UserLinkFragment : Fragment() {
     companion object {
         const val ARG_TYPE = "FRAGMENT_TYPE"
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         * @param param Fragment Type.
-         * @return A new instance of fragment UserLinkFragment.
-         */
         @JvmStatic
         fun newInstance(param: Int) =
             UserLinkFragment().apply {

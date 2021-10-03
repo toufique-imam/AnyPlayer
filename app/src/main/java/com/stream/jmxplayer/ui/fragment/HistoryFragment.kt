@@ -7,27 +7,22 @@ import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.model.db.HistoryDatabase
-import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.ui.PlayerActivity
+import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
+import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HistoryFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HistoryFragment : Fragment() {
 
     private lateinit var gallery: RecyclerView
     lateinit var galleryAdapter: GalleryAdapter
-    private lateinit var historyDatabase: HistoryDatabase
+    private val viewModel: DatabaseViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -43,7 +38,7 @@ class HistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        historyDatabase = HistoryDatabase.getInstance(requireContext())
+
         gallery = view.findViewById(R.id.recycler_gallery)
         galleryAdapter = GalleryAdapter(
             GalleryItemViewHolder.SINGLE_DELETE,
@@ -62,7 +57,11 @@ class HistoryFragment : Fragment() {
             viewR.layoutManager = GridLayoutManager(context, 1)
             viewR.adapter = galleryAdapter
         }
-        galleryAdapter.updateData(historyDatabase.playerModelDao().getAll())
+        viewModel.videos.observe(viewLifecycleOwner, { videos ->
+            galleryAdapter.updateData(videos)
+        })
+        viewModel.getAll()
+        //galleryAdapter.updateData(historyDatabase.playerModelDao().getAll())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -89,12 +88,15 @@ class HistoryFragment : Fragment() {
     }
 
     private fun deleteHistory() {
-        historyDatabase.playerModelDao().deleteAll()
-        galleryAdapter.updateData(historyDatabase.playerModelDao().getAll())
+        viewModel.deleteAll()
+        viewModel.getAll()
+        //historyDatabase.playerModelDao().deleteAll()
+        //galleryAdapter.updateData(historyDatabase.playerModelDao().getAll())
     }
 
     private fun deleteHistory(playerModel: PlayerModel, pos: Int) {
-        historyDatabase.playerModelDao().deleteModel(playerModel)
+        viewModel.deleteModel(playerModel)
+        //historyDatabase.playerModelDao().deleteModel(playerModel)
         galleryAdapter.deleteData(pos)
     }
 
@@ -111,12 +113,6 @@ class HistoryFragment : Fragment() {
 
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment HistoryFragment.
-         */
         @JvmStatic
         fun newInstance() = HistoryFragment()
     }

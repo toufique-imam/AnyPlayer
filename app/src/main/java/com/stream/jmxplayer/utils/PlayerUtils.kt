@@ -86,9 +86,8 @@ class PlayerUtils {
             val builder = MediaData.Builder(linkNow)
                 .setContentType(
                     when (playerModel.streamType) {
-                        //todo music and image mimetype
-                        PlayerModel.STREAM_OFFLINE_AUDIO -> ""
-                        PlayerModel.STREAM_OFFLINE_IMAGE -> ""
+                        PlayerModel.STREAM_OFFLINE_AUDIO -> "audio/mpeg"
+                        PlayerModel.STREAM_OFFLINE_IMAGE -> "image/jpeg"
                         else -> getMimeType(linkNow)
                     }
                 )

@@ -17,17 +17,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.ui.LocalVideoViewModel
 import com.stream.jmxplayer.ui.PlayerActivity
+import com.stream.jmxplayer.ui.viewmodel.LocalVideoViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 
 
 /**
@@ -35,7 +35,7 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
  * Use the [BrowseFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-//todo add tab layout for video / images / music
+//todo customize imageViewer
 class BrowseFragment : Fragment() {
 
     private val viewModel: LocalVideoViewModel by viewModels()
@@ -87,6 +87,16 @@ class BrowseFragment : Fragment() {
         })
     }
 
+    private fun showImages(position: Int) {
+        com.stfalcon.imageviewer.StfalconImageViewer.Builder(
+            context,
+            galleryAdapter.galleryData
+        ) { view, imageNow ->
+            Glide.with(view).load(imageNow.image).into(view)
+        }.withStartPosition(position)
+            .show()
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -96,12 +106,15 @@ class BrowseFragment : Fragment() {
         grantPermissionButton = view.findViewById(R.id.grant_permission_button)
         welcomeView = view.findViewById(R.id.welcome_view)
         permissionRationaleView = view.findViewById(R.id.permission_rationale_view)
-        galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { video, _ ->
-            val intent = Intent(context, PlayerActivity::class.java)
-            PlayListAll.clear()
-            PlayListAll.add(video)
-            //intent.putExtra(PlayerModel.DIRECT_PUT, data)
-            startActivity(intent)
+        galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { video, pos ->
+            if (video.streamType != PlayerModel.STREAM_OFFLINE_IMAGE) {
+                val intent = Intent(context, PlayerActivity::class.java)
+                PlayListAll.clear()
+                PlayListAll.add(video)
+                startActivity(intent)
+            } else {
+                showImages(pos)
+            }
         }, { _, _ -> })
         galleryAdapter.setHasStableIds(true)
         val spanCount = getGridSpanCount(requireActivity())
@@ -163,7 +176,7 @@ class BrowseFragment : Fragment() {
 
     private fun showVideos() {
         viewModel.loadMedia(typeNow)
-        galleryAdapter.notifyDataSetChanged()
+        //galleryAdapter.notifyDataSetChanged()
         welcomeView.visibility = View.GONE
         permissionRationaleView.visibility = View.GONE
     }

@@ -11,12 +11,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.stream.jmxplayer.R
 
-
-/**
- * A simple [Fragment] subclass.
- * Use the [StreamFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class StreamFragment : Fragment() {
 
     private lateinit var tabLayout: TabLayout
@@ -67,12 +61,6 @@ class StreamFragment : Fragment() {
 
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment StreamFragment.
-         */
         @JvmStatic
         fun newInstance() =
             StreamFragment()

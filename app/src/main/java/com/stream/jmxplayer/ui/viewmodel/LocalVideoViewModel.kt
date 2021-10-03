@@ -1,4 +1,4 @@
-package com.stream.jmxplayer.ui
+package com.stream.jmxplayer.ui.viewmodel
 
 import android.app.Application
 import android.content.ContentResolver

@@ -11,6 +11,7 @@
         android:layout_width="128dp"
         android:layout_height="64dp"
         android:layout_gravity="center"
+        android:background="@color/ic_launcher_background"
         android:contentDescription="@string/coverimage"
         android:src="@drawable/main_logo" />
 
@@ -19,8 +20,9 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="center"
+        android:background="@color/ic_launcher_background"
         android:contentDescription="@string/coverimage"
-        android:src="@drawable/playlist_logo"
+        android:src="@drawable/logo_playlist2"
         android:visibility="gone" />
 
 

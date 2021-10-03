@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -28,11 +29,11 @@ import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.*
 import com.stream.jmxplayer.model.PlayerModel.Companion.SELECTED_MODEL
-import com.stream.jmxplayer.model.db.HistoryDatabase
-import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
+import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import kotlin.math.max
 
 
@@ -91,7 +92,8 @@ class PlayerActivity : AppCompatActivity(),
     private lateinit var downloaderUtils: DownloaderUtils
     private lateinit var resizeUtils: ResizeUtils
 
-    private lateinit var historyDB: HistoryDatabase
+    //    private lateinit var historyDB: HistoryDatabase
+    val viewModel: DatabaseViewModel by viewModels()
 
     var idxNow = 0
     /*
@@ -101,12 +103,13 @@ class PlayerActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         logger("onCreate", "called")
         super.onCreate(savedInstanceState)
+        setTheme(SharedPreferenceUtils.getTheme(this))
         setContentView(R.layout.activity_player)
-        setUpOrientation()
         alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
 
-        historyDB = HistoryDatabase.getInstance(this)
+        //historyDB = HistoryDatabase.getInstance(this)
         getDataFromIntent()
+        setUpOrientation()
 
         downloaderUtils = DownloaderUtils(this, playerModelNow)
         resizeUtils = ResizeUtils(this)
@@ -130,6 +133,7 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun initCast() {
+        PlayerUtils.createMediaData(playerModelNow)
         casty = Casty.create(this).withMiniController()
         //Casty.configure("8639B975")
         casty.setUpMediaRouteButton(castButton)
@@ -220,7 +224,8 @@ class PlayerActivity : AppCompatActivity(),
 
             }
         }
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        if (playerModelNow.streamType != PlayerModel.STREAM_OFFLINE_AUDIO)
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
             if ((visibility and View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
                 hideSystemUi()
@@ -459,12 +464,6 @@ class PlayerActivity : AppCompatActivity(),
         // mPlayerView.layoutParams = resizeUtils.setAspectRatio(requestedOrientation)
     }
 
-//    private fun changeAspectRatio() {
-//        resizeUtils.changeAspectRatio()
-//        mPlayerView.resizeMode = resizeUtils.setResize()
-//        mPlayerView.layoutParams = resizeUtils.setAspectRatio(requestedOrientation)
-//    }
-
     /*
     nav setUp
      */
@@ -515,8 +514,9 @@ class PlayerActivity : AppCompatActivity(),
      */
 
     private fun addToHistory(playerModel: PlayerModel) {
-        val playerDao = historyDB.playerModelDao()
-        playerDao.insertModel(playerModel)
+//        val playerDao = historyDB.playerModelDao()
+//        playerDao.insertModel(playerModel)
+        viewModel.insertModel(playerModel)
     }
 
     private fun getDataFromIntent() {
