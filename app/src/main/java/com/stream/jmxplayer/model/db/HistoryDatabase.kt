@@ -14,7 +14,7 @@ abstract class HistoryDatabase : RoomDatabase() {
 
     companion object : SingletonHolder<HistoryDatabase, Context>({
         Room.databaseBuilder(it.applicationContext, HistoryDatabase::class.java, "playerModel")
-            .allowMainThreadQueries()
+            .allowMainThreadQueries() //todo remove it and add concurrent
             .build()
     })
 }

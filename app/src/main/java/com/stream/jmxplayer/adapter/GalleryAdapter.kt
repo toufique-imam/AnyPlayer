@@ -32,6 +32,13 @@ class GalleryAdapter(
         notifyItemRangeInserted(0, data.size)
     }
 
+    fun addData(playerModel: PlayerModel) {
+        val sz = galleryData.size
+        mainData.add(playerModel)
+        galleryData.add(playerModel)
+        notifyItemInserted(sz)
+    }
+
     fun deleteData(position: Int) {
         if (position != -1 && position < galleryData.size) {
             mainData.remove(galleryData.removeAt(position))
@@ -42,41 +49,58 @@ class GalleryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryItemViewHolder {
         val viewNow =
-            if (type == 0) {
+            if (type == GalleryItemViewHolder.GRID_NO_DELETE) {
                 LayoutInflater.from(parent.context).inflate(R.layout.gallery_item, null, false)
             } else {
                 LayoutInflater.from(parent.context).inflate(R.layout.history_item, null, false)
             }
 
         return GalleryItemViewHolder(viewNow).apply {
-            if (type != 0) {
+            if (type != GalleryItemViewHolder.GRID_NO_DELETE) {
                 initHistory()
             }
-            if (type > 1) {
-                hideButton()
+            if (type == GalleryItemViewHolder.SINGLE_NO_DELETE || type == GalleryItemViewHolder.M3U_LIST) {
+                configPlaylist()
+            }
+            if (type == GalleryItemViewHolder.M3U_LIST) {
+                configM3UPlaylist()
             }
         }
     }
 
     override fun onBindViewHolder(holder: GalleryItemViewHolder, position: Int) {
         val playerModel = galleryData[position]
-        Glide.with(holder.imageView)
-            .load(Uri.parse(playerModel.image))
-            .thumbnail(0.33f)
-            .placeholder(R.drawable.main_logo)
-            .centerCrop()
-            .into(holder.imageView)
-        val timerText = GlobalFunctions.milliSecondToString(playerModel.duration)
-        if (timerText.isEmpty()) holder.durationView.visibility = View.GONE
-        else holder.durationView.text = timerText
+        if (type != GalleryItemViewHolder.M3U_LIST && playerModel.streamType != PlayerModel.STREAM_OFFLINE_AUDIO) {
+            Glide.with(holder.imageView)
+                .load(
+                    if (playerModel.streamType != PlayerModel.STREAM_M3U) {
+                        Uri.parse(playerModel.image)
+                    } else {
+                        R.drawable.playlist_logo
+                    }
+                )
+                .thumbnail(0.33f)
+                .placeholder(R.drawable.main_logo)
+                //.centerCrop()
+                .into(holder.imageView)
+
+            val timerText = GlobalFunctions.milliSecondToString(playerModel.duration)
+            if (timerText.isEmpty()) holder.durationView.visibility = View.GONE
+            else holder.durationView.text = timerText
+        }
+        if (type == GalleryItemViewHolder.M3U_LIST) {
+            holder.durationView.text = playerModel.link
+        }
+        if (playerModel.streamType == PlayerModel.STREAM_OFFLINE_AUDIO) {
+            holder.imageView.setImageResource(R.drawable.logo_music)
+        }
         holder.titleView.text = playerModel.title
-        if (type > 1) {
+        if (type == GalleryItemViewHolder.SINGLE_NO_DELETE) {
             holder.titleView.setTextColor(Color.WHITE)
             holder.durationView.setTextColor(Color.WHITE)
         }
         holder.itemView.setOnClickListener { onClick(playerModel, position) }
-        if (type == 1) {
-            holder.playButton.setOnClickListener { onClick(playerModel, position) }
+        if (type == GalleryItemViewHolder.SINGLE_DELETE) {
             holder.deleteButton.setOnClickListener {
                 onDelete(playerModel, position)
             }

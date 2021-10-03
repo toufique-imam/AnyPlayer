@@ -18,12 +18,16 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.tabs.TabLayout
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
+import com.stream.jmxplayer.adapter.GalleryItemViewHolder
+import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.model.db.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.ui.LocalVideoViewModel
 import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 
 
 /**
@@ -31,15 +35,18 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
  * Use the [BrowseFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+//todo add tab layout for video / images / music
 class BrowseFragment : Fragment() {
 
     private val viewModel: LocalVideoViewModel by viewModels()
     private lateinit var gallery: RecyclerView
+    lateinit var tabLayout: TabLayout
     private lateinit var openAlbum: MaterialButton
     private lateinit var grantPermissionButton: MaterialButton
     private lateinit var welcomeView: LinearLayout
     private lateinit var permissionRationaleView: LinearLayout
     lateinit var galleryAdapter: GalleryAdapter
+    var typeNow = PlayerModel.STREAM_OFFLINE_VIDEO
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,15 +63,40 @@ class BrowseFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_browse, container, false)
     }
 
+    private fun initTabLayout() {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                if (tab != null) {
+                    val prevType = typeNow
+                    when (tab.text) {
+                        "Video" -> typeNow = PlayerModel.STREAM_OFFLINE_VIDEO
+                        "Audio" -> typeNow = PlayerModel.STREAM_OFFLINE_AUDIO
+                        "Image" -> typeNow = PlayerModel.STREAM_OFFLINE_IMAGE
+                    }
+                    if (prevType != typeNow) {
+                        showVideos()
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+        })
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //initViews()
+        tabLayout = view.findViewById(R.id.tab_custom_browse)
         gallery = view.findViewById(R.id.gallery)
         openAlbum = view.findViewById(R.id.open_album)
         grantPermissionButton = view.findViewById(R.id.grant_permission_button)
         welcomeView = view.findViewById(R.id.welcome_view)
         permissionRationaleView = view.findViewById(R.id.permission_rationale_view)
-        galleryAdapter = GalleryAdapter(0, { video, _ ->
+        galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { video, _ ->
             val intent = Intent(context, PlayerActivity::class.java)
             PlayListAll.clear()
             PlayListAll.add(video)
@@ -90,7 +122,7 @@ class BrowseFragment : Fragment() {
         } else {
             showVideos()
         }
-        //menuItemActions()
+        initTabLayout()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -130,7 +162,8 @@ class BrowseFragment : Fragment() {
 
 
     private fun showVideos() {
-        viewModel.loadVideos()
+        viewModel.loadMedia(typeNow)
+        galleryAdapter.notifyDataSetChanged()
         welcomeView.visibility = View.GONE
         permissionRationaleView.visibility = View.GONE
     }
