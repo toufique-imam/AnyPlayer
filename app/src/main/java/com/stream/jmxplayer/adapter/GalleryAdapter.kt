@@ -32,18 +32,25 @@ class GalleryAdapter(
         notifyItemRangeInserted(0, data.size)
     }
 
-    fun addData(playerModel: PlayerModel) {
+    fun addData(playerModel: PlayerModel): Int {
         val sz = galleryData.size
+        if (mainData.contains(playerModel)) return sz - 1
         mainData.add(playerModel)
         galleryData.add(playerModel)
         notifyItemInserted(sz)
+        return sz
     }
 
-    fun deleteData(position: Int) {
+    fun deleteData(playerModel: PlayerModel) {
+        val position = galleryData.indexOf(playerModel)
+        logger("deleteData1", "$playerModel $position")
+        logger("deleteData2", "${galleryData[position]} ${mainData[position]}")
         if (position != -1 && position < galleryData.size) {
-            mainData.remove(galleryData.removeAt(position))
+            galleryData.removeAt(position)
+            mainData.remove(playerModel)
             notifyItemRemoved(position)
         }
+
     }
 
 

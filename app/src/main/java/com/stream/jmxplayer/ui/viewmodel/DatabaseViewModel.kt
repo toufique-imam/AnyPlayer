@@ -20,9 +20,7 @@ class DatabaseViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun deleteModel(playerModel: PlayerModel) {
-        viewModelScope.launch {
-            database.playerModelDao().deleteModel(playerModel)
-        }
+        database.playerModelDao().deleteModel(playerModel)
     }
 
     fun deleteAll() {

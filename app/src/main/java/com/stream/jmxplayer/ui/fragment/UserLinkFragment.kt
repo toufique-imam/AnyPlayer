@@ -191,7 +191,7 @@ class UserLinkFragment : Fragment() {
         playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
         viewModel.insertModel(playerModel)
         //historyDatabase.playerModelDao().insertModel(playerModel)
-        galleryAdapter.addData(playerModel)
+        recyclerView.smoothScrollToPosition(galleryAdapter.addData(playerModel))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

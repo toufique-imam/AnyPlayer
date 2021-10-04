@@ -16,6 +16,7 @@ import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
+import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 
 class HistoryFragment : Fragment() {
@@ -95,9 +96,10 @@ class HistoryFragment : Fragment() {
     }
 
     private fun deleteHistory(playerModel: PlayerModel, pos: Int) {
+        GlobalFunctions.logger("deleteHistory", "$playerModel $pos")
         viewModel.deleteModel(playerModel)
         //historyDatabase.playerModelDao().deleteModel(playerModel)
-        galleryAdapter.deleteData(pos)
+        galleryAdapter.deleteData(playerModel)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =

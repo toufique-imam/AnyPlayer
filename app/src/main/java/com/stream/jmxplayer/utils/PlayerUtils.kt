@@ -317,32 +317,6 @@ class PlayerUtils {
             }
         }
 
-        fun createPlayer(activity: Activity): SimpleExoPlayer {
-            val loadControl = DefaultLoadControl()
-            //DefaultLoadControl.Builder().setBufferDurationsMs(25000, 90000, 1500, 2000).build()
-            val trackSelector = DefaultTrackSelector(activity)
-            trackSelector.setParameters(
-                trackSelector.parameters.buildUpon()
-                    .setPreferredTextLanguage("es")
-                    .setPreferredAudioLanguage("es")
-            )
-
-            return if (Build.VERSION.SDK_INT > 22) {
-                SimpleExoPlayer.Builder(activity)
-                    .setLoadControl(loadControl)
-                    .setTrackSelector(trackSelector)
-                    .build()
-            } else {
-                @ExtensionRendererMode val extensionRendererMode =
-                    DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
-                val renderer = DefaultRenderersFactory(activity)
-                    .setExtensionRendererMode(extensionRendererMode)
-                SimpleExoPlayer.Builder(activity, renderer)
-                    .setLoadControl(loadControl)
-                    .setTrackSelector(trackSelector)
-                    .build()
-            }
-        }
     }
 }
 /*

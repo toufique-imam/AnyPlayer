@@ -33,6 +33,7 @@
                     android:layout_height="wrap_content"
                     android:nextFocusDown="@id/text_view_custom_stream_user_agent"
                     android:text="https://raw.githubusercontent.com/lourensloukassy/iptv/main/FreeTVLourens.m3u"
+                    android:textIsSelectable="true"
                     android:textSize="12sp" />
             </com.google.android.material.textfield.TextInputLayout>
 

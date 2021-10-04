@@ -1,6 +1,7 @@
 package com.stream.jmxplayer.ui
 
 
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Color
@@ -11,6 +12,7 @@ import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.mediarouter.app.MediaRouteButton
 import androidx.recyclerview.widget.GridLayoutManager
@@ -20,7 +22,10 @@ import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.BehindLiveWindowException
 import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.navigation.NavigationView
 import com.stream.jmxplayer.R
@@ -37,6 +42,7 @@ import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import kotlin.math.max
 
 
+@Suppress("Deprecation")
 class PlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
     Player.Listener,
@@ -80,7 +86,12 @@ class PlayerActivity : AppCompatActivity(),
     private lateinit var pauseButton: ImageButton
     private lateinit var nextButton: ImageButton
     private lateinit var previousButton: ImageButton
+    private lateinit var audioTrackSelector: ImageButton
+    private var trackDialog: Dialog? = null
     private lateinit var castButton: MediaRouteButton
+
+    private val loadControl = DefaultLoadControl()
+    private lateinit var trackSelector: DefaultTrackSelector
 
     private lateinit var recyclerViewPlayList: RecyclerView
     private lateinit var galleryAdapter: GalleryAdapter
@@ -93,7 +104,7 @@ class PlayerActivity : AppCompatActivity(),
     private lateinit var resizeUtils: ResizeUtils
 
     //    private lateinit var historyDB: HistoryDatabase
-    val viewModel: DatabaseViewModel by viewModels()
+    private val viewModel: DatabaseViewModel by viewModels()
 
     var idxNow = 0
     /*
@@ -253,6 +264,8 @@ class PlayerActivity : AppCompatActivity(),
 
         nextButton = findViewById(R.id.playlistNext)
         previousButton = findViewById(R.id.playlistPrev)
+        audioTrackSelector = mPlayerView.findViewById(R.id.exo_track_selector)
+
         recyclerViewAutoHide()
 
     }
@@ -387,6 +400,45 @@ class PlayerActivity : AppCompatActivity(),
             }
             updatePlayerModel()
         }
+        audioTrackSelector.setOnClickListener {
+            if (trackDialog == null) {
+                initPopupQuality()
+            }
+            trackDialog
+            trackDialog?.show()
+        }
+    }
+
+    private fun isAudionRenderer(
+        mappedTrackInfo: MappingTrackSelector.MappedTrackInfo,
+        renderedIndex: Int
+    ): Boolean {
+        val trackGroupArray = mappedTrackInfo.getTrackGroups(renderedIndex)
+        if (trackGroupArray.length == 0) return false
+
+        val trackType = mappedTrackInfo.getRendererType(renderedIndex)
+        return C.TRACK_TYPE_AUDIO == trackType
+    }
+
+    private fun initPopupQuality() {
+        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
+        if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
+        var videoRenderer: Int? = null
+
+        for (i in 0 until mappedTrackInfo.rendererCount) {
+            if (isAudionRenderer(mappedTrackInfo, i)) {
+                videoRenderer = i
+            }
+        }
+        if (videoRenderer == null) {
+            audioTrackSelector.visibility = View.GONE
+            return
+        }
+
+        val trackSelectionDialogueBuilder =
+            TrackSelectionDialogBuilder(this, "Select Audio Track", trackSelector, videoRenderer)
+
+        trackDialog = trackSelectionDialogueBuilder.build()
     }
 
     private fun updatePlayerModel() {
@@ -395,7 +447,7 @@ class PlayerActivity : AppCompatActivity(),
         if (casty.isConnected) {
             casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
         }
-        addSource(playerModelNow)
+        addSource()
         preparePlayer()
     }
 
@@ -427,7 +479,7 @@ class PlayerActivity : AppCompatActivity(),
     private fun setUpMenuButton() {
         menuButton.setOnClickListener {
             hideSystemUi()
-            drawerLayout.openDrawer(Gravity.RIGHT)
+            drawerLayout.openDrawer(GravityCompat.END)
 
         }
         menuButton.setOnFocusChangeListener { view, hasFocus ->
@@ -572,9 +624,38 @@ class PlayerActivity : AppCompatActivity(),
     }
 
 
-    private fun addSource(playerModel: PlayerModel) {
-        val mediaSource = PlayerUtils.createMediaSource(this, playerModel, errorCount)
+    private fun addSource() {
+        errorCount = 0
+        trackDialog = null
+        audioTrackSelector.visibility = View.GONE
+        addToHistory(playerModelNow)
+        val mediaSource = PlayerUtils.createMediaSource(this, playerModelNow, 0)
         mPlayer?.setMediaSource(mediaSource)
+    }
+
+    private fun createPlayer() {
+        trackSelector = DefaultTrackSelector(this)
+        trackSelector.setParameters(
+            trackSelector.parameters.buildUpon()
+                .setPreferredTextLanguage("es")
+                .setPreferredAudioLanguage("es")
+        )
+
+        mPlayer = if (Build.VERSION.SDK_INT > 22) {
+            SimpleExoPlayer.Builder(this)
+                .setLoadControl(loadControl)
+                .setTrackSelector(trackSelector)
+                .build()
+        } else {
+            @DefaultRenderersFactory.ExtensionRendererMode val extensionRendererMode =
+                DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+            val renderer = DefaultRenderersFactory(this)
+                .setExtensionRendererMode(extensionRendererMode)
+            SimpleExoPlayer.Builder(this , renderer)
+                .setLoadControl(loadControl)
+                .setTrackSelector(trackSelector)
+                .build()
+        }
     }
 
     private fun preparePlayer() {
@@ -588,16 +669,16 @@ class PlayerActivity : AppCompatActivity(),
 
     private fun initPlayer(fromError: Boolean) {
         inErrorState = false
-        if (mPlayer == null) {
-            mPlayer = PlayerUtils.createPlayer(this)
+        if (mPlayer==null) {
+            createPlayer()
             mPlayer?.playWhenReady = autoPlay
             mPlayer?.addListener(this)
             mPlayer?.addAnalyticsListener(this)
             mPlayerView.player = mPlayer
         }
         if (!fromError) {
-            addToHistory(playerModelNow)
-            addSource(playerModelNow)
+            //addToHistory(playerModelNow)
+            addSource()
         }
         preparePlayer()
     }
@@ -620,7 +701,7 @@ class PlayerActivity : AppCompatActivity(),
 
     private fun updateResumePosition() {
         currentWindow = mPlayer?.currentWindowIndex ?: 0
-        playbackPosition = max(0, mPlayer?.contentPosition ?: 0L)
+        playbackPosition = max(0, mPlayer?.contentPosition ?: 0)
     }
 
     override fun onLoadStarted(
@@ -637,25 +718,6 @@ class PlayerActivity : AppCompatActivity(),
         }
     }
 
-    private fun audioTrackSelection() {
-        val len = mPlayer?.currentTrackGroups?.length ?: 0
-        for (i in 0 until len) {
-            val trackNow = mPlayer?.currentTrackGroups?.get(i)
-            val format = trackNow?.getFormat(0)?.sampleMimeType
-            val lang = trackNow?.getFormat(0)?.language
-            val id = trackNow?.getFormat(0)?.id
-            if (trackNow != null) {
-                println("trackNow: ")
-                println(trackNow.getFormat(0))
-            }
-            if (format != null) {
-                if (format.contains("audio") && id != null && lang != null)
-                    println("lang=$lang id=$id")
-                if (id != null && lang != null)
-                    println("format=$format lang=$lang id=$id")
-            }
-        }
-    }
 
     override fun onPlayerStateChanged(
         eventTime: AnalyticsListener.EventTime,
@@ -671,8 +733,8 @@ class PlayerActivity : AppCompatActivity(),
                 stateString = "STATE_BUFFERING"
             }
             ExoPlayer.STATE_READY -> {
-                audioTrackSelection()
                 stateString = "STATE_READY"
+                audioTrackSelector.visibility = View.VISIBLE
             }
             ExoPlayer.STATE_ENDED -> {
                 stateString = "STATE_ENDED"
@@ -687,13 +749,6 @@ class PlayerActivity : AppCompatActivity(),
     override fun onPlayerError(error: ExoPlaybackException) {
         logger(TAG, "Error : " + error.message)
         logger(TAG, "Error Cause : " + error.cause)
-        logger(
-            TAG,
-            "Error Media :" +
-                    " " + mPlayer?.currentMediaItem?.toString() +
-                    " " + mPlayer?.mediaMetadata?.mediaUri +
-                    " " + mPlayer?.mediaMetadata.toString()
-        )
         inErrorState = true
         errorCount++
         if (errorCount == 1) {
@@ -727,8 +782,6 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     companion object {
-        const val BUNDLE_MODEL = "PLAY_MODEL"
-        const val BUNDLE_STATE = "STATE_MODEL"
         const val SERVER_ERROR_TEXT =
             "Lo sentimos, canal no disponible utilice otro servidor para volver a intentar o vuelva más tarde"
         const val TAG = "ExoPlayer"

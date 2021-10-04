@@ -21,7 +21,7 @@ interface PlayerModelDAO {
     suspend fun updateModel(vararg playerModel: PlayerModel)
 
     @Delete
-    suspend fun deleteModel(vararg playerModel: PlayerModel)
+    fun deleteModel(vararg playerModel: PlayerModel)
 
     @Query("DELETE FROM playerModel")
     suspend fun deleteAll()
