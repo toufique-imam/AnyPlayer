@@ -623,13 +623,11 @@ class PlayerActivity : AppCompatActivity(),
         }
     }
 
-
     private fun addSource() {
-        errorCount = 0
         trackDialog = null
         audioTrackSelector.visibility = View.GONE
         addToHistory(playerModelNow)
-        val mediaSource = PlayerUtils.createMediaSource(this, playerModelNow, 0)
+        val mediaSource = PlayerUtils.createMediaSource(this, playerModelNow, errorCount)
         mPlayer?.setMediaSource(mediaSource)
     }
 
@@ -637,6 +635,7 @@ class PlayerActivity : AppCompatActivity(),
         trackSelector = DefaultTrackSelector(this)
         trackSelector.setParameters(
             trackSelector.parameters.buildUpon()
+                .setMaxVideoSizeSd()
                 .setPreferredTextLanguage("es")
                 .setPreferredAudioLanguage("es")
         )
@@ -647,14 +646,14 @@ class PlayerActivity : AppCompatActivity(),
                 .setTrackSelector(trackSelector)
                 .build()
         } else {
-            @DefaultRenderersFactory.ExtensionRendererMode val extensionRendererMode =
-                DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
-            val renderer = DefaultRenderersFactory(this)
-                .setExtensionRendererMode(extensionRendererMode)
-            SimpleExoPlayer.Builder(this , renderer)
-                .setLoadControl(loadControl)
-                .setTrackSelector(trackSelector)
-                .build()
+        @DefaultRenderersFactory.ExtensionRendererMode val extensionRendererMode =
+            DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+        val renderer = DefaultRenderersFactory(this)
+            .setExtensionRendererMode(extensionRendererMode)
+          SimpleExoPlayer.Builder(this, renderer)
+            .setLoadControl(loadControl)
+            .setTrackSelector(trackSelector)
+            .build()
         }
     }
 
@@ -669,7 +668,7 @@ class PlayerActivity : AppCompatActivity(),
 
     private fun initPlayer(fromError: Boolean) {
         inErrorState = false
-        if (mPlayer==null) {
+        if (mPlayer == null) {
             createPlayer()
             mPlayer?.playWhenReady = autoPlay
             mPlayer?.addListener(this)

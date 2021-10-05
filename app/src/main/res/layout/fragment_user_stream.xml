@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -31,8 +32,8 @@
                     android:id="@+id/text_view_custom_stream_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textUri"
                     android:nextFocusDown="@id/text_view_custom_stream_user_agent"
-                    android:text="https://raw.githubusercontent.com/lourensloukassy/iptv/main/FreeTVLourens.m3u"
                     android:textIsSelectable="true"
                     android:textSize="12sp" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -127,25 +128,64 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_stream_confirm"
-                style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="5dp"
-                android:text="@string/accept"
-                android:textColor="@color/Green"
-                android:textSize="12sp"
-                app:backgroundTint="@color/White" />
+                android:gravity="end"
+                android:orientation="horizontal">
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_stream_cancel"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/reject"
+                    android:textColor="@color/Red"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/White" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_stream_edit"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Edit"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/White" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_stream_confirm"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/accept"
+                    android:textColor="@color/Green"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/White" />
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_m3u"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="80dp"
                 android:visibility="gone" />
         </LinearLayout>
+
     </ScrollView>
+
+
+    <include
+        layout="@layout/bottom_sheet_m3u"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -24,6 +24,7 @@
     <string name="reject">CANCELAR</string>
     <string name="splash_logo">splash_logo</string>
     <string name="casty_introduction_text">Use this button to connect with Chromecast</string>
+    <string name="bottom_sheet_header_none">No Item Selected</string>
 
 
     <string name="loading">Cargando Contenido..\nExpere un momento por favor.</string>

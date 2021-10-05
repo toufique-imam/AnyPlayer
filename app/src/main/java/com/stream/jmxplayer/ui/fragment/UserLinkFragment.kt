@@ -7,12 +7,15 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -24,6 +27,7 @@ import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
+import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.m3u.OnScrappingCompleted
@@ -35,12 +39,22 @@ class UserLinkFragment : Fragment() {
     lateinit var linkTextView: TextInputEditText
     lateinit var userAgentTextView: TextInputEditText
     lateinit var headersTextView: TextInputEditText
-    lateinit var acceptButton: MaterialButton
-
+    private lateinit var acceptButton: MaterialButton
+    lateinit var editConfirmButton: MaterialButton
+    lateinit var editCancelButton: MaterialButton
+    lateinit var bottomSheetLinearLayout: LinearLayout
     lateinit var headerTIL: TextInputLayout
     lateinit var userAgentTIL: TextInputLayout
     lateinit var titleTIL: TextInputLayout
     lateinit var optionalTV: TextView
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+
+    lateinit var titleTextViewM3U: TextView
+    lateinit var playButtonLarge: ImageButton
+    lateinit var playButton: MaterialButton
+    lateinit var editButton: MaterialButton
+    lateinit var shareButton: MaterialButton
+    lateinit var deleteButton: MaterialButton
 
     lateinit var recyclerView: RecyclerView
 
@@ -51,6 +65,8 @@ class UserLinkFragment : Fragment() {
     lateinit var m3UDisplayFragment: M3UDisplayFragment
 
     var fragmentType: Int = 0
+
+    var playerModelNow = PlayerModel(-1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,16 +87,120 @@ class UserLinkFragment : Fragment() {
         userAgentTextView = view.findViewById(R.id.text_view_custom_stream_user_agent)
         headersTextView = view.findViewById(R.id.text_view_custom_stream_headers)
         acceptButton = view.findViewById(R.id.button_stream_confirm)
+        editConfirmButton = view.findViewById(R.id.button_stream_edit)
+        editCancelButton = view.findViewById(R.id.button_stream_cancel)
         headerTIL = view.findViewById(R.id.til_headers)
         userAgentTIL = view.findViewById(R.id.til_user_agent)
         titleTIL = view.findViewById(R.id.til_stream_name)
         optionalTV = view.findViewById(R.id.tv_optional)
         recyclerView = view.findViewById(R.id.recycler_m3u)
+        initBottomSheet(view)
         if (fragmentType == 1) {
             hideView()
             m3UDisplayFragment = M3UDisplayFragment.newInstance()
         }
         return view
+    }
+
+    private fun historyItemClicked(playerModel: PlayerModel) {
+        //update the bottom sheet
+        playerModelNow = playerModel
+        println(playerModelNow)
+        if (playerModel.id != -1L) {
+            val title = "${playerModel.title}\n${playerModel.link}"
+            titleTextViewM3U.text = title
+        } else {
+            titleTextView.setText(R.string.bottom_sheet_header_none)
+        }
+    }
+
+    private fun initBottomSheet(view: View) {
+        bottomSheetLinearLayout = view.findViewById(R.id.linear_layout_bottom_sheet)
+        titleTextViewM3U = view.findViewById(R.id.text_view_title_bs)
+        playButtonLarge = view.findViewById(R.id.image_button_play_bs)
+        playButton = view.findViewById(R.id.material_button_play_bs)
+        editButton = view.findViewById(R.id.material_button_edit_bs)
+        shareButton = view.findViewById(R.id.material_button_share_bs)
+        deleteButton = view.findViewById(R.id.material_button_delete_bs)
+
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLinearLayout)
+        val directionButton: ImageButton = view.findViewById(R.id.image_button_direction_bs)
+        directionButton.setOnClickListener {
+            if (playerModelNow.id != -1L) {
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                } else {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
+        }
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    playButtonLarge.visibility = View.GONE
+                    directionButton.rotation = 0F
+                } else {
+                    playButtonLarge.visibility = View.VISIBLE
+                    directionButton.rotation = 180F
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            }
+        })
+        playButtonLarge.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            parseM3U(playerModelNow.link)
+        }
+        playButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            parseM3U(playerModelNow.link)
+        }
+        editButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            acceptButton.visibility = View.GONE
+            editCancelButton.visibility = View.VISIBLE
+            editConfirmButton.visibility = View.VISIBLE
+            linkTextView.setText(playerModelNow.link)
+        }
+        shareButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            val intentNow = PlayerUtils.createViewIntent(playerModelNow)
+            if (intentNow.resolveActivity(requireActivity().packageManager) != null) {
+                startActivity(intentNow)
+            } else {
+                toaster(requireActivity(), GlobalFunctions.NO_APP_FOUND_PLAY_MESSAGE)
+            }
+
+        }
+        deleteButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            deleteModel(playerModelNow)
+            playerModelNow = PlayerModel(-1)
+            historyItemClicked(playerModelNow)
+
+        }
+        editConfirmButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            userInputM3U(false)
+            acceptButton.visibility = View.VISIBLE
+            editCancelButton.visibility = View.GONE
+            editConfirmButton.visibility = View.GONE
+            toaster(requireActivity(), "updated")
+        }
+        editCancelButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            acceptButton.visibility = View.VISIBLE
+            editCancelButton.visibility = View.GONE
+            editConfirmButton.visibility = View.GONE
+            toaster(requireActivity(), "Cancelled")
+        }
+    }
+
+    private fun deleteModel(playerModel: PlayerModel) {
+        galleryAdapter.deleteData(playerModel)
+        viewModel.deleteModel(playerModel)
     }
 
     private fun hideView() {
@@ -89,6 +209,7 @@ class UserLinkFragment : Fragment() {
         titleTIL.visibility = View.GONE
         optionalTV.visibility = View.GONE
         recyclerView.visibility = View.VISIBLE
+        bottomSheetLinearLayout.visibility = View.VISIBLE
     }
 
 
@@ -180,7 +301,7 @@ class UserLinkFragment : Fragment() {
         scrapper.startScrapping()
     }
 
-    private fun userInputM3U() {
+    private fun userInputM3U(insert: Boolean) {
         val urlNow = linkTextView.text.toString()
         toaster(requireActivity(), urlNow)
         SharedPreferenceUtils.setUserM3U(requireContext(), urlNow)
@@ -189,9 +310,30 @@ class UserLinkFragment : Fragment() {
         val playerModel =
             PlayerModel(link = urlNow, streamType = PlayerModel.STREAM_M3U, title = token)
         playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
+        if (!insert) {
+            println("deleting")
+            println(playerModelNow)
+            deleteModel(playerModelNow)
+        }
+        println("inserting")
+        println(playerModel)
         viewModel.insertModel(playerModel)
+        historyItemClicked(playerModel)
         //historyDatabase.playerModelDao().insertModel(playerModel)
         recyclerView.smoothScrollToPosition(galleryAdapter.addData(playerModel))
+    }
+
+    private fun linkChecker(): Boolean {
+        if (linkTextView.text == null || linkTextView.text.toString()
+                .isEmpty() || !Patterns.WEB_URL.matcher(
+                linkTextView.text.toString()
+            ).matches()
+        ) {
+            linkTextView.error = resources.getString(R.string.enter_stream_link)
+            linkTextView.requestFocus()
+            return false
+        }
+        return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -207,15 +349,17 @@ class UserLinkFragment : Fragment() {
             linkTextView.setText(userPrevData)
             //historyDatabase = HistoryDatabase.getInstance(requireContext())
             galleryAdapter = GalleryAdapter(GalleryItemViewHolder.M3U_LIST, { video, _ ->
-                parseM3U(video.link)
+                historyItemClicked(video)
+                //parseM3U(video.link)
             }, { _, _ -> })
             recyclerView.also { viewR ->
                 viewR.layoutManager =
-                    LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
+                    LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 viewR.adapter = galleryAdapter
             }
             viewModel.videos.observe(viewLifecycleOwner, { videos ->
                 galleryAdapter.updateData(videos)
+                recyclerView.smoothScrollToPosition(videos.size - 1)
             })
             viewModel.getAllM3U()
             //val data = historyDatabase.playerModelDao().getAllM3U()
@@ -223,18 +367,11 @@ class UserLinkFragment : Fragment() {
             //galleryAdapter.updateData(data)
         }
         acceptButton.setOnClickListener {
-            if (linkTextView.text == null || linkTextView.text.toString()
-                    .isEmpty() || !Patterns.WEB_URL.matcher(
-                    linkTextView.text.toString()
-                ).matches()
-            ) {
-                linkTextView.error = resources.getString(R.string.enter_stream_link)
-                linkTextView.requestFocus()
-            } else {
+            if (linkChecker()) {
                 if (fragmentType == 0) {
                     userInputLink()
                 } else {
-                    userInputM3U()
+                    userInputM3U(true)
                 }
             }
         }

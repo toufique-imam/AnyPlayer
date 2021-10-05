@@ -45,8 +45,8 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
                 logger(key, headers[key])
             }
         }
-        logger("range", "" + range)
-        logger("uri", "" + uri.toString())
+       // logger("range", "" + range)
+        //logger("uri", "" + uri.toString())
         val type = when (uri.toString()) {
             "/audio" -> PlayerModel.STREAM_OFFLINE_AUDIO
             "/video" -> PlayerModel.STREAM_OFFLINE_VIDEO
@@ -116,12 +116,12 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
         if (videoNow != null) {
             val fis: FileInputStream?
             val video = File(realPath)
-            logger("rangeHeader", rangeHeader)
+            //logger("rangeHeader", rangeHeader)
             val rangeValue = rangeHeader.trim().substring("bytes=".length)
             val fileLength = video.length()
             val start: Long
             var end: Long
-            logger("rangeValue", "$rangeValue :: $fileLength")
+            //logger("rangeValue", "$rangeValue :: $fileLength")
 
             if (rangeValue.startsWith("-")) {
                 end = fileLength - 1
@@ -129,9 +129,6 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
                 start = fileLength - 1 - temp
             } else {
                 val range = rangeValue.split("-")
-                for (i in range) {
-                    logger("ranges", i)
-                }
                 start = range[0].toLong()
                 end = if (range.size > 1 && range[1].isNotEmpty() && range[1].isDigitsOnly()) {
                     range[1].toLong()

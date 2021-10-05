@@ -40,5 +40,4 @@ class DatabaseViewModel(application: Application) : AndroidViewModel(application
             database.playerModelDao().insertModel(playerModel)
         }
     }
-
 }
