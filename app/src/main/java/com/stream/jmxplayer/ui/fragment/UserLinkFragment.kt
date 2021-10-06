@@ -105,7 +105,7 @@ class UserLinkFragment : Fragment() {
     private fun historyItemClicked(playerModel: PlayerModel) {
         //update the bottom sheet
         playerModelNow = playerModel
-        println(playerModelNow)
+        bottomSheetBehavior.isDraggable = playerModelNow.id != -1L
         if (playerModel.id != -1L) {
             val title = "${playerModel.title}\n${playerModel.link}"
             titleTextViewM3U.text = title
@@ -147,8 +147,10 @@ class UserLinkFragment : Fragment() {
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
             }
         })
+        bottomSheetBehavior.isDraggable = false
         playButtonLarge.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             parseM3U(playerModelNow.link)
@@ -312,11 +314,11 @@ class UserLinkFragment : Fragment() {
         playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
         if (!insert) {
             println("deleting")
-            println(playerModelNow)
+            //println(playerModelNow)
             deleteModel(playerModelNow)
         }
         println("inserting")
-        println(playerModel)
+        //println(playerModel)
         viewModel.insertModel(playerModel)
         historyItemClicked(playerModel)
         //historyDatabase.playerModelDao().insertModel(playerModel)
@@ -359,7 +361,8 @@ class UserLinkFragment : Fragment() {
             }
             viewModel.videos.observe(viewLifecycleOwner, { videos ->
                 galleryAdapter.updateData(videos)
-                recyclerView.smoothScrollToPosition(videos.size - 1)
+                if (videos.isNotEmpty())
+                    recyclerView.smoothScrollToPosition(videos.size - 1)
             })
             viewModel.getAllM3U()
             //val data = historyDatabase.playerModelDao().getAllM3U()

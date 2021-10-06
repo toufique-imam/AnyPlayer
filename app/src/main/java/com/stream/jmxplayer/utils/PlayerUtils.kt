@@ -3,18 +3,19 @@ package com.stream.jmxplayer.utils
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
-import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
+import com.google.android.exoplayer2.source.hls.DefaultHlsExtractorFactory
+import com.google.android.exoplayer2.source.hls.HlsExtractorFactory
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
@@ -281,6 +282,10 @@ class PlayerUtils {
                     DefaultExtractorsFactory()
                 )
             }
+            val flags = (DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES
+                    or DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS)
+            val extractorFactory: HlsExtractorFactory = DefaultHlsExtractorFactory(flags, true)
+
             val httpDataSourceFactory = createDataSourceFactory(activity, playerModel)
 
             val uriNow = Uri.parse(playerModel.link)
@@ -294,6 +299,7 @@ class PlayerUtils {
                 C.TYPE_HLS -> {
                     return HlsMediaSource.Factory(httpDataSourceFactory)
                         .setAllowChunklessPreparation(true)
+                        .setExtractorFactory(extractorFactory)
                 }
                 C.TYPE_SS -> {
                     return SsMediaSource.Factory(httpDataSourceFactory)
@@ -301,6 +307,7 @@ class PlayerUtils {
                 C.TYPE_OTHER -> {
                     if (playerModel.link.contains(playerLatinoDomain)) {
                         return HlsMediaSource.Factory(httpDataSourceFactory)
+                            .setExtractorFactory(extractorFactory)
                             .setAllowChunklessPreparation(true)
                     }
                     return if (errorCount % 2 == 0) {
@@ -308,6 +315,7 @@ class PlayerUtils {
 
                     } else {
                         HlsMediaSource.Factory(httpDataSourceFactory)
+                            .setExtractorFactory(extractorFactory)
                             .setAllowChunklessPreparation(true)
                     }
                 }

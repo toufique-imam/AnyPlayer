@@ -14,9 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:focusable="true"
-        app:controller_layout_id="@layout/exo_player_view_style"
-        app:fastforward_increment="15000"
-        app:rewind_increment="15000" />
+        app:controller_layout_id="@layout/exo_player_view_style" />
 
 
     <androidx.recyclerview.widget.RecyclerView

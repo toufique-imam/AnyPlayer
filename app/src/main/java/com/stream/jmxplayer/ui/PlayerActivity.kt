@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
-import com.google.android.exoplayer2.source.BehindLiveWindowException
+import com.google.android.exoplayer2.ext.ffmpeg.FfmpegLibrary
 import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -40,7 +40,6 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import kotlin.math.max
-
 
 @Suppress("Deprecation")
 class PlayerActivity : AppCompatActivity(),
@@ -170,7 +169,8 @@ class PlayerActivity : AppCompatActivity(),
         casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
                 toaster(this@PlayerActivity, "connected")
-                casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
+                casty.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
+                //casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
                 //startCastServer()
             }
 
@@ -429,6 +429,11 @@ class PlayerActivity : AppCompatActivity(),
             if (isAudionRenderer(mappedTrackInfo, i)) {
                 videoRenderer = i
             }
+            logger("mappedTrack $i", mappedTrackInfo.getRendererName(i))
+            for (j in 0 until mappedTrackInfo.getTrackGroups(i).length) {
+                println(mappedTrackInfo.getTrackGroups(i)[j])
+                println(mappedTrackInfo.getTrackGroups(i)[j].getFormat(0).toString())
+            }
         }
         if (videoRenderer == null) {
             audioTrackSelector.visibility = View.GONE
@@ -571,17 +576,29 @@ class PlayerActivity : AppCompatActivity(),
         viewModel.insertModel(playerModel)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable(PlayerModel.DIRECT_PUT, playerModelNow)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        playerModelNow = savedInstanceState.getSerializable(PlayerModel.DIRECT_PUT) as PlayerModel
+    }
+
     private fun getDataFromIntent() {
         val intent: Intent
         if (getIntent() != null) {
             intent = getIntent()
             idxNow = intent.getIntExtra(SELECTED_MODEL, 0)
-            if (PlayListAll.size > idxNow)
-                playerModelNow = PlayListAll[idxNow]
-            else if (PlayListAll.isNotEmpty()) {
-                playerModelNow = PlayListAll[0]
-                idxNow = 0
-            }
+        } else {
+            idxNow = 0
+        }
+        if (PlayListAll.size > idxNow)
+            playerModelNow = PlayListAll[idxNow]
+        else if (PlayListAll.isNotEmpty()) {
+            playerModelNow = PlayListAll[0]
+            idxNow = 0
         }
     }
 
@@ -639,22 +656,19 @@ class PlayerActivity : AppCompatActivity(),
                 .setPreferredTextLanguage("es")
                 .setPreferredAudioLanguage("es")
         )
+        logger("Render" , "${FfmpegLibrary.isAvailable()} ${FfmpegLibrary.getVersion()} ${FfmpegLibrary.supportsFormat("audio/mpeg-L2")}")
 
-        mPlayer = if (Build.VERSION.SDK_INT > 22) {
-            SimpleExoPlayer.Builder(this)
-                .setLoadControl(loadControl)
-                .setTrackSelector(trackSelector)
-                .build()
-        } else {
+
         @DefaultRenderersFactory.ExtensionRendererMode val extensionRendererMode =
             DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
         val renderer = DefaultRenderersFactory(this)
             .setExtensionRendererMode(extensionRendererMode)
-          SimpleExoPlayer.Builder(this, renderer)
+        mPlayer = SimpleExoPlayer.Builder(this, renderer)
             .setLoadControl(loadControl)
             .setTrackSelector(trackSelector)
+            .setSeekBackIncrementMs(15000)
+            .setSeekForwardIncrementMs(15000)
             .build()
-        }
     }
 
     private fun preparePlayer() {
@@ -745,7 +759,8 @@ class PlayerActivity : AppCompatActivity(),
         logger(TAG, "changed state to $stateString")
     }
 
-    override fun onPlayerError(error: ExoPlaybackException) {
+    override fun onPlayerError(eventTime: AnalyticsListener.EventTime, error: PlaybackException) {
+        super<Player.Listener>.onPlayerError(error)
         logger(TAG, "Error : " + error.message)
         logger(TAG, "Error Cause : " + error.cause)
         inErrorState = true
@@ -758,21 +773,24 @@ class PlayerActivity : AppCompatActivity(),
             initPlayer(true)
             return
         }
-        if (isRendererError(error)) {
+//        if (isRendererError(error)) {
+//            inErrorState = false
+//            clearResumePosition()
+//            //mPlayer?.next()
+//            initPlayer(true)
+//            return
+//        }
+        if (isDecoderError(error)) {
             inErrorState = false
-            clearResumePosition()
-            //mPlayer?.next()
-            initPlayer(true)
-            return
+            errorCount = 0
+            releasePlayer()
+            initPlayer(false)
         }
-        toaster(this, SERVER_ERROR_TEXT + " " + error.type)
         if (isBehindLiveWindow(error)) {
             clearResumePosition()
-            //mPlayer?.next()
             initPlayer(true)
         } else {
             mPlayer?.next()
-//            updateResumePosition()
         }
     }
 
@@ -785,23 +803,20 @@ class PlayerActivity : AppCompatActivity(),
             "Lo sentimos, canal no disponible utilice otro servidor para volver a intentar o vuelva más tarde"
         const val TAG = "ExoPlayer"
         const val MAGNA_TV_BLOCKED = "http://51.158.167.219/con/999_cna2.ts"
-        fun isRendererError(exception: ExoPlaybackException): Boolean {
-            if (exception.type == ExoPlaybackException.TYPE_RENDERER) {
-                return true
+        fun isDecoderError(exception: PlaybackException): Boolean {
+            return when (exception.errorCode) {
+                PlaybackException.ERROR_CODE_DECODER_INIT_FAILED -> true
+                PlaybackException.ERROR_CODE_DECODER_QUERY_FAILED -> true
+                PlaybackException.ERROR_CODE_DECODING_FAILED -> true
+                PlaybackException.ERROR_CODE_DECODING_FORMAT_EXCEEDS_CAPABILITIES -> true
+                PlaybackException.ERROR_CODE_DECODING_FORMAT_UNSUPPORTED -> true
+                else -> false
             }
-            return false
         }
 
-        fun isBehindLiveWindow(exception: ExoPlaybackException): Boolean {
-            if (exception.type != ExoPlaybackException.TYPE_SOURCE) {
-                return false
-            }
-            var cause: Throwable? = exception.sourceException
-            while (cause != null) {
-                if (cause is BehindLiveWindowException) {
-                    return true
-                }
-                cause = cause.cause
+        fun isBehindLiveWindow(exception: PlaybackException): Boolean {
+            if (exception.errorCode != PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
+                return true
             }
             return false
         }
