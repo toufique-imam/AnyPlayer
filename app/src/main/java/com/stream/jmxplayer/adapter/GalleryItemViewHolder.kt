@@ -15,26 +15,27 @@ class GalleryItemViewHolder(
 
 ) : RecyclerView.ViewHolder(itemView) {
     lateinit var deleteButton: ImageButton
-    lateinit var playListImageView: ImageView
+    //lateinit var playListImageView: ImageView
 
     fun initHistory() {
         deleteButton = itemView.findViewById(R.id.history_delete)
-        playListImageView = itemView.findViewById(R.id.image_view_m3u)
+        //playListImageView = itemView.findViewById(R.id.image_view_m3u)
     }
 
     fun configPlaylist() {
-        deleteButton.visibility = View.GONE
+        deleteButton.setImageResource(R.drawable.ic_outline_more_vert_24)
     }
 
     fun configM3UPlaylist() {
-        imageView.visibility = View.GONE
-        playListImageView.visibility = View.VISIBLE
+        //imageView.setImageResource(R.drawable.logo_playlist2)
+        //  imageView.visibility = View.GONE
+        //playListImageView.visibility = View.VISIBLE
     }
 
     companion object {
-        const val GRID_NO_DELETE = 0
-        const val SINGLE_DELETE = 1
-        const val SINGLE_NO_DELETE = 2
-        const val M3U_LIST = 3
+        const val GRID_NO_DELETE = 0 //normal grid view
+        const val SINGLE_DELETE = 1 //history list with delete
+        const val SINGLE_NO_DELETE = 2 //playlist in exoplayer
+        const val M3U_LIST = 3 //m3u list
     }
 }

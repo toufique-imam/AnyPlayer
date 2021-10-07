@@ -27,7 +27,9 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.util.Util
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
+import com.google.gson.Gson
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
@@ -86,7 +88,8 @@ class PlayerActivity : AppCompatActivity(),
     private lateinit var nextButton: ImageButton
     private lateinit var previousButton: ImageButton
     private lateinit var audioTrackSelector: ImageButton
-    private var trackDialog: Dialog? = null
+    private var trackSelectorDialog: HashMap<Int, Dialog> = HashMap()
+    private var trackDialog: AlertDialog? = null
     private lateinit var castButton: MediaRouteButton
 
     private val loadControl = DefaultLoadControl()
@@ -350,7 +353,6 @@ class PlayerActivity : AppCompatActivity(),
             override fun workResult(result: Any) {
                 btnClick = result as String
                 goAction()
-
             }
         })
     }
@@ -402,14 +404,65 @@ class PlayerActivity : AppCompatActivity(),
         }
         audioTrackSelector.setOnClickListener {
             if (trackDialog == null) {
-                initPopupQuality()
+                initTracks()
+                //initPopupQuality()
             }
-            trackDialog
             trackDialog?.show()
         }
     }
 
-    private fun isAudionRenderer(
+    //create dialogue for every tracks
+    //only if it's audio or video renderer
+    //call when link changes
+    private fun initTracks() {
+//        println(Gson().toJson(mPlayer?.mediaMetadata))
+//
+//        println(Gson().toJson(mPlayer?.currentMediaItem?.mediaMetadata))
+//        println(mPlayer?.currentMediaItem?.playbackProperties)
+        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
+        if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
+        trackSelectorDialog.clear()
+        val dialogView = this.layoutInflater.inflate(R.layout.dialog_tracks, null)
+
+        val builder = AlertDialog.Builder(this).setTitle("Select Tracks").setView(dialogView)
+        builder.setCancelable(true)
+        val radioGroup: RadioGroup = dialogView.findViewById(R.id.radio_group_server)
+
+        trackDialog = builder.create()
+        var cnt = 0
+        for (i in 0 until mappedTrackInfo.rendererCount) {
+            if (isVideoRenderer(mappedTrackInfo, i) || isAudioRenderer(mappedTrackInfo, i)) {
+                trackSelectorDialog[cnt] = TrackSelectionDialogBuilder(
+                    this,
+                    "select audio track",
+                    trackSelector,
+                    i
+                ).build()
+                val radioButton = RadioButton(this)
+                radioButton.id = cnt
+                radioButton.text = mappedTrackInfo.getRendererName(i)
+                radioButton.textSize = 15f
+                radioButton.setTextColor(Color.BLACK)
+                if (cnt == 0) {
+                    radioButton.isChecked = true
+                }
+                radioGroup.addView(radioButton)
+                cnt++
+            }
+        }
+        if (cnt == 0)
+            audioTrackSelector.visibility = View.GONE
+
+        val materialButton: MaterialButton = dialogView.findViewById(R.id.button_stream_now)
+
+
+        materialButton.setOnClickListener {
+            trackDialog?.dismiss()
+            trackSelectorDialog[radioGroup.checkedRadioButtonId]?.show()
+        }
+    }
+
+    private fun isAudioRenderer(
         mappedTrackInfo: MappingTrackSelector.MappedTrackInfo,
         renderedIndex: Int
     ): Boolean {
@@ -420,31 +473,42 @@ class PlayerActivity : AppCompatActivity(),
         return C.TRACK_TYPE_AUDIO == trackType
     }
 
-    private fun initPopupQuality() {
-        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
-        if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
-        var videoRenderer: Int? = null
+    private fun isVideoRenderer(
+        mappedTrackInfo: MappingTrackSelector.MappedTrackInfo,
+        renderedIndex: Int
+    ): Boolean {
+        val trackGroupArray = mappedTrackInfo.getTrackGroups(renderedIndex)
+        if (trackGroupArray.length == 0) return false
 
-        for (i in 0 until mappedTrackInfo.rendererCount) {
-            if (isAudionRenderer(mappedTrackInfo, i)) {
-                videoRenderer = i
-            }
-            logger("mappedTrack $i", mappedTrackInfo.getRendererName(i))
-            for (j in 0 until mappedTrackInfo.getTrackGroups(i).length) {
-                println(mappedTrackInfo.getTrackGroups(i)[j])
-                println(mappedTrackInfo.getTrackGroups(i)[j].getFormat(0).toString())
-            }
-        }
-        if (videoRenderer == null) {
-            audioTrackSelector.visibility = View.GONE
-            return
-        }
-
-        val trackSelectionDialogueBuilder =
-            TrackSelectionDialogBuilder(this, "Select Audio Track", trackSelector, videoRenderer)
-
-        trackDialog = trackSelectionDialogueBuilder.build()
+        val trackType = mappedTrackInfo.getRendererType(renderedIndex)
+        return C.TRACK_TYPE_VIDEO == trackType
     }
+
+//    private fun initPopupQuality() {
+//        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
+//        if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
+//        var videoRenderer: Int? = null
+//
+//        for (i in 0 until mappedTrackInfo.rendererCount) {
+//            if (isAudionRenderer(mappedTrackInfo, i)) {
+//                videoRenderer = i
+//            }
+//            logger("mappedTrack $i", mappedTrackInfo.getRendererName(i))
+//            for (j in 0 until mappedTrackInfo.getTrackGroups(i).length) {
+//                println(mappedTrackInfo.getTrackGroups(i)[j])
+//                println(mappedTrackInfo.getTrackGroups(i)[j].getFormat(0).toString())
+//            }
+//        }
+//        if (videoRenderer == null) {
+//            audioTrackSelector.visibility = View.GONE
+//            return
+//        }
+//
+//        val trackSelectionDialogueBuilder =
+//            TrackSelectionDialogBuilder(this, "Select Audio Track", trackSelector, videoRenderer)
+//
+//        trackDialog = trackSelectionDialogueBuilder.build()
+//    }
 
     private fun updatePlayerModel() {
         playerModelNow = PlayListAll[idxNow]
@@ -455,7 +519,6 @@ class PlayerActivity : AppCompatActivity(),
         addSource()
         preparePlayer()
     }
-
 
     private fun setUpAppBar() {
         backButton.setOnClickListener {
@@ -656,7 +719,12 @@ class PlayerActivity : AppCompatActivity(),
                 .setPreferredTextLanguage("es")
                 .setPreferredAudioLanguage("es")
         )
-        logger("Render" , "${FfmpegLibrary.isAvailable()} ${FfmpegLibrary.getVersion()} ${FfmpegLibrary.supportsFormat("audio/mpeg-L2")}")
+        logger(
+            "Render",
+            "${FfmpegLibrary.isAvailable()} ${FfmpegLibrary.getVersion()} ${
+                FfmpegLibrary.supportsFormat("audio/mpeg-L2")
+            }"
+        )
 
 
         @DefaultRenderersFactory.ExtensionRendererMode val extensionRendererMode =

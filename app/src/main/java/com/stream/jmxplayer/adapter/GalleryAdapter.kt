@@ -77,23 +77,23 @@ class GalleryAdapter(
 
     override fun onBindViewHolder(holder: GalleryItemViewHolder, position: Int) {
         val playerModel = galleryData[position]
-        if (type != GalleryItemViewHolder.M3U_LIST) {
-            Glide.with(holder.imageView)
-                .load(
-                    if (playerModel.streamType != PlayerModel.STREAM_M3U) {
-                        Uri.parse(playerModel.image)
-                    } else {
-                        R.drawable.logo_playlist2
-                    }
-                )
-                .thumbnail(0.33f)
-                .placeholder(
-                    if (playerModel.streamType == PlayerModel.STREAM_OFFLINE_AUDIO) R.drawable.ic_empty_music2
-                    else R.drawable.main_logo
-                )
-                //.centerCrop()
-                .into(holder.imageView)
-        }
+        //if (type != GalleryItemViewHolder.M3U_LIST) {
+        Glide.with(holder.imageView)
+            .load(
+                if (playerModel.streamType != PlayerModel.STREAM_M3U) {
+                    Uri.parse(playerModel.image)
+                } else {
+                    R.drawable.logo_playlist2
+                }
+            )
+            .thumbnail(0.33f)
+            .placeholder(
+                if (playerModel.streamType == PlayerModel.STREAM_OFFLINE_AUDIO) R.drawable.ic_empty_music2
+                else R.drawable.main_logo
+            )
+            //.centerCrop()
+            .into(holder.imageView)
+        //  }
         if (type != GalleryItemViewHolder.M3U_LIST) {
             val timerText = GlobalFunctions.milliSecondToString(playerModel.duration)
             if (timerText.isEmpty()) holder.durationView.visibility = View.GONE
@@ -101,8 +101,7 @@ class GalleryAdapter(
                 holder.durationView.visibility = View.VISIBLE
                 holder.durationView.text = timerText
             }
-        }
-        if (type == GalleryItemViewHolder.M3U_LIST) {
+        } else {
             holder.durationView.text = playerModel.link
         }
 
@@ -112,7 +111,7 @@ class GalleryAdapter(
             holder.durationView.setTextColor(Color.WHITE)
         }
         holder.itemView.setOnClickListener { onClick(playerModel, position) }
-        if (type == GalleryItemViewHolder.SINGLE_DELETE) {
+        if (type == GalleryItemViewHolder.SINGLE_DELETE || type == GalleryItemViewHolder.M3U_LIST) {
             holder.deleteButton.setOnClickListener {
                 onDelete(playerModel, position)
             }
@@ -131,13 +130,13 @@ class GalleryAdapter(
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filterStr = constraint.toString().toLowerCase()
+                val filterStr = constraint.toString().lowercase()
                 var filtered = ArrayList<PlayerModel>()
                 if (filterStr.isEmpty()) {
                     filtered = mainData
                 } else {
                     for (i in mainData) {
-                        if (i.title.toLowerCase().contains(filterStr)) {
+                        if (i.title.lowercase().contains(filterStr)) {
                             filtered.add(i)
                         }
                     }

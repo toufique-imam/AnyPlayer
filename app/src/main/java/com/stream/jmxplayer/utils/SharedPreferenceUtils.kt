@@ -41,15 +41,20 @@ class SharedPreferenceUtils {
             return array
         }
 
-        fun getUserM3U(context: Context): String {
+        fun getUserM3U(context: Context): Array<String> {
             val prefs = context.getSharedPreferences(SHARED_PREF, Activity.MODE_PRIVATE)
-            return prefs.getString(PlayerModel.mainLinkIntent, "") ?: ""
+            val array = Array(2, this::init)
+            array[0] = prefs.getString(PlayerModel.mainLinkIntent, "") ?: ""
+            array[1] = prefs.getString(PlayerModel.descriptionIntent, "") ?: ""
+            return array
         }
 
-        fun setUserM3U(context: Context, link: String) {
+        fun setUserM3U(context: Context, link: String, title: String) {
             val prefs = context.getSharedPreferences(SHARED_PREF, Activity.MODE_PRIVATE)
             val editor = prefs.edit()
             editor.putString(PlayerModel.mainLinkIntent, link)
+            editor.putString(PlayerModel.descriptionIntent, title)
+
             editor.apply()
         }
 
