@@ -63,15 +63,12 @@ class GalleryAdapter(
             }
 
         return GalleryItemViewHolder(viewNow).apply {
-            if (type != GalleryItemViewHolder.GRID_NO_DELETE) {
-                initHistory()
-            }
-            if (type == GalleryItemViewHolder.SINGLE_NO_DELETE || type == GalleryItemViewHolder.M3U_LIST) {
-                configPlaylist()
-            }
-            if (type == GalleryItemViewHolder.M3U_LIST) {
-                configM3UPlaylist()
-            }
+//            if (type != GalleryItemViewHolder.GRID_NO_DELETE) {
+            initHistory(type)
+//            }
+//            if (type == GalleryItemViewHolder.SINGLE_NO_DELETE || type == GalleryItemViewHolder.M3U_LIST) {
+//                configPlaylist()
+//            }
         }
     }
 

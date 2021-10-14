@@ -29,7 +29,6 @@ import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
-import com.google.gson.Gson
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
@@ -434,7 +433,7 @@ class PlayerActivity : AppCompatActivity(),
             if (isVideoRenderer(mappedTrackInfo, i) || isAudioRenderer(mappedTrackInfo, i)) {
                 trackSelectorDialog[cnt] = TrackSelectionDialogBuilder(
                     this,
-                    "select audio track",
+                    "Select audio track",
                     trackSelector,
                     i
                 ).build()
@@ -484,31 +483,6 @@ class PlayerActivity : AppCompatActivity(),
         return C.TRACK_TYPE_VIDEO == trackType
     }
 
-//    private fun initPopupQuality() {
-//        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
-//        if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
-//        var videoRenderer: Int? = null
-//
-//        for (i in 0 until mappedTrackInfo.rendererCount) {
-//            if (isAudionRenderer(mappedTrackInfo, i)) {
-//                videoRenderer = i
-//            }
-//            logger("mappedTrack $i", mappedTrackInfo.getRendererName(i))
-//            for (j in 0 until mappedTrackInfo.getTrackGroups(i).length) {
-//                println(mappedTrackInfo.getTrackGroups(i)[j])
-//                println(mappedTrackInfo.getTrackGroups(i)[j].getFormat(0).toString())
-//            }
-//        }
-//        if (videoRenderer == null) {
-//            audioTrackSelector.visibility = View.GONE
-//            return
-//        }
-//
-//        val trackSelectionDialogueBuilder =
-//            TrackSelectionDialogBuilder(this, "Select Audio Track", trackSelector, videoRenderer)
-//
-//        trackDialog = trackSelectionDialogueBuilder.build()
-//    }
 
     private fun updatePlayerModel() {
         playerModelNow = PlayListAll[idxNow]
@@ -731,12 +705,19 @@ class PlayerActivity : AppCompatActivity(),
             DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
         val renderer = DefaultRenderersFactory(this)
             .setExtensionRendererMode(extensionRendererMode)
-        mPlayer = SimpleExoPlayer.Builder(this, renderer)
-            .setLoadControl(loadControl)
-            .setTrackSelector(trackSelector)
-            .setSeekBackIncrementMs(15000)
-            .setSeekForwardIncrementMs(15000)
-            .build()
+        mPlayer = if (Build.VERSION.SDK_INT > 29) {
+            SimpleExoPlayer.Builder(this)
+                .setLoadControl(loadControl)
+                .setTrackSelector(trackSelector)
+                .build()
+        } else {
+            SimpleExoPlayer.Builder(this, renderer)
+                .setLoadControl(loadControl)
+                .setTrackSelector(trackSelector)
+                .setSeekBackIncrementMs(15000)
+                .setSeekForwardIncrementMs(15000)
+                .build()
+        }
     }
 
     private fun preparePlayer() {
@@ -815,6 +796,8 @@ class PlayerActivity : AppCompatActivity(),
             }
             ExoPlayer.STATE_READY -> {
                 stateString = "STATE_READY"
+                errorCount = 0
+                inErrorState = false
                 audioTrackSelector.visibility = View.VISIBLE
             }
             ExoPlayer.STATE_ENDED -> {
@@ -841,18 +824,12 @@ class PlayerActivity : AppCompatActivity(),
             initPlayer(true)
             return
         }
-//        if (isRendererError(error)) {
-//            inErrorState = false
-//            clearResumePosition()
-//            //mPlayer?.next()
-//            initPlayer(true)
-//            return
-//        }
+
         if (isDecoderError(error)) {
             inErrorState = false
-            errorCount = 0
+            //errorCount = 0
             releasePlayer()
-            initPlayer(false)
+            initPlayer(true)
         }
         if (isBehindLiveWindow(error)) {
             clearResumePosition()

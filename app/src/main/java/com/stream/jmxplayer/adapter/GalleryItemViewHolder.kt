@@ -17,19 +17,16 @@ class GalleryItemViewHolder(
     lateinit var deleteButton: ImageButton
     //lateinit var playListImageView: ImageView
 
-    fun initHistory() {
+    fun initHistory(type: Int) {
+        if (type == GRID_NO_DELETE) return
         deleteButton = itemView.findViewById(R.id.history_delete)
+        if (type == M3U_LIST) {
+            deleteButton.setImageResource(R.drawable.ic_outline_more_vert_24)
+        }
+        if (type == SINGLE_NO_DELETE) {
+            deleteButton.visibility = View.GONE
+        }
         //playListImageView = itemView.findViewById(R.id.image_view_m3u)
-    }
-
-    fun configPlaylist() {
-        deleteButton.setImageResource(R.drawable.ic_outline_more_vert_24)
-    }
-
-    fun configM3UPlaylist() {
-        //imageView.setImageResource(R.drawable.logo_playlist2)
-        //  imageView.visibility = View.GONE
-        //playListImageView.visibility = View.VISIBLE
     }
 
     companion object {

@@ -11,10 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.stream.jmxplayer.R
 import me.drakeet.support.toast.ToastCompat
-import java.net.InetAddress
-import java.net.MalformedURLException
-import java.net.NetworkInterface
-import java.net.URL
+import java.net.*
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
@@ -43,7 +40,7 @@ class GlobalFunctions {
             var lastHashPos = url.lastIndexOf('#')
             if (lastHashPos == -1) lastHashPos = len
             val endIndex = lastHashPos.coerceAtMost(lastQMpos)
-            return url.substring(startIndex, endIndex)
+            return URLDecoder.decode(url.substring(startIndex, endIndex), "UTF-8")
         }
 
         fun getGridSpanCount(activity: Activity): Int {

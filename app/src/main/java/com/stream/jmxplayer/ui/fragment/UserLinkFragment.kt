@@ -33,6 +33,7 @@ import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.m3u.OnScrappingCompleted
 import com.stream.jmxplayer.utils.m3u.Parser
 import com.stream.jmxplayer.utils.m3u.Scrapper
+import java.net.URLDecoder
 
 class UserLinkFragment : Fragment() {
     private lateinit var titleTextView: TextInputEditText
@@ -311,13 +312,15 @@ class UserLinkFragment : Fragment() {
         val uri = Uri.parse(urlNow)
 
         val token =
-            if (titleTextView.text != null && titleTextView.text.toString()
-                    .isNotEmpty()
-            ) {
-                titleTextView.text.toString()
-            } else {
-                uri.lastPathSegment ?: "User M3U"
-            }
+            URLDecoder.decode(
+                if (titleTextView.text != null && titleTextView.text.toString()
+                        .isNotEmpty()
+                ) {
+                    titleTextView.text.toString()
+                } else {
+                    uri.lastPathSegment ?: "User M3U"
+                }, "UTF-8"
+            )
 
         SharedPreferenceUtils.setUserM3U(requireContext(), urlNow, token)
         val playerModel =
