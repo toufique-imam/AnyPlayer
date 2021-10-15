@@ -22,8 +22,8 @@ android {
 
     buildTypes {
         release {
-            //minifyEnabled true
-            //shrinkResources true
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -38,8 +38,8 @@ android {
 
 dependencies {
     implementation files('libs/extension-ffmpeg-release.aar')
-    implementation files('libs/extension-av1-release.aar')
-    implementation files('libs/extension-vp9-release.aar')
+    //implementation files('libs/extension-av1-release.aar')
+    //implementation files('libs/extension-vp9-release.aar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.6.0'
@@ -85,4 +85,6 @@ dependencies {
     implementation "androidx.room:room-ktx:2.3.0"
     //volley
     implementation 'com.android.volley:volley:1.2.1'
+    //libVLC
+    implementation 'org.videolan.android:libvlc-all:3.4.2'
 }

@@ -3,7 +3,8 @@
     <string name="grant_permission">Grant Permission</string>
 
     <string name="permission_not_granted">App requires access to storage to access items stored in MediaStore.</string>
-
+    <string name="lockscreen_transport_play_description">lockscreen_transport_play_description</string>
+    <string name="lockscreen_transport_pause_description">lockscreen_transport_pause_description</string>
     <string name="receiver_id">8639B975</string>
     <string name="app_name">JMX Player</string>
     <string name="rotate">Orientacion de pantalla</string>

@@ -3,23 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_baseline_phonelink_black_lock_24.xml" value="0.6253012048192771" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_browser.xml" value="0.536" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_local_video_browser.xml" value="0.60875" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/bottom_sheet_m3u.xml" value="0.25416666666666665" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_browser.xml" value="0.1" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_player.xml" value="0.1" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/dialog_tracks.xml" value="0.25416666666666665" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/exo_player_view_style.xml" value="0.23796296296296296" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_list_view.xml" value="0.38125" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_user_stream.xml" value="0.25416666666666665" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/gallery_item.xml" value="0.4" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/history_item.xml" value="0.4" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/casty_discovery.xml" value="0.6" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/play_menu.xml" value="0.53125" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/toolbar_meni.xml" value="0.61" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.6253012048192771" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_browser.xml" value="0.17407407407407408" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_player.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_vlc.xml" value="0.17407407407407408" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_player.xml" value="0.1742354031510658" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_vlc.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/vlc_player_view_style.xml" value="0.176" />
       </map>
     </option>
   </component>

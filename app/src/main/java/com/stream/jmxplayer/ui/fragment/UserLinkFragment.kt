@@ -221,6 +221,7 @@ class UserLinkFragment : Fragment() {
         PlayListAll.clear()
         PlayListAll.addAll(data)
         val intentNext = Intent(requireActivity(), PlayerActivity::class.java)
+        //val intentNext = Intent(requireActivity(), VlcActivity::class.java)
         intentNext.putExtra(PlayerModel.SELECTED_MODEL, selectedIdx)
         startActivity(intentNext)
     }

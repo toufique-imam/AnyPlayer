@@ -25,6 +25,7 @@ import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.PlayerActivity
+import com.stream.jmxplayer.ui.VlcActivity
 import com.stream.jmxplayer.ui.viewmodel.LocalVideoViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
@@ -108,7 +109,8 @@ class BrowseFragment : Fragment() {
         permissionRationaleView = view.findViewById(R.id.permission_rationale_view)
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { video, pos ->
             if (video.streamType != PlayerModel.STREAM_OFFLINE_IMAGE) {
-                val intent = Intent(context, PlayerActivity::class.java)
+                //val intent = Intent(context, PlayerActivity::class.java)
+                val intent = Intent(context, VlcActivity::class.java)
                 PlayListAll.clear()
                 PlayListAll.add(video)
                 startActivity(intent)

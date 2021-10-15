@@ -69,7 +69,7 @@ public class Parser {
 
             channelModel = new PlayerModel(
                     0, channelLink, logo, channelLink, GlobalFunctions.USER_AGENT
-                    , "", "", 0, channelName, channelName + " " + language, language, logo, 1, mp);
+                    , "", "", 0, channelName, channelName + " " + language, language, logo, PlayerModel.STREAM_ONLINE_LIVE, mp);
             channelModel.setId(PlayerModel.Companion.getId(channelLink, channelName));
             channelModels.add(channelModel);
             i++;

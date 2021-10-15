@@ -54,6 +54,7 @@ class SplashActivity : AppCompatActivity() {
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             logger("Splash PlayerModel", playerModel.toString())
             val intentNext = Intent(this, PlayerActivity::class.java)
+            //val intentNext = Intent(this, VlcActivity::class.java)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

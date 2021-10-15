@@ -8,6 +8,8 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.view.WindowInsetsController.*
+import android.view.WindowManager.*
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -87,6 +89,7 @@ class PlayerActivity : AppCompatActivity(),
     private lateinit var nextButton: ImageButton
     private lateinit var previousButton: ImageButton
     private lateinit var audioTrackSelector: ImageButton
+
     private var trackSelectorDialog: HashMap<Int, Dialog> = HashMap()
     private var trackDialog: AlertDialog? = null
     private lateinit var castButton: MediaRouteButton
@@ -145,7 +148,6 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun initCast() {
-        PlayerUtils.createMediaData(playerModelNow)
         casty = Casty.create(this).withMiniController()
         //Casty.configure("8639B975")
         casty.setUpMediaRouteButton(castButton)
@@ -221,19 +223,19 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun setUpOrientation() {
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         if (Build.VERSION.SDK_INT < 30) {
             window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
+                LayoutParams.FLAG_FULLSCREEN,
+                LayoutParams.FLAG_FULLSCREEN
             )
         } else {
             val controller = window.insetsController
             if (controller != null) {
                 controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
                 controller.systemBarsBehavior =
-                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 
             }
         }
@@ -297,7 +299,6 @@ class PlayerActivity : AppCompatActivity(),
         }
         galleryAdapter.updateData(PlayListAll)
     }
-
 
     private fun goAction() {
         if (btnClick == "ADM") {
@@ -414,10 +415,6 @@ class PlayerActivity : AppCompatActivity(),
     //only if it's audio or video renderer
     //call when link changes
     private fun initTracks() {
-//        println(Gson().toJson(mPlayer?.mediaMetadata))
-//
-//        println(Gson().toJson(mPlayer?.currentMediaItem?.mediaMetadata))
-//        println(mPlayer?.currentMediaItem?.playbackProperties)
         val mappedTrackInfo = trackSelector.currentMappedTrackInfo
         if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
         trackSelectorDialog.clear()
@@ -645,34 +642,35 @@ class PlayerActivity : AppCompatActivity(),
     private fun hideSystemUi() {
         if (Build.VERSION.SDK_INT < 30) {
             window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
+                LayoutParams.FLAG_FULLSCREEN,
+                LayoutParams.FLAG_FULLSCREEN
             )
         } else {
             val controller = window.insetsController
             if (controller != null) {
-                controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                controller.hide(WindowInsets.Type.statusBars()
+                        or WindowInsets.Type.navigationBars())
                 controller.systemBarsBehavior =
-                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         }
         if (Build.VERSION.SDK_INT < 30) {
-            mPlayerView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+            mPlayerView.systemUiVisibility =
+                (View.SYSTEM_UI_FLAG_LOW_PROFILE
                     or View.SYSTEM_UI_FLAG_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
         } else {
-            val controller: WindowInsetsController? = mPlayerView.windowInsetsController
+            val controller = mPlayerView.windowInsetsController
             if (controller != null) {
                 controller.hide(
                     (WindowInsets.Type.statusBars()
                             or WindowInsets.Type.navigationBars()
                             or WindowInsets.Type.systemBars())
                 )
-                controller.systemBarsBehavior =
-                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                controller.systemBarsBehavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         }
     }
