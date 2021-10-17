@@ -20,14 +20,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
+import com.stfalcon.imageviewer.StfalconImageViewer
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
+import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.ui.VlcActivity
+import com.stream.jmxplayer.ui.view.ImageOverlayView
 import com.stream.jmxplayer.ui.viewmodel.LocalVideoViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
+import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 
 
@@ -36,7 +39,6 @@ import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
  * Use the [BrowseFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-//todo customize imageViewer
 class BrowseFragment : Fragment() {
 
     private val viewModel: LocalVideoViewModel by viewModels()
@@ -48,6 +50,9 @@ class BrowseFragment : Fragment() {
     private lateinit var permissionRationaleView: LinearLayout
     lateinit var galleryAdapter: GalleryAdapter
     var typeNow = PlayerModel.STREAM_OFFLINE_VIDEO
+    var overlayView: ImageOverlayView? = null
+    var imageViewer: StfalconImageViewer<PlayerModel>? = null
+    var casty: Casty? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,14 +93,68 @@ class BrowseFragment : Fragment() {
         })
     }
 
+    private fun initCast() {
+        casty = Casty.create(requireActivity())
+        casty?.setUpMediaRouteButton(overlayView!!.castButton)
+
+        casty?.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
+            override fun onConnected() {
+                if (imageViewer != null) {
+                    val pos = imageViewer?.currentPosition()
+                    if (pos != null)
+                        casty?.player?.loadMediaAndPlayInBackground(
+                            PlayerUtils.createMediaData(
+                                galleryAdapter.galleryData[pos]
+                            )
+                        )
+                }
+
+                //toaster(this@PlayerActivity, "connected")
+                //casty.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
+                //casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
+                //startCastServer()
+            }
+
+            override fun onDisconnected() {
+                //toaster(this@PlayerActivity, "disconnected")
+                //hideSystemUi()
+            }
+        })
+    }
+
+    private fun setupOverlay(position: Int) {
+        overlayView = ImageOverlayView(requireContext()).apply {
+            update(galleryAdapter.galleryData[position])
+
+            onBackClick = {
+                imageViewer?.close()
+                imageViewer = null
+            }
+        }
+        if (casty == null) initCast()
+    }
+
     private fun showImages(position: Int) {
-        com.stfalcon.imageviewer.StfalconImageViewer.Builder(
+        setupOverlay(position)
+        imageViewer = StfalconImageViewer.Builder(
             context,
             galleryAdapter.galleryData
         ) { view, imageNow ->
             Glide.with(view).load(imageNow.image).into(view)
-        }.withStartPosition(position)
-            .show()
+        }
+            .withImageChangeListener {
+                overlayView?.update(galleryAdapter.galleryData[it])
+                if (casty?.isConnected == true) {
+                    casty?.player?.loadMediaAndPlayInBackground(
+                        PlayerUtils.createMediaData(
+                            galleryAdapter.galleryData[it]
+                        )
+                    )
+                }
+            }
+            .withStartPosition(position)
+            .withHiddenStatusBar(true)
+            .withOverlayView(overlayView).show()
     }
 
 

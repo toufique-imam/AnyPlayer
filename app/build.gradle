@@ -22,8 +22,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+           // minifyEnabled true
+            //shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -34,12 +34,21 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            universalApk false
+        }
+    }
 }
+
 
 dependencies {
     implementation files('libs/extension-ffmpeg-release.aar')
-    //implementation files('libs/extension-av1-release.aar')
-    //implementation files('libs/extension-vp9-release.aar')
+    implementation files('libs/extension-av1-release.aar')
+    implementation files('libs/extension-vp9-release.aar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.6.0'

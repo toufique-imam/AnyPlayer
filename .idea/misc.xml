@@ -5,10 +5,15 @@
       <map>
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_browser.xml" value="0.17407407407407408" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_player.xml" value="0.1" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_vlc.xml" value="0.17407407407407408" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_vlc.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_exo.xml" value="0.20092592592592592" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_player.xml" value="0.1742354031510658" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_vlc.xml" value="0.25416666666666665" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/vlc_player_view_style.xml" value="0.176" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_vlc.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_user_stream.xml" value="0.22685185185185186" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/history_item.xml" value="0.22962962962962963" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/image_overlay.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/playlist_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/vlc_player_view_style.xml" value="0.1" />
       </map>
     </option>
   </component>

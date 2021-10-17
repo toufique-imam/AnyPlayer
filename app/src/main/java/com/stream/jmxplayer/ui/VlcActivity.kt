@@ -2,11 +2,14 @@ package com.stream.jmxplayer.ui
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Color
 import android.net.Uri
 import android.os.*
 import android.view.*
 import android.widget.ImageButton
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -16,6 +19,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.mediarouter.app.MediaRouteButton
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
@@ -45,8 +49,6 @@ class VlcActivity : AppCompatActivity(),
     //private var playList = ArrayList<PlayerModel>()
     private lateinit var btnClick: String
 
-    private var autoPlay = true
-    private var inErrorState = false
     private var errorCount = 0
 
     private lateinit var casty: Casty
@@ -77,7 +79,8 @@ class VlcActivity : AppCompatActivity(),
     private lateinit var iAdListener: IAdListener
 
     private lateinit var downloaderUtils: DownloaderUtils
-    private lateinit var resizeUtils: ResizeUtils
+
+    private var trackDialog: AlertDialog? = null
 
     //    private lateinit var historyDB: HistoryDatabase
     private val viewModel: DatabaseViewModel by viewModels()
@@ -92,6 +95,7 @@ class VlcActivity : AppCompatActivity(),
     lateinit var mediaNow: Media
     var mLibVLC: LibVLC? = null
     var mVlcPlayer: MediaPlayer? = null
+    var scaleNow = MediaPlayer.ScaleType.SURFACE_BEST_FIT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +107,6 @@ class VlcActivity : AppCompatActivity(),
         setUpOrientation()
 
         downloaderUtils = DownloaderUtils(this, playerModelNow)
-        resizeUtils = ResizeUtils(this)
         animationUtils = MAnimationUtils(this)
 
         initView()
@@ -114,7 +117,10 @@ class VlcActivity : AppCompatActivity(),
         initButtons()
         mVideoLayout.setOnClickListener {
             mediaController.show(10000)
+            if (recyclerViewPlayList.visibility == View.VISIBLE) recyclerViewPlayList.visibility =
+                View.GONE
         }
+
         navigationView.setNavigationItemSelectedListener(this)
 
         setUpAppBar()
@@ -148,6 +154,11 @@ class VlcActivity : AppCompatActivity(),
         mLibVLC!!.release()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateTexts()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putSerializable(PlayerModel.DIRECT_PUT, playerModelNow)
@@ -156,6 +167,7 @@ class VlcActivity : AppCompatActivity(),
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         playerModelNow = savedInstanceState.getSerializable(PlayerModel.DIRECT_PUT) as PlayerModel
+        updateTexts()
     }
 
     override fun onBackPressed() {
@@ -180,9 +192,9 @@ class VlcActivity : AppCompatActivity(),
     }
 
     private fun initView() {
-        recyclerViewPlayList = findViewById(R.id.recycler_playlist)
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.nav_view)
+        recyclerViewPlayList = findViewById(R.id.recycler_playlist_vlc)
+        drawerLayout = findViewById(R.id.drawer_layout_vlc)
+        navigationView = findViewById(R.id.nav_view_vlc)
         mVideoLayout = findViewById(R.id.media_view)
         mediaController = VideoControlView(this)
 
@@ -202,7 +214,6 @@ class VlcActivity : AppCompatActivity(),
 
     }
 
-
     private fun initButtons() {
         playerTitle = mediaController.mTitleView
         playerDesc = mediaController.mDescriptionView
@@ -219,9 +230,43 @@ class VlcActivity : AppCompatActivity(),
         castButton = mediaController.mCastButton
     }
 
+    private fun initTrackDialogue() {
+        if (mVlcPlayer?.audioTracks == null) return
+        val dialogView = this.layoutInflater.inflate(R.layout.dialog_tracks, null)
 
-    private fun initTracks() {
-        //todo
+        val builder = AlertDialog.Builder(this).setTitle("Select Tracks").setView(dialogView)
+        builder.setCancelable(true)
+        val radioGroup: RadioGroup = dialogView.findViewById(R.id.radio_group_server)
+        var cnt = 0
+        trackDialog = builder.create()
+
+        for (i in mVlcPlayer?.audioTracks!!) {
+            logger("tracks", "${i.id} ${i.name}")
+            val radioButton = RadioButton(this)
+            radioButton.id = cnt
+            radioButton.text = i.name
+            radioButton.textSize = 15f
+            radioButton.setTextColor(Color.BLACK)
+            if (cnt == 0) {
+                radioButton.isChecked = true
+            }
+            radioGroup.addView(radioButton)
+            cnt++
+        }
+        if (cnt == 0)
+            audioTrackSelector.visibility = View.GONE
+        val materialButton: MaterialButton = dialogView.findViewById(R.id.button_stream_now)
+
+        materialButton.setOnClickListener {
+            trackDialog?.dismiss()
+            val checkedId = radioGroup.checkedRadioButtonId
+            toaster(this, "radio checked $checkedId")
+            if (mVlcPlayer?.audioTracks?.isNotEmpty() == true) {
+                val temp = mVlcPlayer!!.audioTracks[checkedId]
+                logger("trackSelected", temp.name + " " + temp.id)
+                mVlcPlayer!!.audioTrack = temp.id
+            }
+        }
     }
 
     private fun setUpPlayerViewControl() {
@@ -250,7 +295,11 @@ class VlcActivity : AppCompatActivity(),
         }
 
         audioTrackSelector.setOnClickListener {
-            toaster(this, "trackSelection")
+            if (trackDialog == null) {
+                initTrackDialogue()
+            }
+            if (trackDialog != null)
+                trackDialog?.show()
         }
     }
 
@@ -260,6 +309,7 @@ class VlcActivity : AppCompatActivity(),
             { _, pos ->
                 idxNow = pos
                 updatePlayerModel()
+                recyclerViewPlayList.visibility = View.GONE
             }, { _, _ ->
 
             }
@@ -297,14 +347,14 @@ class VlcActivity : AppCompatActivity(),
         }
         casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
-                GlobalFunctions.toaster(this@VlcActivity, "connected")
+                toaster(this@VlcActivity, "connected")
                 casty.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
                 //casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
                 //startCastServer()
             }
 
             override fun onDisconnected() {
-                GlobalFunctions.toaster(this@VlcActivity, "disconnected")
+                toaster(this@VlcActivity, "disconnected")
                 hideSystemUi()
             }
         })
@@ -355,9 +405,30 @@ class VlcActivity : AppCompatActivity(),
         }
     }
 
+    private fun nextScaleType() {
+        when (scaleNow) {
+            MediaPlayer.ScaleType.SURFACE_BEST_FIT -> {
+                scaleNow = MediaPlayer.ScaleType.SURFACE_FILL
+            }
+            MediaPlayer.ScaleType.SURFACE_FILL -> {
+                scaleNow = MediaPlayer.ScaleType.SURFACE_16_9
+            }
+            MediaPlayer.ScaleType.SURFACE_16_9 -> {
+                scaleNow = MediaPlayer.ScaleType.SURFACE_4_3
+            }
+            MediaPlayer.ScaleType.SURFACE_4_3 -> {
+                scaleNow = MediaPlayer.ScaleType.SURFACE_FIT_SCREEN
+            }
+            MediaPlayer.ScaleType.SURFACE_FIT_SCREEN -> {
+                scaleNow = MediaPlayer.ScaleType.SURFACE_ORIGINAL
+            }
+            else -> scaleNow = MediaPlayer.ScaleType.SURFACE_BEST_FIT
+        }
+    }
+
     private fun changeResize() {
-        resizeUtils.changeResize()
-        //todo mPlayerView.resizeMode = resizeUtils.setResize()
+        nextScaleType()
+        mVlcPlayer?.videoScale = scaleNow
     }
 
     private fun setUpOrientation() {
@@ -521,12 +592,11 @@ class VlcActivity : AppCompatActivity(),
                 adActivity(4)
             }
             R.id.menu_resize -> {
-                changeResize()
                 item.title =
-                    resources.getString(R.string.resize) + " : " + resizeUtils.resizeMode.valueStr
+                    resources.getString(R.string.resize) + " : " + scaleNow.name
+                changeResize()
             }
             R.id.menu_playlist -> {
-                toaster(this, "playlist")
                 if (recyclerViewPlayList.visibility == View.VISIBLE) {
                     recyclerViewPlayList.visibility = View.GONE
                 } else {
@@ -548,7 +618,7 @@ class VlcActivity : AppCompatActivity(),
         if (casty.isConnected) {
             casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
         }
-        addSource()
+       // addSource()
         preparePlayer()
     }
 
@@ -558,8 +628,6 @@ class VlcActivity : AppCompatActivity(),
     }
 
     private fun addSource() {
-        //todo trackdiag = null
-        audioTrackSelector.visibility = View.GONE
         addToHistory(playerModelNow)
         mediaNow = if (PlayerModel.isLocal(playerModelNow.streamType)) {
             Media(
@@ -579,7 +647,11 @@ class VlcActivity : AppCompatActivity(),
         if (mediaNow.isReleased) {
             addSource()
         }
+        trackDialog = null
+        audioTrackSelector.visibility = View.GONE
+        scaleNow = MediaPlayer.ScaleType.SURFACE_BEST_FIT
         mVlcPlayer?.media = mediaNow
+        mVlcPlayer?.videoScale = scaleNow
         mediaNow.release()
         mVlcPlayer?.play()
     }
@@ -597,17 +669,15 @@ class VlcActivity : AppCompatActivity(),
         mVlcPlayer?.setEventListener { event ->
             when (event.type) {
                 MediaPlayer.Event.Opening -> logger(TAG, "Event Opening")
-                MediaPlayer.Event.Buffering -> logger(TAG, "Event Buffering")
+                MediaPlayer.Event.Buffering -> {
+                    logger(TAG, "Event Buffering")
+                }
                 MediaPlayer.Event.EncounteredError -> {
+                    audioTrackSelector.visibility = View.GONE
                     logger(TAG, "Event Error")
-                    preparePlayer()
                 }
                 MediaPlayer.Event.Stopped -> {
                     logger(TAG, "event stopped")
-                    if (errorCount < 10) {
-                        errorCount++
-                        preparePlayer()
-                    }
                 }
                 MediaPlayer.Event.Playing -> {
                     logger(TAG, "event playing")

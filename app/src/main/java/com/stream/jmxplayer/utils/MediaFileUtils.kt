@@ -18,7 +18,7 @@ class MediaFileUtils {
     companion object {
 
         private const val TAG = "MediaFileUtils"
-        fun getAlbumArtUri(albumId: Long): Uri {
+        private fun getAlbumArtUri(albumId: Long): Uri {
             return ContentUris.withAppendedId(
                 Uri.parse("content://media/external/audio/albumart"),
                 albumId
@@ -26,15 +26,20 @@ class MediaFileUtils {
         }
 
         fun getRealPathFromURI(context: Context, contentUri: Uri, type: Int): String {
-            val projection = if (type == PlayerModel.STREAM_OFFLINE_VIDEO)
-                arrayOf(MediaStore.Video.Media.DATA)
-            else arrayOf(MediaStore.Audio.Media.DATA)
+            val projection =
+                when (type) {
+                    PlayerModel.STREAM_OFFLINE_VIDEO -> arrayOf(MediaStore.Video.Media.DATA)
+                    PlayerModel.STREAM_OFFLINE_AUDIO -> arrayOf(MediaStore.Audio.Media.DATA)
+                    else -> arrayOf(MediaStore.Images.Media.DATA)
+                }
             logger("Querying", contentUri.toString())
             //toaster(context, "Querying $contentUri")
             return context.contentResolver.query(contentUri, projection, null, null, null)?.use {
-                val dataIndex = if (type == PlayerModel.STREAM_OFFLINE_VIDEO)
-                    it.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
-                else it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+                val dataIndex = when (type) {
+                    PlayerModel.STREAM_OFFLINE_VIDEO -> it.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+                    PlayerModel.STREAM_OFFLINE_AUDIO -> it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+                    else -> it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                }
                 if (it.moveToFirst()) {
                     it.getString(dataIndex)
                 } else {

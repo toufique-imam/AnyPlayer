@@ -7,20 +7,29 @@ import com.android.volley.toolbox.HurlStack
 import com.android.volley.toolbox.Volley
 import com.stream.jmxplayer.utils.CustomRequest
 import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.TextFileUtils
 import java.net.HttpURLConnection
 import java.net.URL
 
 class Scrapper(val context: Context, private val url: String) {
     lateinit var onComplete: OnScrappingCompleted
     var mRequestQueue: RequestQueue? = null
-
+    var textFileUtils = TextFileUtils(context)
 
     fun startScrapping() {
+        val savedData = textFileUtils.getSavedM3UFile(url)
+        if (savedData.isNotEmpty()) {
+            onComplete.onComplete(savedData)
+            return
+        }
         val headers = HashMap<String, String>()
         headers["user-agent"] = GlobalFunctions.USER_AGENT
         val localData = CustomRequest(
             Request.Method.GET, url, headers,
-            { response -> onComplete.onComplete(response ?: "") },
+            { response ->
+                textFileUtils.saveM3UFile(url, response)
+                onComplete.onComplete(response)
+            },
             { onComplete.onError() }
         )
         addToRequestQueue(localData)

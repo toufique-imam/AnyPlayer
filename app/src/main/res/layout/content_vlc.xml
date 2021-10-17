@@ -16,13 +16,12 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_playlist"
+        android:id="@+id/recycler_playlist_vlc"
         style="@style/Widget.MaterialComponents.BottomSheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:visibility="gone"
         android:background="@color/TransparentBlack"
-        tools:listitem="@layout/history_item" />
+        tools:listitem="@layout/playlist_item" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

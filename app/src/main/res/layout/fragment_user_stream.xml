@@ -26,14 +26,13 @@
                 app:boxCornerRadiusBottomStart="5dp"
                 app:boxCornerRadiusTopEnd="5dp"
                 app:boxCornerRadiusTopStart="5dp"
-                app:endIconMode="clear_text"
-                app:errorEnabled="true">
+                app:endIconMode="clear_text">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/text_view_custom_stream_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:nextFocusDown="@id/text_view_custom_stream_user_agent"
+                    android:nextFocusDown="@id/text_view_custom_stream_name"
                     android:textIsSelectable="true"
                     android:textSize="12sp" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -69,7 +68,7 @@
                     android:id="@+id/text_view_custom_stream_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:nextFocusDown="@id/text_view_custom_stream_url"
+                    android:nextFocusDown="@id/text_view_custom_stream_user_agent"
                     android:textSize="12sp" />
             </com.google.android.material.textfield.TextInputLayout>
 

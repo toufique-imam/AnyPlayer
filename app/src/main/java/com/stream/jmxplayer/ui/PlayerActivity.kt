@@ -4,6 +4,7 @@ package com.stream.jmxplayer.ui
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -615,9 +616,15 @@ class PlayerActivity : AppCompatActivity(),
         outState.putSerializable(PlayerModel.DIRECT_PUT, playerModelNow)
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateTexts()
+    }
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         playerModelNow = savedInstanceState.getSerializable(PlayerModel.DIRECT_PUT) as PlayerModel
+        updateTexts()
     }
 
     private fun getDataFromIntent() {
@@ -648,8 +655,10 @@ class PlayerActivity : AppCompatActivity(),
         } else {
             val controller = window.insetsController
             if (controller != null) {
-                controller.hide(WindowInsets.Type.statusBars()
-                        or WindowInsets.Type.navigationBars())
+                controller.hide(
+                    WindowInsets.Type.statusBars()
+                            or WindowInsets.Type.navigationBars()
+                )
                 controller.systemBarsBehavior =
                     BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
@@ -657,11 +666,11 @@ class PlayerActivity : AppCompatActivity(),
         if (Build.VERSION.SDK_INT < 30) {
             mPlayerView.systemUiVisibility =
                 (View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
         } else {
             val controller = mPlayerView.windowInsetsController
             if (controller != null) {
@@ -703,19 +712,13 @@ class PlayerActivity : AppCompatActivity(),
             DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
         val renderer = DefaultRenderersFactory(this)
             .setExtensionRendererMode(extensionRendererMode)
-        mPlayer = if (Build.VERSION.SDK_INT > 29) {
-            SimpleExoPlayer.Builder(this)
-                .setLoadControl(loadControl)
-                .setTrackSelector(trackSelector)
-                .build()
-        } else {
-            SimpleExoPlayer.Builder(this, renderer)
-                .setLoadControl(loadControl)
-                .setTrackSelector(trackSelector)
-                .setSeekBackIncrementMs(15000)
-                .setSeekForwardIncrementMs(15000)
-                .build()
-        }
+        mPlayer = SimpleExoPlayer.Builder(this, renderer)
+            .setLoadControl(loadControl)
+            .setTrackSelector(trackSelector)
+            .setSeekBackIncrementMs(15000)
+            .setSeekForwardIncrementMs(15000)
+            .build()
+
     }
 
     private fun preparePlayer() {

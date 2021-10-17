@@ -54,9 +54,11 @@
             android:value="com.stream.jmxplayer.castconnect.CastOptionsProvider" />
 
         <activity
+            android:exported="true"
             android:name=".ui.ExpandedControlsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
+            android:exported="true"
             android:name=".ui.SplashActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@drawable/circle_cropped_logo"
@@ -79,10 +81,12 @@
             </intent-filter>
         </activity>
         <activity
+            android:exported="true"
             android:name=".ui.PlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@drawable/circle_cropped_logo" />
         <activity
+            android:exported="true"
             android:name=".ui.VlcActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@drawable/circle_cropped_logo" />
