@@ -152,31 +152,10 @@ class PlayerActivity : AppCompatActivity(),
         casty = Casty.create(this).withMiniController()
         //Casty.configure("8639B975")
         casty.setUpMediaRouteButton(castButton)
-        casty.setOnCastSessionUpdatedListener { castSession ->
-            if (castSession != null) {
-                logger(
-                    "on session updated",
-                    castSession.sessionId
-                        ?: "nullSid" + " " + castSession.applicationConnectionResult
-                )
-                logger(
-                    "on session updated",
-                    castSession.applicationStatus ?: "nullAppStat" + " " + castSession.castDevice
-                )
-                logger(
-                    "on session updated",
-                    castSession.category
-                        ?: "nullCategory" + " " + castSession.activeInputState + " " + castSession.applicationMetadata
-                )
-
-            }
-        }
         casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
                 toaster(this@PlayerActivity, "connected")
                 casty.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
-                //casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
-                //startCastServer()
             }
 
             override fun onDisconnected() {

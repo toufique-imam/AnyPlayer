@@ -56,13 +56,5 @@ class StreamFragment : Fragment() {
                 userLinkFragment0
             }
         }
-
-    }
-
-
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            StreamFragment()
     }
 }

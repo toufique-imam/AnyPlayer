@@ -72,8 +72,8 @@ class SharedPreferenceUtils {
 
         fun getTheme(context: Context): Int {
             return when (getUserTheme(context)) {
-                "Day" -> R.style.Theme_JMXPlayer_Day
-                "Night" -> R.style.Theme_JMXPlayer_Night
+                "Día" -> R.style.Theme_JMXPlayer_Day
+                "Noche" -> R.style.Theme_JMXPlayer_Night
                 else -> R.style.Theme_JMXPlayer_NoActionBar
             }
         }

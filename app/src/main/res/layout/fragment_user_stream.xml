@@ -23,6 +23,7 @@
                 android:hint="@string/enter_stream_link"
                 android:padding="2dp"
                 app:boxCornerRadiusBottomEnd="5dp"
+
                 app:boxCornerRadiusBottomStart="5dp"
                 app:boxCornerRadiusTopEnd="5dp"
                 app:boxCornerRadiusTopStart="5dp"
@@ -33,10 +34,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nextFocusDown="@id/text_view_custom_stream_name"
-                    android:textIsSelectable="true"
                     android:textSize="12sp" />
             </com.google.android.material.textfield.TextInputLayout>
-
 
             <TextView
                 android:id="@+id/tv_optional"

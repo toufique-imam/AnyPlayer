@@ -2,8 +2,11 @@ package com.stream.jmxplayer.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.cast.framework.CastContext
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
@@ -36,13 +39,13 @@ class SplashActivity : AppCompatActivity() {
 
 
         alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
-        workAfterAdActivity()
-//        MobileAds.initialize(this) {
-//            adMobAdUtils = AdMobAdUtils(this)
-//            Handler(Looper.myLooper()!!).postDelayed({
-//                adActivity()
-//            }, 500)
-//        }
+//        workAfterAdActivity()
+        MobileAds.initialize(this) {
+            adMobAdUtils = AdMobAdUtils(this)
+            Handler(Looper.myLooper()!!).postDelayed({
+                adActivity()
+            }, 500)
+        }
     }
 
 

@@ -56,12 +56,16 @@ class GalleryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryItemViewHolder {
         val viewNow =
-            if (type == GalleryItemViewHolder.GRID_NO_DELETE) {
-                LayoutInflater.from(parent.context).inflate(R.layout.gallery_item, null, false)
-            } else if (type == GalleryItemViewHolder.SINGLE_NO_DELETE) {
-                LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, null, false)
-            } else {
-                LayoutInflater.from(parent.context).inflate(R.layout.history_item, null, false)
+            when (type) {
+                GalleryItemViewHolder.GRID_NO_DELETE -> {
+                    LayoutInflater.from(parent.context).inflate(R.layout.gallery_item, null, false)
+                }
+                GalleryItemViewHolder.SINGLE_NO_DELETE -> {
+                    LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, null, false)
+                }
+                else -> {
+                    LayoutInflater.from(parent.context).inflate(R.layout.history_item, null, false)
+                }
             }
 
         return GalleryItemViewHolder(viewNow).apply {

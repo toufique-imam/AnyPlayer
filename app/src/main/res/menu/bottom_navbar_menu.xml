@@ -4,21 +4,21 @@
     <item
         android:id="@+id/browseFragment"
         android:icon="@drawable/ic_baseline_video_library_24"
-        android:title="Browse" />
+        android:title="@string/browse" />
 
     <item
         android:id="@+id/streamFragment"
         android:icon="@drawable/ic_baseline_ondemand_video_24"
-        android:title="Stream" />
+        android:title="@string/stream" />
 
     <item
         android:id="@+id/historyFragment"
         android:icon="@drawable/ic_baseline_history_24"
-        android:title="History" />
+        android:title="@string/history" />
 
     <item
         android:id="@+id/settingsFragment"
         android:icon="@drawable/ic_baseline_settings_24"
-        android:title="Settings" />
+        android:title="@string/settings" />
 
 </menu>

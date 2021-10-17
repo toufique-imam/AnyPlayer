@@ -13,7 +13,6 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.ui.VlcActivity
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils

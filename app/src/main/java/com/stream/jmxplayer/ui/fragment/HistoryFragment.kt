@@ -117,10 +117,4 @@ class HistoryFragment : Fragment() {
                 super.onOptionsItemSelected(item)
             }
         }
-
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = HistoryFragment()
-    }
 }

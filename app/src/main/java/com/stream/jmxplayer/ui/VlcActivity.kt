@@ -49,9 +49,7 @@ class VlcActivity : AppCompatActivity(),
     //private var playList = ArrayList<PlayerModel>()
     private lateinit var btnClick: String
 
-    private var errorCount = 0
-
-    private lateinit var casty: Casty
+    private lateinit var cast: Casty
 
     private lateinit var animationUtils: MAnimationUtils
     private lateinit var playerTitle: TextView
@@ -82,20 +80,19 @@ class VlcActivity : AppCompatActivity(),
 
     private var trackDialog: AlertDialog? = null
 
-    //    private lateinit var historyDB: HistoryDatabase
     private val viewModel: DatabaseViewModel by viewModels()
 
-    var idxNow = 0
+    private var idxNow = 0
 
-    val TAG = "VLC_Activity"
+    private val tagNow = "VLC_Activity"
 
     private lateinit var mVideoLayout: VLCVideoLayout
-    lateinit var mediaController: VideoControlView
+    private lateinit var mediaController: VideoControlView
 
-    lateinit var mediaNow: Media
-    var mLibVLC: LibVLC? = null
+    private lateinit var mediaNow: Media
+    private var mLibVLC: LibVLC? = null
     var mVlcPlayer: MediaPlayer? = null
-    var scaleNow = MediaPlayer.ScaleType.SURFACE_BEST_FIT
+    private var scaleNow = MediaPlayer.ScaleType.SURFACE_BEST_FIT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -323,10 +320,9 @@ class VlcActivity : AppCompatActivity(),
     }
 
     private fun initCast() {
-        casty = Casty.create(this).withMiniController()
-        //Casty.configure("8639B975")
-        casty.setUpMediaRouteButton(castButton)
-        casty.setOnCastSessionUpdatedListener { castSession ->
+        cast = Casty.create(this).withMiniController()
+        cast.setUpMediaRouteButton(castButton)
+        cast.setOnCastSessionUpdatedListener { castSession ->
             if (castSession != null) {
                 logger(
                     "on session updated",
@@ -345,12 +341,10 @@ class VlcActivity : AppCompatActivity(),
 
             }
         }
-        casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
+        cast.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
                 toaster(this@VlcActivity, "connected")
-                casty.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
-                //casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
-                //startCastServer()
+                cast.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
             }
 
             override fun onDisconnected() {
@@ -615,10 +609,10 @@ class VlcActivity : AppCompatActivity(),
     private fun updatePlayerModel() {
         playerModelNow = PlayListAll[idxNow]
         updateTexts()
-        if (casty.isConnected) {
-            casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
+        if (cast.isConnected) {
+            cast.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
         }
-       // addSource()
+        // addSource()
         preparePlayer()
     }
 
@@ -658,29 +652,23 @@ class VlcActivity : AppCompatActivity(),
 
     private fun initPlayer() {
         val options = GlobalFunctions.getVLCOptions(this)
-//        val options: ArrayList<String> = ArrayList()
-//        options.add("--aout=opensles")
-//        options.add("--audio-time-stretch") // time stretching
-//        options.add("-vvv") // verbosity
-//        options.add("--http-reconnect")
-//        options.add("--network-caching=" + 6 * 1000)
         mLibVLC = LibVLC(this, options)
         mVlcPlayer = MediaPlayer(mLibVLC)
         mVlcPlayer?.setEventListener { event ->
             when (event.type) {
-                MediaPlayer.Event.Opening -> logger(TAG, "Event Opening")
+                MediaPlayer.Event.Opening -> logger(tagNow, "Event Opening")
                 MediaPlayer.Event.Buffering -> {
-                    logger(TAG, "Event Buffering")
+                    logger(tagNow, "Event Buffering")
                 }
                 MediaPlayer.Event.EncounteredError -> {
                     audioTrackSelector.visibility = View.GONE
-                    logger(TAG, "Event Error")
+                    logger(tagNow, "Event Error")
                 }
                 MediaPlayer.Event.Stopped -> {
-                    logger(TAG, "event stopped")
+                    logger(tagNow, "event stopped")
                 }
                 MediaPlayer.Event.Playing -> {
-                    logger(TAG, "event playing")
+                    logger(tagNow, "event playing")
                     audioTrackSelector.visibility = View.VISIBLE
                 }
             }

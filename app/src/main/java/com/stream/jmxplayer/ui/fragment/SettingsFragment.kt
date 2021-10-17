@@ -29,12 +29,4 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
     }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            SettingsFragment().apply {
-                arguments = Bundle()
-            }
-    }
 }
