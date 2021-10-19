@@ -571,6 +571,12 @@ class PlayerActivity : AppCompatActivity(),
                     recyclerViewPlayList.visibility = View.VISIBLE
                 }
             }
+            R.id.menu_change_player -> {
+                val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_M3U)
+                intent.putExtra(SELECTED_MODEL, idxNow)
+                startActivity(intent)
+                finish()
+            }
 //            R.id.menu_aspect_ratio -> {
 //                changeAspectRatio()
 //                item.title =

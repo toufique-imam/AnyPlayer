@@ -2,7 +2,6 @@ package com.stream.jmxplayer.ui.fragment
 
 import android.app.SearchManager
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
@@ -14,8 +13,6 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.ui.PlayerActivity
-import com.stream.jmxplayer.ui.VlcActivity
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
@@ -46,10 +43,7 @@ class HistoryFragment : Fragment() {
             GalleryItemViewHolder.SINGLE_DELETE,
             { video, _ ->
                 //val intent = Intent(context, PlayerActivity::class.java)
-                val intent =
-                    if (video.streamType == PlayerModel.STREAM_ONLINE_LIVE)
-                        Intent(context, PlayerActivity::class.java)
-                    else Intent(context, VlcActivity::class.java)
+                val intent = GlobalFunctions.getIntentPlayer(requireContext(), video.streamType)
                 PlayListAll.clear()
                 PlayListAll.add(video)
                 startActivity(intent)

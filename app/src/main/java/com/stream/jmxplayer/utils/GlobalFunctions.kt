@@ -2,6 +2,7 @@ package com.stream.jmxplayer.utils
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.os.Build
@@ -13,6 +14,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
 import com.stream.jmxplayer.R
+import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.ui.IJKPlayerActivity
+import com.stream.jmxplayer.ui.PlayerActivity
 import me.drakeet.support.toast.ToastCompat
 import java.net.*
 import java.util.*
@@ -208,11 +212,33 @@ class GlobalFunctions {
             return ans.toString()
         }
 
+        fun getIntentPlayer(context: Context, state: Int): Intent {
+            val intent = Intent(
+                context,
+                when (state) {
+                    PlayerModel.STREAM_ONLINE_LIVE -> PlayerActivity::class.java
+                    else -> IJKPlayerActivity::class.java
+                }
+            )
+            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            return intent
+        }
+
         fun getVLCOptions(context: Context): ArrayList<String> {
-            var audiotrackSessionId = 0
+            /*
+            val options: ArrayList<String> = ArrayList()
+        options.add("--aout=opensles")
+        options.add("--audio-time-stretch") // time stretching
+        options.add("-vvv") // verbosity
+        options.add("--http-reconnect")
+        options.add("--network-caching=" + 6 * 1000)
+
+             */
             val audioManager = context.getSystemService<AudioManager>()!!
-            audiotrackSessionId = audioManager.generateAudioSessionId()
-            val options = ArrayList<String>(50)
+            val audioTrackSessionId = audioManager.generateAudioSessionId()
+            val options = ArrayList<String>()
             val subtitlesEncoding = ""
             val frameSkip = false
             val chroma = "RV16"
@@ -242,7 +268,7 @@ class GlobalFunctions {
             options.add(chroma)
             options.add("--audio-resampler")
             options.add("soxr")
-            options.add("--audiotrack-session-id=$audiotrackSessionId")
+            options.add("--audiotrack-session-id=$audioTrackSessionId")
 
             options.add("--freetype-rel-fontsize=$freetypeRelFontsize")
             if (freetypeBold) options.add("--freetype-bold")
@@ -259,7 +285,7 @@ class GlobalFunctions {
             )
             options.add("--sout-keep")
             options.add("--smb-force-v1")
-//            options.add("--aout=opensles")
+            options.add("--aout=opensles")
             options.add("--http-reconnect")
             return options
         }

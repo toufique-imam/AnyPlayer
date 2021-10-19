@@ -19,7 +19,6 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_playlist"
-        style="@style/Widget.MaterialComponents.BottomSheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"

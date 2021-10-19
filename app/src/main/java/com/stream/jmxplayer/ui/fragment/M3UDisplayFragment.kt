@@ -2,7 +2,6 @@ package com.stream.jmxplayer.ui.fragment
 
 import android.app.SearchManager
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
@@ -13,7 +12,6 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.ui.VlcActivity
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils
 
@@ -39,7 +37,8 @@ class M3UDisplayFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recycler_gallery)
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { _, pos ->
             //val intent = Intent(context, PlayerActivity::class.java)
-            val intent = Intent(context, VlcActivity::class.java)
+//            val intent = Intent(context, VlcActivity::class.java)
+            val intent = GlobalFunctions.getIntentPlayer(requireContext(), PlayerModel.STREAM_M3U)
             intent.putExtra(PlayerModel.SELECTED_MODEL, pos)
             startActivity(intent)
         }, { _, _ -> })

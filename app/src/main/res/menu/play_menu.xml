@@ -1,23 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/menu_change_orientation"
-            android:title="@string/rotate" />
+            android:title="@string/rotate"
+            app:showAsAction="ifRoom" />
 
         <item
             android:id="@+id/menu_download_video"
-            android:title="@string/download_video" />
+            android:title="@string/download_video"
+            app:showAsAction="ifRoom" />
 
         <item
             android:id="@+id/menu_open_with_other_app"
-            android:title="@string/open_with" />
+            android:title="@string/open_with"
+            app:showAsAction="ifRoom" />
         <item
             android:id="@+id/menu_resize"
-            android:title="@string/resize" />
+            android:title="@string/resize"
+            app:showAsAction="ifRoom" />
         <item
             android:id="@+id/menu_playlist"
-            android:title="@string/playlist" />
+            android:title="@string/playlist"
+            app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/menu_change_player"
+            android:title="Change Player"
+            app:showAsAction="ifRoom" />
 
     </group>
     <!--    <item android:title="Personalize">-->

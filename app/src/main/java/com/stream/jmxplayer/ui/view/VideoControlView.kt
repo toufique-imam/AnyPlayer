@@ -10,7 +10,6 @@ import android.view.View.OnClickListener
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.*
-import androidx.mediarouter.app.MediaRouteButton
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.MediaPlayerControl
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
@@ -47,13 +46,11 @@ class VideoControlView : FrameLayout {
 
     private val mHandler: Handler = MessageHandler(this)
 
-
     private var mPlayer: MediaPlayerControl? = null
     private var mContext: Context
     private var mAnchor: ViewGroup? = null
     private var mRoot: View? = null
 
-    //private lateinit var mProgress: ProgressBar
     lateinit var mProgressbar: ProgressBar
     private lateinit var mEndTime: TextView
     private lateinit var mCurrentTime: TextView
@@ -64,21 +61,14 @@ class VideoControlView : FrameLayout {
     private var mDragging = false
     private var mUseFastForward = false
     private var mFromXml = false
-    private var mListenersSet = false
-    private lateinit var mNextListener: OnClickListener
-    private lateinit var mPrevListener: OnClickListener
+
     var mFormatBuilder = StringBuilder()
     var mFormatter = Formatter(mFormatBuilder, Locale.getDefault())
-    lateinit var mPauseButton: ImageButton
-    lateinit var mFfwdButton: ImageButton
-    lateinit var mRewButton: ImageButton
-    lateinit var mNextButton: ImageButton
-    lateinit var mPrevButton: ImageButton
-    lateinit var mTrackSelectorButton: ImageButton
-    lateinit var mCastButton: MediaRouteButton
-    lateinit var menuButton: ImageButton
-    lateinit var backButton: ImageButton
+    var mPauseButton: ImageButton? = null
+    var mFfwdButton: ImageButton? = null
+    var mRewButton: ImageButton? = null
 
+    lateinit var backButton: ImageButton
 
     constructor(context: Context) : this(context, true)
 
@@ -99,11 +89,6 @@ class VideoControlView : FrameLayout {
         mRoot?.let { initControllerView(it) }
     }
 
-    fun setMediaPlayer(player: MediaPlayerControl?) {
-        mPlayer = player
-        updatePausePlay()
-        //updateFullScreen()
-    }
 
     /**
      * Set the view that acts as the anchor for the control view.
@@ -111,6 +96,7 @@ class VideoControlView : FrameLayout {
      * @param view The view to which to anchor the controller when it is visible.
      */
     fun setAnchorView(view: ViewGroup) {
+        logger(TAG, "setAnchorView")
         mAnchor = view
         val frameParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -136,25 +122,20 @@ class VideoControlView : FrameLayout {
     }
 
     private fun initControllerView(view: View) {
-        mPauseButton = view.findViewById(R.id.exo_pause)
-        mPauseButton.setOnClickListener(mPauseListener)
+        mPauseButton = view.findViewById(R.id.vlc_pause)
+        mPauseButton?.setOnClickListener(mPauseListener)
 
-        mFfwdButton = view.findViewById(R.id.exo_ffwd)
-        mFfwdButton.setOnClickListener(mFfwdListener)
+        mFfwdButton = view.findViewById(R.id.vlc_forward)
+        mFfwdButton?.setOnClickListener(mFfwdListener)
         if (!mFromXml)
-            mFfwdButton.visibility = if (mUseFastForward) View.VISIBLE else View.GONE
+            mFfwdButton?.visibility = if (mUseFastForward) View.VISIBLE else View.GONE
 
-        mRewButton = view.findViewById(R.id.exo_rew)
-        mRewButton.setOnClickListener(mRewListener)
+        mRewButton = view.findViewById(R.id.vlc_rew)
+        mRewButton?.setOnClickListener(mRewListener)
         if (!mFromXml)
-            mRewButton.visibility = if (mUseFastForward) View.VISIBLE else View.GONE
+            mRewButton?.visibility = if (mUseFastForward) View.VISIBLE else View.GONE
 
-        mNextButton = view.findViewById(R.id.playlistNext)
-        mPrevButton = view.findViewById(R.id.playlistPrev)
-        if (!mFromXml && !mListenersSet) {
-            mNextButton.visibility = View.GONE
-            mPrevButton.visibility = View.GONE
-        }
+
 
         mProgressbar = view.findViewById(R.id.mediacontroller_progress)
         if (mProgressbar is SeekBar) {
@@ -164,21 +145,15 @@ class VideoControlView : FrameLayout {
         }
         mProgressbar.max = 1000
 
-        mEndTime = view.findViewById(R.id.exo_duration)
-        mCurrentTime = view.findViewById(R.id.exo_position)
+        mEndTime = view.findViewById(R.id.vlc_duration)
+        mCurrentTime = view.findViewById(R.id.vlc_position)
         //titles
-        mTitleView = view.findViewById(R.id.textView_title_exo)
-        mDescriptionView = view.findViewById(R.id.textView_desc_exo)
-        mLanguageView = view.findViewById(R.id.textView_language_exo)
-        //trackSelection
-        mTrackSelectorButton = view.findViewById(R.id.exo_track_selector)
-        //cast
-        mCastButton = view.findViewById(R.id.exo_custom_cast)
-        //menu
-        menuButton = view.findViewById(R.id.exo_menu)
-        //backbutton
-        backButton = view.findViewById(R.id.exo_back)
-        installPrevNextListeneres()
+        mTitleView = view.findViewById(R.id.textView_title_vlc)
+        mDescriptionView = view.findViewById(R.id.textView_desc_vlc)
+        mLanguageView = view.findViewById(R.id.textView_language_vlc)
+
+        backButton = view.findViewById(R.id.vlc_back)
+        //installPrevNextListeners()
     }
 
     /**
@@ -198,8 +173,8 @@ class VideoControlView : FrameLayout {
     fun show(timeout: Int) {
         if (!mShowing && mAnchor != null) {
             setProgress()
-            if (this::mPauseButton.isInitialized)
-                mPauseButton.requestFocus()
+            if (mPauseButton != null)
+                mPauseButton?.requestFocus()
 
             disableUnsupportedButtons()
             val tlp = LayoutParams(
@@ -228,6 +203,12 @@ class VideoControlView : FrameLayout {
         return mShowing
     }
 
+    fun setMediaPlayer(player: MediaPlayerControl?) {
+        mPlayer = player
+        updatePausePlay()
+        //updateFullScreen()
+    }
+
     /**
      * Disable pause or seek buttons if the stream cannot be paused or seeked.
      * This requires the control interface to be a MediaPlayerControlExt
@@ -235,14 +216,14 @@ class VideoControlView : FrameLayout {
     private fun disableUnsupportedButtons() {
         if (mPlayer == null) return
         try {
-            if (this::mPauseButton.isInitialized && !mPlayer!!.canPause()) {
-                mPauseButton.isEnabled = false
+            if (!mPlayer!!.canPause()) {
+                mPauseButton?.isEnabled = false
             }
-            if (this::mRewButton.isInitialized && !mPlayer!!.canSeekBackward()) {
-                mRewButton.isEnabled = false
+            if (!mPlayer!!.canSeekBackward()) {
+                mRewButton?.isEnabled = false
             }
-            if (this::mFfwdButton.isInitialized && !mPlayer!!.canSeekForward()) {
-                mFfwdButton.isEnabled = false
+            if (!mPlayer!!.canSeekForward()) {
+                mFfwdButton?.isEnabled = false
             }
         } catch (ex: Exception) {
             logger(TAG, ex.message)
@@ -319,7 +300,7 @@ class VideoControlView : FrameLayout {
             if (uniqueDown) {
                 doPauseResume()
                 show(sDefaultTimeout)
-                mPauseButton.requestFocus()
+                mPauseButton?.requestFocus()
             }
             return true
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
@@ -364,11 +345,11 @@ class VideoControlView : FrameLayout {
         if (mRoot == null || mPlayer == null) return
 
         if (mPlayer!!.isPlaying) {
-            mPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_filled_24)
-            mPauseButton.contentDescription = "pause"
+            mPauseButton?.setImageResource(R.drawable.ic_baseline_pause_circle_filled_24)
+            mPauseButton?.contentDescription = "pause"
         } else {
-            mPauseButton.contentDescription = "play"
-            mPauseButton.setImageResource(R.drawable.ic_baseline_play_circle_filled_24)
+            mPauseButton?.contentDescription = "play"
+            mPauseButton?.setImageResource(R.drawable.ic_baseline_play_circle_filled_24)
         }
     }
 
@@ -438,12 +419,11 @@ class VideoControlView : FrameLayout {
     }
 
     override fun setEnabled(enabled: Boolean) {
-        if (this::mPauseButton.isInitialized) {
-            mPauseButton.isEnabled = enabled
-            mFfwdButton.isEnabled = enabled
-            mRewButton.isEnabled = enabled
-            mNextButton.isEnabled = (enabled && this::mNextListener.isInitialized)
-            mPrevButton.isEnabled = (enabled && this::mPrevListener.isInitialized)
+        if (mPauseButton != null) {
+            mPauseButton?.isEnabled = enabled
+            mFfwdButton?.isEnabled = enabled
+            mRewButton?.isEnabled = enabled
+
             mProgressbar.isEnabled = enabled
         }
         disableUnsupportedButtons()
@@ -463,7 +443,7 @@ class VideoControlView : FrameLayout {
     private val mRewListener = OnClickListener {
         if (mPlayer == null) return@OnClickListener
         var pos = mPlayer!!.currentPosition
-        pos -= 5000
+        pos -= 15000
         mPlayer!!.seekTo(pos)
         setProgress()
         show(sDefaultTimeout)
@@ -471,37 +451,10 @@ class VideoControlView : FrameLayout {
     private val mFfwdListener = OnClickListener {
         if (mPlayer == null) return@OnClickListener
         var pos = mPlayer!!.currentPosition
-        pos += 5000
+        pos += 15000
         mPlayer!!.seekTo(pos)
         setProgress()
         show(sDefaultTimeout)
     }
 
-    private fun installPrevNextListeneres() {
-        if (this::mNextButton.isInitialized) {
-            if (this::mNextListener.isInitialized)
-                mNextButton.setOnClickListener(mNextListener)
-            else mNextButton.isEnabled = false
-        }
-        if (this::mPrevButton.isInitialized) {
-            if (this::mPrevListener.isInitialized)
-                mPrevButton.setOnClickListener(mPrevListener)
-            else mPrevButton.isEnabled = false
-        }
-    }
-
-    fun setPrevNextListeners(next: OnClickListener, prev: OnClickListener) {
-        mNextListener = next
-        mPrevListener = prev
-        mListenersSet = true
-        if (mRoot != null) {
-            installPrevNextListeneres()
-            if (this::mNextButton.isInitialized && !mFromXml) {
-                mNextButton.visibility = View.VISIBLE
-            }
-            if (this::mPrevButton.isInitialized && !mFromXml) {
-                mPrevButton.visibility = View.VISIBLE
-            }
-        }
-    }
 }

@@ -5,6 +5,7 @@ buildscript {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.3'
@@ -25,7 +26,7 @@ allprojects {
         maven {
             url "https://dl.bintray.com/videolan/Android"
         }
-        //jcenter() // Warning: this repository is going to shut down soon
+        jcenter() // Warning: this repository is going to shut down soon
     }
 }
 

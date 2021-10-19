@@ -2,8 +2,6 @@ package com.stream.jmxplayer.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.MobileAds
@@ -42,9 +40,11 @@ class SplashActivity : AppCompatActivity() {
 //        workAfterAdActivity()
         MobileAds.initialize(this) {
             adMobAdUtils = AdMobAdUtils(this)
-            Handler(Looper.myLooper()!!).postDelayed({
-                adActivity()
-            }, 500)
+
+        adActivity()
+//            Handler(Looper.myLooper()!!).postDelayed({
+//                adActivity()
+//            }, 200)
         }
     }
 

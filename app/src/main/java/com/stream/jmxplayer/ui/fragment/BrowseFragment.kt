@@ -26,9 +26,9 @@ import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.ui.VlcActivity
 import com.stream.jmxplayer.ui.view.ImageOverlayView
 import com.stream.jmxplayer.ui.viewmodel.LocalVideoViewModel
+import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
@@ -169,7 +169,8 @@ class BrowseFragment : Fragment() {
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { video, pos ->
             if (video.streamType != PlayerModel.STREAM_OFFLINE_IMAGE) {
                 //val intent = Intent(context, PlayerActivity::class.java)
-                val intent = Intent(context, VlcActivity::class.java)
+//                val intent = Intent(context, VlcActivity::class.java)
+                val intent = GlobalFunctions.getIntentPlayer(requireContext(), video.streamType)
                 PlayListAll.clear()
                 PlayListAll.add(video)
                 startActivity(intent)

@@ -5,7 +5,7 @@
     android:background="#74000000">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_layout_exo"
+        android:id="@+id/constraint_layout_vlc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -17,7 +17,7 @@
         android:padding="3dp">
 
         <ImageButton
-            android:id="@+id/exo_back"
+            android:id="@+id/vlc_back"
             style="@style/ExoMediaButton"
             android:layout_width="40dp"
             android:layout_height="match_parent"
@@ -27,25 +27,25 @@
             android:nextFocusDown="@id/exo_track_selector"
             android:scaleType="centerInside"
             android:src="@drawable/ic_baseline_arrow_back_ios_24"
-            app:layout_constraintBottom_toBottomOf="@id/constraint_layout_exo"
-            app:layout_constraintStart_toStartOf="@id/constraint_layout_exo"
-            app:layout_constraintTop_toTopOf="@id/constraint_layout_exo" />
+            app:layout_constraintBottom_toBottomOf="@id/constraint_layout_vlc"
+            app:layout_constraintStart_toStartOf="@id/constraint_layout_vlc"
+            app:layout_constraintTop_toTopOf="@id/constraint_layout_vlc" />
 
 
         <TextView
-            android:id="@+id/textView_title_exo"
+            android:id="@+id/textView_title_vlc"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
             android:text="@string/movie_name"
             android:textColor="@color/white"
             android:textSize="16sp"
-            app:layout_constraintStart_toEndOf="@id/exo_back"
-            app:layout_constraintTop_toTopOf="@id/constraint_layout_exo" />
+            app:layout_constraintStart_toEndOf="@id/vlc_back"
+            app:layout_constraintTop_toTopOf="@id/constraint_layout_vlc" />
 
 
         <TextView
-            android:id="@+id/textView_desc_exo"
+            android:id="@+id/textView_desc_vlc"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
@@ -54,12 +54,12 @@
             android:text="@string/season_episode"
             android:textColor="@color/white"
             android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@id/exo_back"
-            app:layout_constraintTop_toBottomOf="@id/textView_title_exo" />
+            app:layout_constraintStart_toEndOf="@id/vlc_back"
+            app:layout_constraintTop_toBottomOf="@id/textView_title_vlc" />
 
 
         <TextView
-            android:id="@+id/textView_language_exo"
+            android:id="@+id/textView_language_vlc"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
@@ -67,11 +67,11 @@
             android:text="@string/langauge_name"
             android:textColor="@color/white"
             android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@id/exo_back"
-            app:layout_constraintTop_toBottomOf="@id/textView_desc_exo" />
+            app:layout_constraintStart_toEndOf="@id/vlc_back"
+            app:layout_constraintTop_toBottomOf="@id/textView_desc_vlc" />
 
         <ImageButton
-            android:id="@+id/exo_track_selector"
+            android:id="@+id/vlc_track_selector"
             style="@style/ExoMediaButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -83,11 +83,11 @@
             android:src="@drawable/ic_baseline_video_settings_24"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/exo_custom_cast"
+            app:layout_constraintEnd_toStartOf="@id/vlc_custom_cast"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.mediarouter.app.MediaRouteButton
-            android:id="@+id/exo_custom_cast"
+            android:id="@+id/vlc_custom_cast"
             style="@style/Theme.MediaRouter"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -98,11 +98,11 @@
             android:scaleType="fitEnd"
             app:externalRouteEnabledDrawable="@drawable/ic_baseline_cast_24"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/exo_menu"
+            app:layout_constraintEnd_toStartOf="@id/vlc_menu"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/exo_menu"
+            android:id="@+id/vlc_menu"
             style="@style/ExoMediaButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -112,9 +112,9 @@
             android:padding="10dp"
             android:scaleType="fitEnd"
             android:src="@drawable/ic_baseline_menu_24"
-            app:layout_constraintBottom_toBottomOf="@id/constraint_layout_exo"
-            app:layout_constraintEnd_toEndOf="@id/constraint_layout_exo"
-            app:layout_constraintTop_toTopOf="@id/constraint_layout_exo" />
+            app:layout_constraintBottom_toBottomOf="@id/constraint_layout_vlc"
+            app:layout_constraintEnd_toEndOf="@id/constraint_layout_vlc"
+            app:layout_constraintTop_toTopOf="@id/constraint_layout_vlc" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -132,7 +132,7 @@
         android:padding="5dp">
 
         <ImageButton
-            android:id="@id/exo_rew"
+            android:id="@+id/vlc_rew"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginLeft="5dp"
@@ -146,7 +146,7 @@
             android:src="@drawable/backward" />
 
         <ImageButton
-            android:id="@id/exo_pause"
+            android:id="@+id/vlc_pause"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginLeft="5dp"
@@ -160,7 +160,7 @@
             android:src="@drawable/ic_baseline_pause_circle_filled_24" />
 
         <ImageButton
-            android:id="@id/exo_ffwd"
+            android:id="@+id/vlc_forward"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginLeft="5dp"
@@ -184,13 +184,13 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/playListActions"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="4dp"
         android:focusable="true"
         android:gravity="bottom"
         android:orientation="horizontal">
 
         <TextView
-            android:id="@id/exo_position"
+            android:id="@+id/vlc_position"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
@@ -208,7 +208,7 @@
             android:layout_weight="1" />
 
         <TextView
-            android:id="@id/exo_duration"
+            android:id="@+id/vlc_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
@@ -226,7 +226,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="25dp"
         android:focusable="true"
         android:orientation="horizontal">
 

@@ -8,15 +8,15 @@
     android:orientation="horizontal">
 
 
-<!--    <org.videolan.libvlc.util.VLCVideoLayout-->
-<!--        android:id="@+id/media_view"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:focusable="true" />-->
+    <com.stream.jmxplayer.ui.view.IjkVideoView
+        android:id="@+id/ijk_media_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true" />
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_playlist_vlc"
+        android:id="@+id/recycler_playlist_ijk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
