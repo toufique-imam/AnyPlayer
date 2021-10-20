@@ -27,6 +27,7 @@ import com.stream.jmxplayer.R;
 public class Settings {
     private final Context mAppContext;
     private final SharedPreferences mSharedPreferences;
+    private final SharedPreferences.Editor editor;
 
     public static final int PV_PLAYER__Auto = 0;
     public static final int PV_PLAYER__AndroidMediaPlayer = 1;
@@ -36,6 +37,7 @@ public class Settings {
     public Settings(Context context) {
         mAppContext = context.getApplicationContext();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mAppContext);
+        editor = mSharedPreferences.edit();
     }
 
     public boolean getEnableBackgroundPlay() {
@@ -52,10 +54,19 @@ public class Settings {
             return 0;
         }
     }
+    public String getTheme(){
+        String key =
+    }
 
     public boolean getUsingMediaCodec() {
         String key = mAppContext.getString(R.string.pref_key_using_media_codec);
         return mSharedPreferences.getBoolean(key, false);
+    }
+
+    public void setUsingMediaCodec(boolean value) {
+        String key = mAppContext.getString(R.string.pref_key_using_media_codec);
+        editor.putBoolean(key, value);
+        editor.apply();
     }
 
     public boolean getUsingMediaCodecAutoRotate() {
@@ -63,9 +74,22 @@ public class Settings {
         return mSharedPreferences.getBoolean(key, false);
     }
 
+    public void setUsingMediaCodecAutoRotate(boolean value) {
+        String key = mAppContext.getString(R.string.pref_key_using_media_codec_auto_rotate);
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+
     public boolean getMediaCodecHandleResolutionChange() {
         String key = mAppContext.getString(R.string.pref_key_media_codec_handle_resolution_change);
         return mSharedPreferences.getBoolean(key, false);
+    }
+
+    public void setMediaCodecHandleResolutionChange(boolean value) {
+        String key = mAppContext.getString(R.string.pref_key_media_codec_handle_resolution_change);
+        editor.putBoolean(key, value);
+        editor.apply();
+        //mSharedPreferences.getBoolean(key, false);
     }
 
     public boolean getUsingOpenSLES() {
@@ -76,6 +100,11 @@ public class Settings {
     public String getPixelFormat() {
         String key = mAppContext.getString(R.string.pref_key_pixel_format);
         return mSharedPreferences.getString(key, "");
+    }
+
+    public void setPixelFormat(String key) {
+        editor.putString(mAppContext.getString(R.string.pref_key_pixel_format), key);
+        editor.apply();
     }
 
     public boolean getEnableNoView() {
@@ -91,6 +120,18 @@ public class Settings {
     public boolean getEnableTextureView() {
         String key = mAppContext.getString(R.string.pref_key_enable_texture_view);
         return mSharedPreferences.getBoolean(key, false);
+    }
+
+    public void setEnableSurfaceView(boolean value) {
+        String key = mAppContext.getString(R.string.pref_key_enable_surface_view);
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+
+    public void setEnableTextureView(boolean value) {
+        String key = mAppContext.getString(R.string.pref_key_enable_texture_view);
+        editor.putBoolean(key , value);
+        editor.apply();
     }
 
     public boolean getEnableDetachedSurfaceTextureView() {

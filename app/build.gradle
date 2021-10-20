@@ -47,8 +47,8 @@ android {
 
 dependencies {
     implementation files('libs/extension-ffmpeg-release.aar')
-    implementation files('libs/extension-av1-release.aar')
-    implementation files('libs/extension-vp9-release.aar')
+    //implementation files('libs/extension-av1-release.aar')
+    //implementation files('libs/extension-vp9-release.aar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.6.0'
@@ -99,7 +99,7 @@ dependencies {
     //ijkPlayer
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
-    implementation 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.8'
+//    implementation 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.8'

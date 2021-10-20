@@ -10,6 +10,7 @@ import android.view.View.OnClickListener
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.*
+import androidx.core.view.isVisible
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.MediaPlayerControl
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
@@ -65,6 +66,7 @@ class VideoControlView : FrameLayout {
     var mFormatBuilder = StringBuilder()
     var mFormatter = Formatter(mFormatBuilder, Locale.getDefault())
     var mPauseButton: ImageButton? = null
+    var mPlayButton: ImageButton? = null
     var mFfwdButton: ImageButton? = null
     var mRewButton: ImageButton? = null
 
@@ -124,6 +126,8 @@ class VideoControlView : FrameLayout {
     private fun initControllerView(view: View) {
         mPauseButton = view.findViewById(R.id.vlc_pause)
         mPauseButton?.setOnClickListener(mPauseListener)
+        mPlayButton = view.findViewById(R.id.vlc_play)
+        mPlayButton?.setOnClickListener(mPauseListener)
 
         mFfwdButton = view.findViewById(R.id.vlc_forward)
         mFfwdButton?.setOnClickListener(mFfwdListener)
@@ -173,8 +177,11 @@ class VideoControlView : FrameLayout {
     fun show(timeout: Int) {
         if (!mShowing && mAnchor != null) {
             setProgress()
-            if (mPauseButton != null)
+            if (mPauseButton != null && mPauseButton?.isVisible == true)
                 mPauseButton?.requestFocus()
+            if (mPlayButton != null && mPlayButton?.isVisible == true)
+                mPlayButton?.requestFocus()
+
 
             disableUnsupportedButtons()
             val tlp = LayoutParams(
@@ -218,6 +225,7 @@ class VideoControlView : FrameLayout {
         try {
             if (!mPlayer!!.canPause()) {
                 mPauseButton?.isEnabled = false
+                mPlayButton?.isEnabled = false
             }
             if (!mPlayer!!.canSeekBackward()) {
                 mRewButton?.isEnabled = false
@@ -300,7 +308,10 @@ class VideoControlView : FrameLayout {
             if (uniqueDown) {
                 doPauseResume()
                 show(sDefaultTimeout)
-                mPauseButton?.requestFocus()
+                if (mPauseButton?.isVisible == true)
+                    mPauseButton?.requestFocus()
+                if (mPlayButton?.isVisible == true)
+                    mPlayButton?.requestFocus()
             }
             return true
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
@@ -345,11 +356,11 @@ class VideoControlView : FrameLayout {
         if (mRoot == null || mPlayer == null) return
 
         if (mPlayer!!.isPlaying) {
-            mPauseButton?.setImageResource(R.drawable.ic_baseline_pause_circle_filled_24)
-            mPauseButton?.contentDescription = "pause"
+            mPauseButton?.visibility = View.VISIBLE
+            mPlayButton?.visibility = View.GONE
         } else {
-            mPauseButton?.contentDescription = "play"
-            mPauseButton?.setImageResource(R.drawable.ic_baseline_play_circle_filled_24)
+            mPauseButton?.visibility = View.GONE
+            mPlayButton?.visibility = View.VISIBLE
         }
     }
 
@@ -421,6 +432,8 @@ class VideoControlView : FrameLayout {
     override fun setEnabled(enabled: Boolean) {
         if (mPauseButton != null) {
             mPauseButton?.isEnabled = enabled
+            mPlayButton?.isEnabled = enabled
+
             mFfwdButton?.isEnabled = enabled
             mRewButton?.isEnabled = enabled
 

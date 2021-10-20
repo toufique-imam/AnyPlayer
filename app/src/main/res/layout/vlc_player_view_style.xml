@@ -37,7 +37,10 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/movie_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@id/vlc_back"
@@ -64,7 +67,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
             android:layout_weight="1"
-            android:text="@string/langauge_name"
+            android:text="@string/language_name"
             android:textColor="@color/white"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@id/vlc_back"
@@ -132,47 +135,61 @@
         android:padding="5dp">
 
         <ImageButton
+            android:id="@+id/playlistPrev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/transparent_circle_background"
+            android:padding="16dp"
+            android:src="@drawable/ic_skip_back" />
+
+        <ImageButton
             android:id="@+id/vlc_rew"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            android:background="#00000000"
-            android:contentDescription="@string/backward_button"
-            android:focusable="true"
-            android:padding="5dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/backward" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/transparent_circle_background"
+            android:padding="16dp"
+            android:src="@drawable/ic_rewind" />
+
+        <ImageButton
+            android:id="@+id/vlc_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/white"
+            android:padding="16dp"
+            android:src="@drawable/ic_play"
+            app:tint="@color/black" />
 
         <ImageButton
             android:id="@+id/vlc_pause"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            android:background="#00000000"
-            android:contentDescription="@string/pause_button"
-            android:focusable="true"
-            android:padding="5dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_baseline_pause_circle_filled_24" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/white"
+            android:padding="16dp"
+            android:src="@drawable/ic_pause"
+            android:visibility="gone"
+            app:tint="@color/black" />
 
         <ImageButton
             android:id="@+id/vlc_forward"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            android:background="#00000000"
-            android:contentDescription="@string/forward_button"
-            android:focusable="true"
-            android:nextFocusDown="@id/line"
-            android:padding="5dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/forward" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:background="@drawable/transparent_circle_background"
+            android:padding="16dp"
+            android:src="@drawable/ic_fast_forward" />
+
+        <ImageButton
+            android:id="@+id/playlistNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:background="@drawable/transparent_circle_background"
+            android:padding="16dp"
+            android:src="@drawable/ic_skip_forward" />
 
     </LinearLayout>
 
@@ -182,7 +199,7 @@
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/playListActions"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:focusable="true"
@@ -219,33 +236,4 @@
             android:textStyle="bold" />
 
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/playListActions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="25dp"
-        android:focusable="true"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/playlistPrev"
-            style="@style/ExoMediaButton.Previous"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_weight="1"
-            android:background="#00000000" />
-
-        <ImageButton
-            android:id="@+id/playlistNext"
-            style="@style/ExoMediaButton.Next"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_weight="1"
-            android:background="#00000000" />
-
-    </LinearLayout>
-
 </RelativeLayout>

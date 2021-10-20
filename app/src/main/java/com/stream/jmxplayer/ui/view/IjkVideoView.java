@@ -19,7 +19,6 @@ package com.stream.jmxplayer.ui.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -33,8 +32,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.MediaController;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,7 +46,6 @@ import com.stream.jmxplayer.utils.ijkplayer.FileMediaDataSource;
 import com.stream.jmxplayer.utils.ijkplayer.Settings;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -66,7 +62,7 @@ import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 import tv.danmaku.ijk.media.player.misc.IjkMediaFormat;
 
 public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
-    private String TAG = "IjkVideoView";
+    private final String TAG = "IjkVideoView";
     // settable by the client
     private Uri mUri;
     private String mManifestString;
@@ -106,11 +102,11 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
     private IMediaPlayer.OnInfoListener mOnInfoListener;
     private IResultListener mOnToggleListener;
     private int mSeekWhenPrepared;  // recording the seek position while preparing
-    private boolean mCanPause = true;
-    private boolean mCanSeekBack = true;
-    private boolean mCanSeekForward = true;
+    private final boolean mCanPause = true;
+    private final boolean mCanSeekBack = true;
+    private final boolean mCanSeekForward = true;
 
-    /** Subtitle rendering widget overlaid on top of the video. */
+    /* Subtitle rendering widget overlaid on top of the video. */
     // private RenderingWidget mSubtitleWidget;
 
     /**
@@ -339,7 +335,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
 
             // TODO: create SubtitleController in MediaPlayer, but we need
             // a context for the subtitle renderers
-            final Context context = getContext();
+//            final Context context = getContext();
             // REMOVED: SubtitleController
 
             // REMOVED: mAudioSession
@@ -377,7 +373,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
             // target state that was there before.
             mCurrentState = STATE_PREPARING;
             attachMediaController();
-        } catch (IOException | IllegalArgumentException ex) {
+        } catch (Exception ex) {
             Log.w(TAG, "Unable to open content: " + mUri, ex);
             mCurrentState = STATE_ERROR;
             mTargetState = STATE_ERROR;
@@ -398,7 +394,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
             mMediaController.setMediaPlayer(this);
 //            View anchorView = this.getParent() instanceof View ?
 //                    (View) this.getParent() : this;
-           // mMediaController.setAnchorView(this);
+            // mMediaController.setAnchorView(this);
             mMediaController.setEnabled(isInPlaybackState());
         }
     }
@@ -456,14 +452,14 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                         if (mTargetState == STATE_PLAYING) {
                             start();
                             if (mMediaController != null) {
-                                if(mOnToggleListener!=null)mOnToggleListener.workResult("Show");
+                                if (mOnToggleListener != null) mOnToggleListener.workResult("Show");
                                 mMediaController.show();
                             }
                         } else if (!isPlaying() &&
                                 (seekToPosition != 0 || getCurrentPosition() > 0)) {
                             if (mMediaController != null) {
                                 // Show the media controls when we're paused into a video and make 'em stick.
-                                if(mOnToggleListener!=null)mOnToggleListener.workResult("Show");
+                                if (mOnToggleListener != null) mOnToggleListener.workResult("Show");
                                 mMediaController.show(0);
                             }
                         }
@@ -479,13 +475,13 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
         }
     };
 
-    private IMediaPlayer.OnCompletionListener mCompletionListener =
+    private final IMediaPlayer.OnCompletionListener mCompletionListener =
             new IMediaPlayer.OnCompletionListener() {
                 public void onCompletion(IMediaPlayer mp) {
                     mCurrentState = STATE_PLAYBACK_COMPLETED;
                     mTargetState = STATE_PLAYBACK_COMPLETED;
                     if (mMediaController != null) {
-                        if(mOnToggleListener!=null)mOnToggleListener.workResult("Hide");
+                        if (mOnToggleListener != null) mOnToggleListener.workResult("Hide");
                         mMediaController.hide();
                     }
                     if (mOnCompletionListener != null) {
@@ -494,7 +490,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                 }
             };
 
-    private IMediaPlayer.OnInfoListener mInfoListener =
+    private final IMediaPlayer.OnInfoListener mInfoListener =
             new IMediaPlayer.OnInfoListener() {
                 public boolean onInfo(IMediaPlayer mp, int arg1, int arg2) {
                     if (mOnInfoListener != null) {
@@ -545,14 +541,14 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                 }
             };
 
-    private IMediaPlayer.OnErrorListener mErrorListener =
+    private final IMediaPlayer.OnErrorListener mErrorListener =
             new IMediaPlayer.OnErrorListener() {
                 public boolean onError(IMediaPlayer mp, int framework_err, int impl_err) {
                     Log.d(TAG, "Error: " + framework_err + "," + impl_err);
                     mCurrentState = STATE_ERROR;
                     mTargetState = STATE_ERROR;
                     if (mMediaController != null) {
-                        if(mOnToggleListener!=null)mOnToggleListener.workResult("Hide");
+                        if (mOnToggleListener != null) mOnToggleListener.workResult("Hide");
                         mMediaController.hide();
                     }
 
@@ -569,7 +565,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                      * longer have a window, don't bother showing the user an error.
                      */
                     if (getWindowToken() != null) {
-                        Resources r = mAppContext.getResources();
+                        //Resources r = mAppContext.getResources();
                         int messageId;
 
                         if (framework_err == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
@@ -596,14 +592,14 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                 }
             };
 
-    private IMediaPlayer.OnBufferingUpdateListener mBufferingUpdateListener =
+    private final IMediaPlayer.OnBufferingUpdateListener mBufferingUpdateListener =
             new IMediaPlayer.OnBufferingUpdateListener() {
                 public void onBufferingUpdate(IMediaPlayer mp, int percent) {
                     mCurrentBufferPercentage = percent;
                 }
             };
 
-    private IMediaPlayer.OnSeekCompleteListener mSeekCompleteListener = new IMediaPlayer.OnSeekCompleteListener() {
+    private final IMediaPlayer.OnSeekCompleteListener mSeekCompleteListener = new IMediaPlayer.OnSeekCompleteListener() {
 
         @Override
         public void onSeekComplete(IMediaPlayer mp) {
@@ -612,7 +608,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
         }
     };
 
-    private IMediaPlayer.OnTimedTextListener mOnTimedTextListener = new IMediaPlayer.OnTimedTextListener() {
+    private final IMediaPlayer.OnTimedTextListener mOnTimedTextListener = new IMediaPlayer.OnTimedTextListener() {
         @Override
         public void onTimedText(IMediaPlayer mp, IjkTimedText text) {
             if (text != null) {
@@ -663,7 +659,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
         mOnInfoListener = l;
     }
 
-    public void setOnToggleListener(IResultListener l){
+    public void setOnToggleListener(IResultListener l) {
         mOnToggleListener = l;
     }
 
@@ -782,18 +778,18 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                     keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
                 if (mMediaPlayer.isPlaying()) {
                     pause();
-                    if(mOnToggleListener!=null)mOnToggleListener.workResult("Show");
+                    if (mOnToggleListener != null) mOnToggleListener.workResult("Show");
                     mMediaController.show();
                 } else {
                     start();
-                    if(mOnToggleListener!=null)mOnToggleListener.workResult("Hide");
+                    if (mOnToggleListener != null) mOnToggleListener.workResult("Hide");
                     mMediaController.hide();
                 }
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
                 if (!mMediaPlayer.isPlaying()) {
                     start();
-                    if(mOnToggleListener!=null)mOnToggleListener.workResult("Hide");
+                    if (mOnToggleListener != null) mOnToggleListener.workResult("Hide");
                     mMediaController.hide();
                 }
                 return true;
@@ -801,7 +797,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                     || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
                 if (mMediaPlayer.isPlaying()) {
                     pause();
-                    if(mOnToggleListener!=null)mOnToggleListener.workResult("Show");
+                    if (mOnToggleListener != null) mOnToggleListener.workResult("Show");
                     mMediaController.show();
                 }
                 return true;
@@ -819,7 +815,8 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
         } else {
             mMediaController.show();
         }
-        if(mOnToggleListener!=null)mOnToggleListener.workResult(mMediaController.isShowing()?"Show":"Hide");
+        if (mOnToggleListener != null)
+            mOnToggleListener.workResult(mMediaController.isShowing() ? "Show" : "Hide");
     }
 
     @Override
@@ -892,25 +889,28 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
     }
 
     private boolean isInPlaybackState() {
-        return (mMediaPlayer != null &&
-                mCurrentState != STATE_ERROR &&
+        return (mMediaPlayer != null);
+    }
+
+    private boolean checkState() {
+        return (mCurrentState != STATE_ERROR &&
                 mCurrentState != STATE_IDLE &&
                 mCurrentState != STATE_PREPARING);
     }
 
     @Override
     public boolean canPause() {
-        return mCanPause;
+        return mCanPause && checkState();
     }
 
     @Override
     public boolean canSeekBackward() {
-        return mCanSeekBack;
+        return mCanSeekBack && checkState();
     }
 
     @Override
     public boolean canSeekForward() {
-        return mCanSeekForward;
+        return mCanSeekForward && checkState();
     }
 
     @Override
@@ -958,7 +958,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
     public static final int RENDER_SURFACE_VIEW = 1;
     public static final int RENDER_TEXTURE_VIEW = 2;
 
-    private List<Integer> mAllRenders = new ArrayList<Integer>();
+    private final List<Integer> mAllRenders = new ArrayList<>();
     private int mCurrentRenderIndex = 0;
     private int mCurrentRender = RENDER_NONE;
 
@@ -1041,12 +1041,11 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
     }
 
     public IMediaPlayer createPlayer(int playerType) {
-        IMediaPlayer mediaPlayer = null;
+        IMediaPlayer mediaPlayer;
 
         switch (playerType) {
             case Settings.PV_PLAYER__AndroidMediaPlayer: {
-                AndroidMediaPlayer androidMediaPlayer = new AndroidMediaPlayer();
-                mediaPlayer = androidMediaPlayer;
+                mediaPlayer = new AndroidMediaPlayer();
             }
             break;
             case Settings.PV_PLAYER__IjkMediaPlayer:
@@ -1092,7 +1091,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
 
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
+                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 1);
 
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
                 }
@@ -1154,7 +1153,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
         builder.appendRow2(R.string.mi_resolution, buildResolution(mVideoWidth, mVideoHeight, mVideoSarNum, mVideoSarDen));
         builder.appendRow2(R.string.mi_length, buildTimeMilli(mMediaPlayer.getDuration()));
 
-        ITrackInfo trackInfos[] = mMediaPlayer.getTrackInfo();
+        ITrackInfo[] trackInfos = mMediaPlayer.getTrackInfo();
         if (trackInfos != null) {
             int index = -1;
             for (ITrackInfo trackInfo : trackInfos) {

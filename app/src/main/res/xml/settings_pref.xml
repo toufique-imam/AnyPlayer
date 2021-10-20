@@ -1,16 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        app:key="JMX_PLAYER"
-        app:title="Interface">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="Interface">
 
         <DropDownPreference
             app:defaultValue="Follow System"
-            app:entries="@array/themeEntries"
-            app:entryValues="@array/themeEntries"
-            app:key="JMX_THEME"
-            app:summary="Select App theme"
+            app:entries="@array/pref_entries_theme"
+            app:entryValues="@array/pref_entry_values_theme"
+            app:key="@string/pref_key_theme"
+            app:summary="@string/pref_summary_theme"
             app:title="App Theme" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/pref_title_exoplayer_video">
+
+        <DropDownPreference
+            android:summary="@string/pref_summary_render"
+            app:entries="@array/pref_entries_render"
+            app:entryValues="@array/pref_entry_values_render"
+            app:key="@string/pref_key_render"
+            app:title="@string/pref_title_render" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/pref_title_ijkplayer_video">
+
+        <SwitchPreference
+            app:key="@string/pref_key_using_media_codec"
+            app:summary="@string/pref_summary_using_media_codec"
+            app:title="@string/pref_title_using_media_codec" />
+        <SwitchPreference
+            app:key="@string/pref_key_using_media_codec_auto_rotate"
+            app:summary="@string/pref_summary_using_media_codec_auto_rotate"
+            app:title="@string/pref_title_using_media_codec_auto_rotate" />
+        <SwitchPreference
+            android:summary="@string/pref_summary_media_codec_handle_resolution_change"
+            app:key="@string/pref_key_media_codec_handle_resolution_change"
+            app:title="@string/pref_title_media_codec_handle_resolution_change" />
+        <DropDownPreference
+            app:entries="@array/pref_entries_pixel_format"
+            app:entryValues="@array/pref_entry_values_pixel_format"
+            app:key="@string/pref_key_pixel_format"
+            app:title="@string/pref_title_pixel_format" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="@string/pref_title_ijkplayer_audio">
+
+        <SwitchPreference
+            app:key="@string/pref_key_using_opensl_es"
+            app:summary="@string/pref_summary_using_opensl_es"
+            app:title="@string/pref_title_using_opensl_es" />
+        <SwitchPreference
+            android:summary="@string/pref_summary_enable_surface_view"
+            android:title="@string/pref_title_enable_surface_view"
+            app:key="@string/pref_key_enable_surface_view" />
+        <SwitchPreference
+            android:summary="@string/pref_summary_enable_texture_view"
+            android:title="@string/pref_title_enable_texture_view"
+            app:key="@string/pref_key_enable_texture_view" />
+
     </PreferenceCategory>
 </PreferenceScreen>

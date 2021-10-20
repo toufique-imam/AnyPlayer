@@ -278,6 +278,7 @@ class PlayerActivity : AppCompatActivity(),
             viewR.adapter = galleryAdapter
         }
         galleryAdapter.updateData(PlayListAll)
+        recyclerViewPlayList.visibility = View.GONE
     }
 
     private fun goAction() {
@@ -572,18 +573,21 @@ class PlayerActivity : AppCompatActivity(),
                 }
             }
             R.id.menu_change_player -> {
-                val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_M3U)
-                intent.putExtra(SELECTED_MODEL, idxNow)
-                startActivity(intent)
-                finish()
+                GlobalFunctions.areYouSureDialogue(
+                    this,
+                    "Player wll change to IJKPlayer, Are you sure?",
+                    this::yesSure
+                )
             }
-//            R.id.menu_aspect_ratio -> {
-//                changeAspectRatio()
-//                item.title =
-//                    resources.getString(R.string.aspect_ratio) + " : " + resizeUtils.aspectRatio.valueStr
-//            }
         }
         return false
+    }
+
+    private fun yesSure() {
+        val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_M3U)
+        intent.putExtra(SELECTED_MODEL, idxNow)
+        startActivity(intent)
+        finish()
     }
 
     /*
@@ -694,7 +698,10 @@ class PlayerActivity : AppCompatActivity(),
 
 
         @DefaultRenderersFactory.ExtensionRendererMode val extensionRendererMode =
-            DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
+                DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
+            else
+                DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
         val renderer = DefaultRenderersFactory(this)
             .setExtensionRendererMode(extensionRendererMode)
         mPlayer = SimpleExoPlayer.Builder(this, renderer)

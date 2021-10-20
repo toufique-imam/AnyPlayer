@@ -35,7 +35,6 @@ import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
-import tv.danmaku.ijk.media.player.IMediaPlayer
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
 import java.util.*
@@ -116,12 +115,12 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         setUpPlayerViewControl()
         initPlayer()
         ijkVideoView?.setOnPreparedListener { audioTrackSelector.visibility = View.VISIBLE }
-        ijkVideoView?.setOnErrorListener(object : IMediaPlayer.OnErrorListener {
-            override fun onError(p0: IMediaPlayer?, p1: Int, p2: Int): Boolean {
-                audioTrackSelector.visibility = View.GONE
-                return false
+        ijkVideoView?.setOnCompletionListener {
+            audioTrackSelector.visibility = View.GONE
+            if (PlayListAll.isNotEmpty() && PlayListAll.size > 1) {
+                nextTrack()
             }
-        })
+        }
         ijkVideoView?.setOnToggleListener(object : IResultListener {
             override fun workResult(result: Any) {
                 val res = result as String
@@ -230,20 +229,29 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 trackDialog?.show()
         }
         mNextButton.setOnClickListener {
-            if (PlayListAll.isNotEmpty()) {
-                idxNow++
-                idxNow %= PlayListAll.size
-            }
-            updatePlayerModel()
+            nextTrack()
         }
         mPrevButton.setOnClickListener {
-            if (PlayListAll.isNotEmpty()) {
-                idxNow--
-                idxNow += PlayListAll.size
-                idxNow %= PlayListAll.size
-            }
-            updatePlayerModel()
+            prevTrack()
         }
+    }
+
+    private fun prevTrack() {
+        if (PlayListAll.isNotEmpty()) {
+            idxNow--
+            idxNow += PlayListAll.size
+            idxNow %= PlayListAll.size
+        }
+        updatePlayerModel()
+
+    }
+
+    private fun nextTrack() {
+        if (PlayListAll.isNotEmpty()) {
+            idxNow++
+            idxNow %= PlayListAll.size
+        }
+        updatePlayerModel()
     }
 
     private fun setUpMenuButton() {
@@ -314,6 +322,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             viewR.adapter = galleryAdapter
         }
         galleryAdapter.updateData(PlayListAll)
+        recyclerViewPlayList.visibility = View.GONE
     }
 
     private fun initTrackDialogue() {
@@ -625,13 +634,21 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 }
             }
             R.id.menu_change_player -> {
-                val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_ONLINE_LIVE)
-                intent.putExtra(PlayerModel.SELECTED_MODEL, idxNow)
-                startActivity(intent)
-                finish()
+                GlobalFunctions.areYouSureDialogue(
+                    this,
+                    "Player wll change to ExoPlayer, Are you sure?",
+                    this::yesSure
+                )
             }
 
         }
         return false
+    }
+
+    private fun yesSure() {
+        val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_ONLINE_LIVE)
+        intent.putExtra(PlayerModel.SELECTED_MODEL, idxNow)
+        startActivity(intent)
+        finish()
     }
 }

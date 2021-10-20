@@ -3,6 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/circle_background.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_fast_forward.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_pause.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_play.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_rewind.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_skip_back.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_skip_forward.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/tranparent_circle_background.xml" value="0.1361111111111111" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_browser.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_ijkplayer.xml" value="0.264" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_player.xml" value="0.1" />
@@ -17,6 +25,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_dialogue_download.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_loading_dialogue.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/dialog_tracks.xml" value="0.13020833333333334" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/exo_player_view_style.xml" value="0.264" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_browse.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_list_view.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_settings.xml" value="0.13020833333333334" />
@@ -27,6 +36,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/history_item.xml" value="0.22962962962962963" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/image_overlay.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/mini_controller.xml" value="0.13020833333333334" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/player_control_view.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/playlist_item.xml" value="0.25416666666666665" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/table_media_info.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/table_media_info_row1.xml" value="0.1" />
@@ -38,6 +48,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/play_menu.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/toolbar_browse.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/toolbar_history.xml" value="0.13020833333333334" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/xml/settings_pref.xml" value="0.264" />
       </map>
     </option>
   </component>
