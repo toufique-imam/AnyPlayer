@@ -7,40 +7,51 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
-import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.ijkplayer.Settings
-
+//todo list preference
 class SettingsFragment : PreferenceFragmentCompat() {
+    lateinit var values: Array<String>
+    private lateinit var formats: Array<String>
 
-    //    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        return inflater.inflate(R.layout.fragment_settings, container, false)
-//    }
-    lateinit var mSettings: Settings
+    fun getPixelValue(string: String): String {
+        for ((idx, i) in values.withIndex()) {
+            if (i.equals(string)) {
+                return formats[idx]
+            }
+        }
+        return formats[0]
+    }
+
+    private lateinit var mSettings: Settings
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         logger("sharedPref", rootKey + "")
+        values = resources.getStringArray(R.array.pref_entry_values_pixel_format)
+        formats = resources.getStringArray(R.array.pref_entry_summaries_pixel_format)
         mSettings = Settings(requireContext())
 
         setPreferencesFromResource(R.xml.settings_pref, rootKey)
 
-        val themeDropDown: DropDownPreference? = findPreference(SharedPreferenceUtils.THEME)
-        themeDropDown?.summary = SharedPreferenceUtils.getUserTheme(requireContext())
+        val themeDropDown: DropDownPreference? = findPreference(getString(R.string.pref_key_theme))
+        themeDropDown?.value = mSettings.theme.toString()
+        themeDropDown?.summary = themeDropDown?.entries?.get(mSettings.theme)
         themeDropDown?.setOnPreferenceChangeListener { _, newValue ->
-            logger("OnPrefChange", "$newValue")
-            themeDropDown.summary = newValue as String?
-            SharedPreferenceUtils.setUserTheme(requireContext(), newValue as String)
-            requireActivity().recreate()
+            logger("OnPrefChangeTheme", "$newValue")
+            //SharedPreferenceUtils.setUserTheme(requireContext(), newValue as String)
+            val value = (newValue).toString()
+            if (mSettings.theme.toString() != value) {
+                mSettings.setTheme(value)
+                requireActivity().recreate()
+            }
             true
         }
         val pixelFormat: DropDownPreference? =
             findPreference(getString(R.string.pref_key_pixel_format))
         pixelFormat?.value = mSettings.pixelFormat
+        pixelFormat?.summary = getPixelValue(mSettings.pixelFormat)
         pixelFormat?.setOnPreferenceChangeListener { _, newValue ->
-            pixelFormat.value = newValue as String?
-            pixelFormat.summary = pixelFormat.entry
-            mSettings.pixelFormat = newValue as String
+            logger("OnPrefChangePixel", "$newValue")
+            pixelFormat.summary = getPixelValue(newValue.toString())
+            mSettings.pixelFormat = newValue.toString()
             true
         }
         val resolution =
@@ -48,6 +59,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         resolution?.setDefaultValue(mSettings.mediaCodecHandleResolutionChange)
         resolution?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
+                logger("OnPrefChangeResolution", "$newValue")
                 mSettings.mediaCodecHandleResolutionChange = newValue as Boolean
                 true
             }
@@ -55,6 +67,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             findPreference<SwitchPreference>(getString(R.string.pref_key_using_media_codec_auto_rotate))
         rotate?.setDefaultValue(mSettings.usingMediaCodecAutoRotate)
         rotate?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+            logger("OnPrefChangeRotate", "$newValue")
             mSettings.usingMediaCodecAutoRotate = newValue as Boolean
             true
         }
@@ -63,6 +76,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         mediaCodec?.setDefaultValue(mSettings.usingMediaCodec)
         mediaCodec?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
+                logger("OnPrefChangeMediaCodec", "$newValue")
                 mSettings.usingMediaCodec = newValue as Boolean
                 true
             }
@@ -71,7 +85,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         opensles?.setDefaultValue(mSettings.usingOpenSLES)
         opensles?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
-                mSettings.usingMediaCodec = newValue as Boolean
+                logger("OnPrefChangeOpen", "$newValue")
+                mSettings.usingOpenSLES = newValue as Boolean
                 true
             }
         val surfaceView =
@@ -79,6 +94,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         surfaceView?.setDefaultValue(mSettings.enableSurfaceView)
         surfaceView?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
+                logger("OnPrefChangeSurface", "$newValue")
                 mSettings.enableSurfaceView = newValue as Boolean
                 true
             }
@@ -87,10 +103,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
         textureView?.setDefaultValue(mSettings.enableSurfaceView)
         textureView?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
-                mSettings.enableSurfaceView = newValue as Boolean
+                logger("OnPrefChangeTexture", "$newValue")
+                mSettings.enableTextureView = newValue as Boolean
                 true
             }
         val renderMode = findPreference<DropDownPreference>(getString(R.string.pref_key_render))
-        textureView?.setDefaultValue()
+        renderMode?.value = mSettings.renderExo.toString()
+        renderMode?.summary = renderMode?.entries?.get(mSettings.renderExo)
+        renderMode?.setOnPreferenceChangeListener { _, newValue ->
+            logger("OnPrefChangeExo", "$newValue")
+            renderMode.summary = renderMode.entries[Integer.parseInt(newValue.toString())]
+            mSettings.setRenderExo(newValue.toString())
+            true
+        }
+
     }
 }

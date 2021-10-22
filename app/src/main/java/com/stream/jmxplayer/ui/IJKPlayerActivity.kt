@@ -12,21 +12,19 @@ import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.mediarouter.app.MediaRouteButton
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
-import com.stream.jmxplayer.model.IAdListener
-import com.stream.jmxplayer.model.IRenderView
-import com.stream.jmxplayer.model.IResultListener
-import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.model.*
+import com.stream.jmxplayer.ui.fragment.TracksDialogFragment
 import com.stream.jmxplayer.ui.view.IjkVideoView
 import com.stream.jmxplayer.ui.view.MeasureHelper
 import com.stream.jmxplayer.ui.view.VideoControlView
@@ -36,7 +34,6 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
-import tv.danmaku.ijk.media.player.misc.ITrackInfo
 import java.util.*
 
 class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -75,7 +72,8 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private lateinit var downloaderUtils: DownloaderUtils
 
-    private var trackDialog: AlertDialog? = null
+    private lateinit var tracksDialogFragment: TracksDialogFragment
+
 
     private val viewModel: DatabaseViewModel by viewModels()
     private var idxNow = 0
@@ -83,16 +81,15 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private lateinit var mediaController: VideoControlView
 
     lateinit var mSettings: Settings
-    //lateinit var mHudView: TableLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(SharedPreferenceUtils.getTheme(this))
+        mSettings = Settings(this)
+        setTheme(mSettings.themeId)
         setContentView(R.layout.activity_ijkplayer)
 
         adMobAdUtils = AdMobAdUtils(this)
-        mSettings = Settings(this)
         alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
         getDataFromIntent()
         initView()
@@ -115,11 +112,13 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         setUpPlayerViewControl()
         initPlayer()
         ijkVideoView?.setOnPreparedListener { audioTrackSelector.visibility = View.VISIBLE }
-        ijkVideoView?.setOnCompletionListener {
+        ijkVideoView?.setOnErrorListener { _, _, _ ->
             audioTrackSelector.visibility = View.GONE
             if (PlayListAll.isNotEmpty() && PlayListAll.size > 1) {
                 nextTrack()
             }
+            true
+
         }
         ijkVideoView?.setOnToggleListener(object : IResultListener {
             override fun workResult(result: Any) {
@@ -133,6 +132,8 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             }
 
         })
+
+        tracksDialogFragment = TracksDialogFragment()
     }
 
     private fun initPlayer() {
@@ -182,7 +183,6 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private fun preparePlayer() {
         addSource()
         ijkVideoView?.start()
-
     }
 
     private fun releasePlayer() {
@@ -222,17 +222,30 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
 
         audioTrackSelector.setOnClickListener {
-            if (trackDialog == null) {
-                initTrackDialogue()
+            showVideoTrack { trackNow: TrackInfo ->
+                val currentTrack = ijkVideoView?.getSelectedTrack(trackNow.iTrackInfo.trackType)
+                if (currentTrack != null) {
+                    ijkVideoView?.deselectTrack(currentTrack)
+                }
+                logger("IJK", "$currentTrack , $trackNow")
+                ijkVideoView?.selectTrack(trackNow.id)
             }
-            if (trackDialog != null)
-                trackDialog?.show()
         }
         mNextButton.setOnClickListener {
             nextTrack()
         }
         mPrevButton.setOnClickListener {
             prevTrack()
+        }
+    }
+
+    private fun showVideoTrack(trackSelectionListener: (TrackInfo) -> Unit) {
+        if (!isStarted()) return
+        tracksDialogFragment.arguments = bundleOf()
+        tracksDialogFragment.show(supportFragmentManager, "fragment_video_tracks")
+        tracksDialogFragment.trackSelectionListener = trackSelectionListener
+        tracksDialogFragment.onBindInitiated = {
+            ijkVideoView?.let { tracksDialogFragment.onIJKPlayerModelChanged(it) }
         }
     }
 
@@ -292,7 +305,6 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     private fun updatePlayerModel() {
-        trackDialog = null
         ijkVideoView?.stopPlayback()
         audioTrackSelector.visibility = View.GONE
         playerModelNow = PlayListAll[idxNow]
@@ -323,65 +335,6 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
         galleryAdapter.updateData(PlayListAll)
         recyclerViewPlayList.visibility = View.GONE
-    }
-
-    private fun initTrackDialogue() {
-        if (ijkVideoView?.trackInfo == null) return
-        if (ijkVideoView?.trackInfo?.size == 0) return
-        val dialogView = this.layoutInflater.inflate(R.layout.dialog_tracks, null)
-
-        val builder = AlertDialog.Builder(this).setTitle("Select Tracks").setView(dialogView)
-        builder.setCancelable(true)
-        val radioGroup: RadioGroup = dialogView.findViewById(R.id.radio_group_server)
-        trackDialog = builder.create()
-        var cnt = 0
-        for ((idx, i) in ijkVideoView?.trackInfo!!.withIndex()) {
-            val mInfoInline = String.format(Locale.US, "# %s %d: %s", i.language, idx, i.infoInline)
-            logger(
-                "track",
-                "$idx ${i.trackType}  ${i.infoInline} ${i.language} $mInfoInline"
-            )
-            if (i.trackType != ITrackInfo.MEDIA_TRACK_TYPE_AUDIO) continue
-            val radioButton = RadioButton(this)
-            radioButton.id = idx
-            radioButton.text = mInfoInline
-            radioButton.textSize = 15f
-            radioButton.setTextColor(Color.BLACK)
-            if (ijkVideoView?.getSelectedTrack(ITrackInfo.MEDIA_TRACK_TYPE_AUDIO) == idx) {
-                logger(
-                    "selected track",
-                    "$idx ${i.trackType}  ${i.infoInline} ${i.language}"
-                )
-                radioButton.isChecked = true
-            }
-            radioGroup.addView(radioButton)
-            cnt++
-        }
-
-        val materialButton: MaterialButton = dialogView.findViewById(R.id.button_stream_now)
-
-        materialButton.setOnClickListener {
-            trackDialog?.dismiss()
-            val checkedId = radioGroup.checkedRadioButtonId
-            GlobalFunctions.toaster(this, "radio checked $checkedId")
-            if (!ijkVideoView?.trackInfo.isNullOrEmpty()) {
-                val temp = ijkVideoView?.trackInfo!![checkedId]
-
-                val currentTrack = ijkVideoView?.getSelectedTrack(ITrackInfo.MEDIA_TRACK_TYPE_AUDIO)
-                if (currentTrack != null) {
-                    ijkVideoView?.deselectTrack(currentTrack)
-                }
-                logger(
-                    "checked_tracks",
-                    "${temp.trackType} ${temp.infoInline} ${temp.language}"
-                )
-                logger(
-                    "deselect_tracks",
-                    "$currentTrack $checkedId",
-                )
-                ijkVideoView?.selectTrack(checkedId)
-            }
-        }
     }
 
     private fun updateTexts() {
@@ -646,9 +599,69 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     private fun yesSure() {
+        ijkVideoView?.stopPlayback()
         val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_ONLINE_LIVE)
         intent.putExtra(PlayerModel.SELECTED_MODEL, idxNow)
         startActivity(intent)
         finish()
     }
 }
+/*
+    private fun initAudioTrackDialogue() {
+        if (ijkVideoView?.trackInfo == null) return
+        if (ijkVideoView?.trackInfo?.size == 0) return
+        val dialogView = this.layoutInflater.inflate(R.layout.dialog_tracks, null)
+
+        val builder = AlertDialog.Builder(this).setTitle("Select Tracks").setView(dialogView)
+        builder.setCancelable(true)
+        val radioGroup: RadioGroup = dialogView.findViewById(R.id.radio_group_server)
+        trackDialog[1] = builder.create()
+        var cnt = 0
+        for ((idx, i) in ijkVideoView?.trackInfo!!.withIndex()) {
+            val mInfoInline = i.getName(idx)
+            logger(
+                "track",
+                "$idx ${i.trackType}  ${i.infoInline} ${i.language} $mInfoInline"
+            )
+            if (i.trackType != ITrackInfo.MEDIA_TRACK_TYPE_AUDIO) continue
+            val radioButton = RadioButton(this)
+            radioButton.id = idx
+            radioButton.text = mInfoInline
+            radioButton.textSize = 15f
+            radioButton.setTextColor(Color.BLACK)
+            if (ijkVideoView?.getSelectedTrack(ITrackInfo.MEDIA_TRACK_TYPE_AUDIO) == idx) {
+                logger(
+                    "selected track",
+                    "$idx ${i.trackType}  ${i.infoInline} ${i.language}"
+                )
+                radioButton.isChecked = true
+            }
+            radioGroup.addView(radioButton)
+            cnt++
+        }
+
+        val materialButton: MaterialButton = dialogView.findViewById(R.id.button_stream_now)
+
+        materialButton.setOnClickListener {
+            trackDialog[1]?.dismiss()
+            val checkedId = radioGroup.checkedRadioButtonId
+            GlobalFunctions.toaster(this, "radio checked $checkedId")
+            if (!ijkVideoView?.trackInfo.isNullOrEmpty()) {
+                val temp = ijkVideoView?.trackInfo!![checkedId]
+
+                val currentTrack = ijkVideoView?.getSelectedTrack(ITrackInfo.MEDIA_TRACK_TYPE_AUDIO)
+                if (currentTrack != null) {
+                    ijkVideoView?.deselectTrack(currentTrack)
+                }
+                logger(
+                    "checked_tracks",
+                    "${temp.trackType} ${temp.infoInline} ${temp.language}"
+                )
+                logger(
+                    "deselect_tracks",
+                    "$currentTrack $checkedId",
+                )
+                ijkVideoView?.selectTrack(checkedId)
+            }
+        }
+    }*/

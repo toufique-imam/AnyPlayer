@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="custom_match_parent">-1px</dimen>
+    <dimen name="default_context_width">@dimen/custom_match_parent</dimen>
+</resources>

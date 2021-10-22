@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory app:title="Interface">
+    <PreferenceCategory
+        app:key="@string/app_name"
+        app:title="Interface">
 
         <DropDownPreference
-            app:defaultValue="Follow System"
+            android:summary="@string/pref_summary_theme"
             app:entries="@array/pref_entries_theme"
             app:entryValues="@array/pref_entry_values_theme"
             app:key="@string/pref_key_theme"
-            app:summary="@string/pref_summary_theme"
-            app:title="App Theme" />
+            app:title="@string/pref_title_theme" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/pref_title_exoplayer_video">
+    <PreferenceCategory
+        app:key="@string/app_name"
+        app:title="@string/pref_title_exoplayer_video">
 
         <DropDownPreference
             android:summary="@string/pref_summary_render"
@@ -22,7 +25,9 @@
             app:title="@string/pref_title_render" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/pref_title_ijkplayer_video">
+    <PreferenceCategory
+        app:key="@string/app_name"
+        app:title="@string/pref_title_ijkplayer_video">
 
         <SwitchPreference
             app:key="@string/pref_key_using_media_codec"
@@ -42,7 +47,9 @@
             app:key="@string/pref_key_pixel_format"
             app:title="@string/pref_title_pixel_format" />
     </PreferenceCategory>
-    <PreferenceCategory app:title="@string/pref_title_ijkplayer_audio">
+    <PreferenceCategory
+        app:key="@string/app_name"
+        app:title="@string/pref_title_ijkplayer_audio">
 
         <SwitchPreference
             app:key="@string/pref_key_using_opensl_es"

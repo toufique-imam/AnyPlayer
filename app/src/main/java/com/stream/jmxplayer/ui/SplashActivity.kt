@@ -13,8 +13,8 @@ import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.PlayerUtils
-import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var intentNow: Intent
@@ -26,7 +26,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(SharedPreferenceUtils.getTheme(this))
+        setTheme(Settings(this).themeId)
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
         logger("Splash", "came here")
@@ -41,7 +41,7 @@ class SplashActivity : AppCompatActivity() {
         MobileAds.initialize(this) {
             adMobAdUtils = AdMobAdUtils(this)
 
-        adActivity()
+            adActivity()
 //            Handler(Looper.myLooper()!!).postDelayed({
 //                adActivity()
 //            }, 200)
@@ -56,14 +56,12 @@ class SplashActivity : AppCompatActivity() {
         } else {
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             logger("Splash PlayerModel", playerModel.toString())
-            val intentNext = Intent(this, PlayerActivity::class.java)
-            //val intentNext = Intent(this, VlcActivity::class.java)
+            val intentNext = GlobalFunctions.getIntentPlayer(this , PlayerModel.STREAM_M3U)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             PlayListAll.clear()
             PlayListAll.add(playerModel)
-            //intentNext.putExtra(PlayerModel.DIRECT_PUT, data)
             startActivity(intentNext)
         }
         finish()

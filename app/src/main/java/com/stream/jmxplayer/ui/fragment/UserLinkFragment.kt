@@ -1,6 +1,5 @@
 package com.stream.jmxplayer.ui.fragment
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Patterns
@@ -23,7 +22,6 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
@@ -220,7 +218,7 @@ class UserLinkFragment : Fragment() {
     private fun startStreaming(data: ArrayList<PlayerModel>, selectedIdx: Int = 0) {
         PlayListAll.clear()
         PlayListAll.addAll(data)
-        val intentNext = Intent(requireActivity(), PlayerActivity::class.java)
+        val intentNext = GlobalFunctions.getIntentPlayer(requireContext(), PlayerModel.STREAM_M3U)
         //val intentNext = Intent(requireActivity(), VlcActivity::class.java)
         intentNext.putExtra(PlayerModel.SELECTED_MODEL, selectedIdx)
         startActivity(intentNext)
@@ -255,16 +253,19 @@ class UserLinkFragment : Fragment() {
                 userAgent = userAgentNow,
                 title = titleNow
             )
+        val headersPlayer = HashMap<String, String>()
+        headersPlayer["User-Agent"] = userAgentNow
         if (headers.isNotEmpty()) {
             val headerNow = headers.split(",")
             var index = 1
-            val headersPlayer = HashMap<String, String>()
             while (index < headerNow.size) {
                 headersPlayer[headerNow[index - 1]] = headerNow[index]
                 index += 2
             }
-            model.headers = headersPlayer
         }
+        model.headers = headersPlayer
+
+
         SharedPreferenceUtils.saveUserLastInput(
             requireContext(),
             model.link,

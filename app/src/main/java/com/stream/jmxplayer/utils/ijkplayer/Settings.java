@@ -20,6 +20,7 @@ package com.stream.jmxplayer.utils.ijkplayer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.stream.jmxplayer.R;
 
@@ -54,8 +55,46 @@ public class Settings {
             return 0;
         }
     }
-    public String getTheme(){
-        String key =
+
+    public int getTheme() {
+        String key = mAppContext.getString(R.string.pref_key_theme);
+        String val = mSharedPreferences.getString(key, "");
+        try {
+            return Integer.parseInt(val);
+        } catch (Exception ex) {
+            Log.e("ThemeEx", val);
+            return 0;
+        }
+    }
+
+    public int getThemeId() {
+        int themeNow = getTheme();
+        if (themeNow == 0) return R.style.Theme_JMXPlayer_NoActionBar;
+        else if (themeNow == 1) return R.style.Theme_JMXPlayer_Day;
+        else return R.style.Theme_JMXPlayer_Night;
+    }
+
+    public void setTheme(String val) {
+        String key = mAppContext.getString(R.string.pref_key_theme);
+        editor.putString(key, val);
+        editor.apply();
+    }
+
+    public int getRenderExo() {
+        String key = mAppContext.getString(R.string.pref_key_render);
+        String val = mSharedPreferences.getString(key, "");
+        try {
+            return Integer.parseInt(val);
+        } catch (Exception ex) {
+            Log.e("ExoEx", val);
+            return 0;
+        }
+    }
+
+    public void setRenderExo(String value) {
+        String key = mAppContext.getString(R.string.pref_key_render);
+        editor.putString(key, value);
+        editor.apply();
     }
 
     public boolean getUsingMediaCodec() {
@@ -97,6 +136,12 @@ public class Settings {
         return mSharedPreferences.getBoolean(key, false);
     }
 
+    public void setUsingOpenSLES(boolean value) {
+        String key = mAppContext.getString(R.string.pref_key_using_opensl_es);
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+
     public String getPixelFormat() {
         String key = mAppContext.getString(R.string.pref_key_pixel_format);
         return mSharedPreferences.getString(key, "");
@@ -130,7 +175,7 @@ public class Settings {
 
     public void setEnableTextureView(boolean value) {
         String key = mAppContext.getString(R.string.pref_key_enable_texture_view);
-        editor.putBoolean(key , value);
+        editor.putBoolean(key, value);
         editor.apply();
     }
 

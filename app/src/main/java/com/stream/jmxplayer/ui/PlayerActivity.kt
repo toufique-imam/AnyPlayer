@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
-import com.google.android.exoplayer2.ext.ffmpeg.FfmpegLibrary
 import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -38,13 +37,14 @@ import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.*
 import com.stream.jmxplayer.model.PlayerModel.Companion.SELECTED_MODEL
+import com.stream.jmxplayer.ui.fragment.TracksDialogFragment
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.utils.ijkplayer.Settings
 import kotlin.math.max
-
 @Suppress("Deprecation")
 class PlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
@@ -91,7 +91,7 @@ class PlayerActivity : AppCompatActivity(),
     private lateinit var previousButton: ImageButton
     private lateinit var audioTrackSelector: ImageButton
 
-    private var trackSelectorDialog: HashMap<Int, Dialog> = HashMap()
+    private var trackSelectorDialog = ArrayList<Dialog?>()
     private var trackDialog: AlertDialog? = null
     private lateinit var castButton: MediaRouteButton
 
@@ -100,7 +100,7 @@ class PlayerActivity : AppCompatActivity(),
 
     private lateinit var recyclerViewPlayList: RecyclerView
     private lateinit var galleryAdapter: GalleryAdapter
-    //lateinit var behavior: BottomSheetBehavior<RecyclerView>
+
 
     lateinit var adMobAdUtils: AdMobAdUtils
     private lateinit var iAdListener: IAdListener
@@ -110,6 +110,7 @@ class PlayerActivity : AppCompatActivity(),
 
     //    private lateinit var historyDB: HistoryDatabase
     private val viewModel: DatabaseViewModel by viewModels()
+    lateinit var mSettings: Settings
 
     var idxNow = 0
     /*
@@ -119,7 +120,8 @@ class PlayerActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         logger("onCreate", "called")
         super.onCreate(savedInstanceState)
-        setTheme(SharedPreferenceUtils.getTheme(this))
+        mSettings = Settings(this)
+        setTheme(mSettings.themeId)
         setContentView(R.layout.activity_player)
         alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
 
@@ -163,6 +165,57 @@ class PlayerActivity : AppCompatActivity(),
                 hideSystemUi()
             }
         })
+    }
+
+    private fun initTrackSelector() {
+        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
+        if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
+        trackSelectorDialog.clear()
+        val dialogView = this.layoutInflater.inflate(R.layout.dialog_tracks, null)
+
+        val builder = AlertDialog.Builder(this).setTitle("Select Tracks").setView(dialogView)
+        builder.setCancelable(true)
+        val radioGroup: RadioGroup = dialogView.findViewById(R.id.radio_group_server)
+
+        trackDialog = builder.create()
+        var cnt = 0
+        trackSelectorDialog.clear()
+        for (i in 0 until mappedTrackInfo.rendererCount) {
+            if (isVideoRenderer(mappedTrackInfo, i) || isAudioRenderer(
+                    mappedTrackInfo,
+                    i
+                ) || isSubtitleRenderer(mappedTrackInfo, i)
+            ) {
+                trackSelectorDialog.add(
+                    TrackSelectionDialogBuilder(
+                        this,
+                        "Select audio track",
+                        trackSelector,
+                        i
+                    ).build()
+                )
+                val radioButton = RadioButton(this)
+                radioButton.id = cnt
+                radioButton.text = mappedTrackInfo.getRendererName(i)
+                radioButton.textSize = 15f
+                radioButton.setTextColor(Color.BLACK)
+                if (cnt == 0) {
+                    radioButton.isChecked = true
+                }
+                radioGroup.addView(radioButton)
+                cnt++
+            }
+        }
+        if (cnt == 0)
+            audioTrackSelector.visibility = View.GONE
+
+        val materialButton: MaterialButton = dialogView.findViewById(R.id.button_stream_now)
+
+
+        materialButton.setOnClickListener {
+            trackDialog?.dismiss()
+            trackSelectorDialog[radioGroup.checkedRadioButtonId]?.show()
+        }
     }
 
     override fun onStart() {
@@ -384,60 +437,51 @@ class PlayerActivity : AppCompatActivity(),
             updatePlayerModel()
         }
         audioTrackSelector.setOnClickListener {
-            if (trackDialog == null) {
-                initTracks()
-                //initPopupQuality()
-            }
+            if (trackDialog == null)
+                initTrackSelector()
             trackDialog?.show()
         }
     }
 
-    //create dialogue for every tracks
-    //only if it's audio or video renderer
-    //call when link changes
-    private fun initTracks() {
-        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
-        if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
-        trackSelectorDialog.clear()
-        val dialogView = this.layoutInflater.inflate(R.layout.dialog_tracks, null)
+    /*
+                showVideoTrack { trackNow: TrackInfo ->
+                logger(TAG, trackNow.toString())
+                val parameter = trackSelector.parameters
+                val isDisabled = parameter.getRendererDisabled(trackNow.renderIndex)
 
-        val builder = AlertDialog.Builder(this).setTitle("Select Tracks").setView(dialogView)
-        builder.setCancelable(true)
-        val radioGroup: RadioGroup = dialogView.findViewById(R.id.radio_group_server)
+                val rendererTrackGroups: TrackGroupArray =
+                    trackSelector.currentMappedTrackInfo!!.getTrackGroups(trackNow.renderIndex)
 
-        trackDialog = builder.create()
-        var cnt = 0
-        for (i in 0 until mappedTrackInfo.rendererCount) {
-            if (isVideoRenderer(mappedTrackInfo, i) || isAudioRenderer(mappedTrackInfo, i)) {
-                trackSelectorDialog[cnt] = TrackSelectionDialogBuilder(
-                    this,
-                    "Select audio track",
-                    trackSelector,
-                    i
-                ).build()
-                val radioButton = RadioButton(this)
-                radioButton.id = cnt
-                radioButton.text = mappedTrackInfo.getRendererName(i)
-                radioButton.textSize = 15f
-                radioButton.setTextColor(Color.BLACK)
-                if (cnt == 0) {
-                    radioButton.isChecked = true
+                val override = parameter.getSelectionOverride(
+                    trackNow.renderIndex,
+                    rendererTrackGroups
+                )
+                val overrides = override?.let { listOf(it) } ?: emptyList()
+
+                trackSelector.parameters = TrackSelectionUtil.updateParametersWithOverride(
+                    parameter,
+                    trackNow.renderIndex,
+                    rendererTrackGroups,
+                    isDisabled,
+                    if (overrides.isNotEmpty()) overrides.get(0)
+                    else null
+                )
+            }
+        private fun showVideoTrack(trackSelectionListener: (TrackInfo) -> Unit) {
+            if (!isStarted()) return
+            tracksDialogFragment.arguments = bundleOf()
+            tracksDialogFragment.show(supportFragmentManager, "fragment_video_tracks")
+            tracksDialogFragment.trackSelectionListener = trackSelectionListener
+            tracksDialogFragment.onBindInitiated = {
+                mPlayer?.currentTrackSelections?.let { it1 ->
+                    tracksDialogFragment.onExoPlayerModelChanged(
+                        trackSelector,
+                        it1
+                    )
                 }
-                radioGroup.addView(radioButton)
-                cnt++
             }
         }
-        if (cnt == 0)
-            audioTrackSelector.visibility = View.GONE
-
-        val materialButton: MaterialButton = dialogView.findViewById(R.id.button_stream_now)
-
-
-        materialButton.setOnClickListener {
-            trackDialog?.dismiss()
-            trackSelectorDialog[radioGroup.checkedRadioButtonId]?.show()
-        }
-    }
+    */
 
     private fun isAudioRenderer(
         mappedTrackInfo: MappingTrackSelector.MappedTrackInfo,
@@ -448,6 +492,17 @@ class PlayerActivity : AppCompatActivity(),
 
         val trackType = mappedTrackInfo.getRendererType(renderedIndex)
         return C.TRACK_TYPE_AUDIO == trackType
+    }
+
+    private fun isSubtitleRenderer(
+        mappedTrackInfo: MappingTrackSelector.MappedTrackInfo,
+        renderedIndex: Int
+    ): Boolean {
+        val trackGroupArray = mappedTrackInfo.getTrackGroups(renderedIndex)
+        if (trackGroupArray.length == 0) return false
+
+        val trackType = mappedTrackInfo.getRendererType(renderedIndex)
+        return C.TRACK_TYPE_TEXT == trackType
     }
 
     private fun isVideoRenderer(
@@ -575,7 +630,7 @@ class PlayerActivity : AppCompatActivity(),
             R.id.menu_change_player -> {
                 GlobalFunctions.areYouSureDialogue(
                     this,
-                    "Player wll change to IJKPlayer, Are you sure?",
+                    "Player will change to IJKPlayer, Are you sure?",
                     this::yesSure
                 )
             }
@@ -584,6 +639,7 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun yesSure() {
+        releasePlayer()
         val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_M3U)
         intent.putExtra(SELECTED_MODEL, idxNow)
         startActivity(intent)
@@ -674,6 +730,7 @@ class PlayerActivity : AppCompatActivity(),
     }
 
     private fun addSource() {
+        trackSelectorDialog.clear()
         trackDialog = null
         audioTrackSelector.visibility = View.GONE
         addToHistory(playerModelNow)
@@ -689,19 +746,21 @@ class PlayerActivity : AppCompatActivity(),
                 .setPreferredTextLanguage("es")
                 .setPreferredAudioLanguage("es")
         )
-        logger(
-            "Render",
-            "${FfmpegLibrary.isAvailable()} ${FfmpegLibrary.getVersion()} ${
-                FfmpegLibrary.supportsFormat("audio/mpeg-L2")
-            }"
-        )
 
-
+        logger(TAG, "render " + mSettings.renderExo)
         @DefaultRenderersFactory.ExtensionRendererMode val extensionRendererMode =
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
-                DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
-            else
-                DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+            when (mSettings.renderExo) {
+                1 -> DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+                2 -> DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
+                3 -> DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
+                else -> {
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
+                        DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
+                    else
+                        DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+                }
+            }
+
         val renderer = DefaultRenderersFactory(this)
             .setExtensionRendererMode(extensionRendererMode)
         mPlayer = SimpleExoPlayer.Builder(this, renderer)

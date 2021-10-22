@@ -26,7 +26,8 @@
     <string name="splash_logo">splash_logo</string>
     <string name="casty_introduction_text">Utilice este botón para conectarse con Chromecast</string>
     <string name="bottom_sheet_header_none">Ningún artículo seleccionado</string>
-
+    <string name="no_track">No track</string>
+    <string name="trackName">%1$s, %2$s</string>
 
     <string name="loading">Cargando Contenido..\nExpere un momento por favor.</string>
     <string name="movie_name">Nombre de pelicula</string>
@@ -53,36 +54,6 @@
     <string name="search">Buscar</string>
     <string name="refresh">Actualizar</string>
     <string name="delete">Borrar</string>
-
-    <string name="pref_key_theme">pref.theme</string>
-    <string name="pref_title_theme">App Theme</string>
-    <string name="pref_summary_theme">Select App theme</string>
-    <array name="pref_entries_theme">
-        <item>Seguir el sistema</item>
-        <item>Día</item>
-        <item>Noche</item>
-    </array>
-    <array name="pref_entry_values_theme">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </array>
-
-    <string name="pref_key_render">pref.render</string>
-    <string name="pref_title_render">Render Mode</string>
-    <string name="pref_summary_render">Choose Render Mode</string>
-    <string-array name="pref_entries_render">
-        <item>Auto</item>
-        <item>On</item>
-        <item>Prefer</item>
-        <item>Off</item>
-    </string-array>
-    <string-array name="pref_entry_values_render">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
 
     <string name="N_A">N/A</string>
     <string name="close">Close</string>
@@ -179,10 +150,40 @@
         <item>IjkMediaPlayer</item>
         <item>IjkExoMediaPlayer</item>
     </string-array>
+    <string name="pref_key_theme">pref.theme</string>
+    <string name="pref_title_theme">App Theme</string>
+    <string name="pref_summary_theme">Select App theme</string>
+    <string-array name="pref_entries_theme">
+        <item>Auto</item>
+        <item>Day</item>
+        <item>Night</item>
+    </string-array>
+    <string-array name="pref_entry_values_theme">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string name="pref_key_render">pref.render</string>
+    <string name="pref_title_render">Render Mode</string>
+    <string name="pref_summary_render">Choose Render Mode</string>
+    <string-array name="pref_entries_render">
+        <item>Auto</item>
+        <item>Prefer</item>
+        <item>On</item>
+        <item>Off</item>
+    </string-array>
+    <string-array name="pref_entry_values_render">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
 
     <!-- -->
     <string name="pref_title_ijkplayer_video">Video: ijkplayer</string>
-    <string name="pref_title_exoplayer_video">Video: exoplayer</string>
+    <string name="pref_title_exoplayer_video">Video: ExoPlayer</string>
 
     <string name="pref_key_using_media_codec">pref.using_media_codec</string>
     <string name="pref_title_using_media_codec">Using MediaCodec</string>
@@ -259,4 +260,5 @@
     <string name="pref_key_last_directory" />
     <string name="playlist_next">Playlist Next</string>
     <string name="playlist_prev">Playlist Prev</string>
+    <string name="subtitles">Subtitles</string>
 </resources>

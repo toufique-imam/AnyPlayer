@@ -19,7 +19,6 @@ package com.stream.jmxplayer.ui.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -61,7 +60,8 @@ import tv.danmaku.ijk.media.player.misc.IMediaFormat;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 import tv.danmaku.ijk.media.player.misc.IjkMediaFormat;
 
-public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
+public class IjkVideoView extends
+        FrameLayout implements MediaPlayerControl {
     private final String TAG = "IjkVideoView";
     // settable by the client
     private Uri mUri;
@@ -353,6 +353,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                     mSettings.getUsingMediaDataSource() &&
                     (TextUtils.isEmpty(scheme) || scheme.equalsIgnoreCase("file"))) {
                 IMediaDataSource dataSource = new FileMediaDataSource(new File(mUri.toString()));
+                Log.e(TAG, "noHeader");
                 mMediaPlayer.setDataSource(dataSource);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 mMediaPlayer.setDataSource(mAppContext, mUri, mHeaders);
@@ -951,6 +952,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
         return mCurrentAspectRatio;
     }
 
+
     //-------------------------
     // Extend: Render
     //-------------------------
@@ -1075,6 +1077,7 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
                     } else {
                         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
                     }
+                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "subtitle", 1);
 
                     if (mSettings.getUsingOpenSLES()) {
                         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1);
@@ -1281,4 +1284,5 @@ public class IjkVideoView extends FrameLayout implements MediaPlayerControl {
     public int getSelectedTrack(int trackType) {
         return MediaPlayerCompat.getSelectedTrack(mMediaPlayer, trackType);
     }
+
 }

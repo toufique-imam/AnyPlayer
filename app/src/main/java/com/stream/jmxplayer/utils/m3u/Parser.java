@@ -44,6 +44,16 @@ public class Parser {
         else return "";
     }
 
+    static String getVlcOption(String req, String name) {
+        final String regex = "#EXTVLCOPT:" + name + "=(.*)";
+        final Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        final Matcher matcher = pattern.matcher(req);
+        if (matcher.find() && matcher.groupCount() > 0) {
+            return matcher.group(1);
+        }
+        return "";
+    }
+
     public static ArrayList<PlayerModel> ParseM3UString(String req, String category) {
         ArrayList<PlayerModel> channelModels = new ArrayList<>();
         PlayerModel channelModel;
@@ -56,9 +66,16 @@ public class Parser {
                 continue;
             }
             String channelInfo = lines[i];
-            if (lines[i + 1].startsWith("#EXTVLCOPT")) i++;
+            String userAgent = "";
+            String referrer = "";
+            if (lines[i + 1].startsWith("#EXTVLCOPT")) {
+                userAgent = getVlcOption(lines[i + 1], "http-user-agent");
+                referrer = getVlcOption(lines[i + 1], "http-referrer");
+                i++;
+            }
+            if (userAgent.isEmpty()) userAgent = GlobalFunctions.USER_AGENT;
             String channelLink = lines[i + 1];
-        //    GlobalFunctions.Companion.logger("parser", channelInfo + "\n" + channelLink);
+            //    GlobalFunctions.Companion.logger("parser", channelInfo + "\n" + channelLink);
             String language = getLanguage(channelInfo);
             String logo = getLogo(channelInfo);
             String channelName = getName(channelInfo);
@@ -66,9 +83,11 @@ public class Parser {
             if (language.isEmpty()) language = "Server-1";
             if (logo.isEmpty())
                 logo = channelLink;
-
+            mp.put("User-Agent", userAgent);
+            if (!referrer.isEmpty())
+                mp.put("Referrer", referrer);
             channelModel = new PlayerModel(
-                    0, channelLink, logo, channelLink, GlobalFunctions.USER_AGENT
+                    0, channelLink, logo, channelLink, userAgent
                     , "", "", 0, channelName, channelName + " " + language, language, logo, PlayerModel.STREAM_ONLINE_LIVE, mp);
             channelModel.setId(PlayerModel.Companion.getId(channelLink, channelName));
             channelModels.add(channelModel);

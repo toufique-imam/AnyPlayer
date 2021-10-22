@@ -8,14 +8,15 @@ import androidx.navigation.ui.NavigationUI
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stream.jmxplayer.R
-import com.stream.jmxplayer.utils.SharedPreferenceUtils
+import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 
 class BrowserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(SharedPreferenceUtils.getTheme(this))
+        setTheme(Settings(this).themeId)
+        //setTheme(SharedPreferenceUtils.getTheme(this))
         setContentView(R.layout.activity_browser)
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)

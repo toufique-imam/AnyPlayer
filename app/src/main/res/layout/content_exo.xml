@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:focusable="true"
-        app:controller_layout_id="@layout/exo_player_view_style" />
+        app:controller_layout_id="@layout/exo_player_view_style"
+        app:use_artwork="true" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -22,8 +23,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:visibility="gone"
         android:background="@color/TransparentBlack"
+        android:visibility="gone"
         tools:listitem="@layout/history_item" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

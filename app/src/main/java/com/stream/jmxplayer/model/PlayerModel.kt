@@ -40,48 +40,30 @@ data class PlayerModel(
     @ColumnInfo(name = "language") var mLanguage: String = "default",
     @ColumnInfo(name = "cardImageUrl") var cardImageUrl: String = "",
     @ColumnInfo(name = "streamType") var streamType: Int = 0,
-
     @TypeConverters(MapConvert::class)
     @ColumnInfo(name = "headers")
     var headers: Map<String, String> = HashMap(),
 ) : Serializable {
 
-//    private fun headerString(): String {
-//        val stringBuilder = StringBuilder()
-//        for (i in headers.keys) {
-//            stringBuilder.append("$i:${headers[i]} \n")
-//        }
-//        return stringBuilder.toString()
-//    }
+//    override fun toString(): String {
+//        return "Movie{" +
+//                "id=" + id +
+//                ", $titleIntent='" + title + '\'' +
+//                ", $durationIntent='" + duration + '\'' +
+////                ", $userAgentIntent='" + userAgent + '\'' +
+////                ", $drmStringIntent='" + drmSting + '\'' +
+////                ", $cookieIntent='" + cookies + '\'' +
+////                ", $languageIntent='" + mLanguage + '\'' +
+////                ", $descriptionIntent='" + description + '\'' +
+////                ", $mainLinkIntent='" + mainLinkIntent + '\'' +
+//                ", $linkIntent='" + link + '\'' +
+//                ", $imageIntent='" + image + '\'' +
+////                ", $cardImageIntent='" + cardImageUrl + '\'' +
+//                ", $typeIntent='" + streamType + '\'' +
+////                ", $headerIntent='" + headerString() + '\'' +
+//                '}'
 //
-//    private fun stringToHeader(headerString: String) {
-//        val headerArray = headerString.split(":")
-//        var idx = 1
-//        while (idx < headerArray.size) {
-//            headers[headerArray[idx - 1]] = headerArray[idx]
-//            idx += 2
-//        }
 //    }
-
-    override fun toString(): String {
-        return "Movie{" +
-                "id=" + id +
-                ", $titleIntent='" + title + '\'' +
-                ", $durationIntent='" + duration + '\'' +
-//                ", $userAgentIntent='" + userAgent + '\'' +
-//                ", $drmStringIntent='" + drmSting + '\'' +
-//                ", $cookieIntent='" + cookies + '\'' +
-//                ", $languageIntent='" + mLanguage + '\'' +
-//                ", $descriptionIntent='" + description + '\'' +
-//                ", $mainLinkIntent='" + mainLinkIntent + '\'' +
-                ", $linkIntent='" + link + '\'' +
-                ", $imageIntent='" + image + '\'' +
-//                ", $cardImageIntent='" + cardImageUrl + '\'' +
-                ", $typeIntent='" + streamType + '\'' +
-//                ", $headerIntent='" + headerString() + '\'' +
-                '}'
-
-    }
 
     companion object {
         const val linkIntent = "LINK"

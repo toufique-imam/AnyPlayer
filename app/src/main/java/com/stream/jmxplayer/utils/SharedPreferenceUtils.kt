@@ -57,25 +57,5 @@ class SharedPreferenceUtils {
 
             editor.apply()
         }
-
-        fun getUserTheme(context: Context): String {
-            val prefs = context.getSharedPreferences(SHARED_PREF, Activity.MODE_PRIVATE)
-            return prefs.getString(THEME, "System") ?: "System"
-        }
-
-        fun setUserTheme(context: Context, themeName: String) {
-            val prefs = context.getSharedPreferences(SHARED_PREF, Activity.MODE_PRIVATE)
-            val editor = prefs.edit()
-            editor.putString(THEME, themeName)
-            editor.apply()
-        }
-
-        fun getTheme(context: Context): Int {
-            return when (getUserTheme(context)) {
-                "Día" -> R.style.Theme_JMXPlayer_Day
-                "Noche" -> R.style.Theme_JMXPlayer_Night
-                else -> R.style.Theme_JMXPlayer_NoActionBar
-            }
-        }
     }
 }

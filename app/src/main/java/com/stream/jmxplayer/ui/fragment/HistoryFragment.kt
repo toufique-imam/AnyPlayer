@@ -43,7 +43,8 @@ class HistoryFragment : Fragment() {
             GalleryItemViewHolder.SINGLE_DELETE,
             { video, _ ->
                 //val intent = Intent(context, PlayerActivity::class.java)
-                val intent = GlobalFunctions.getIntentPlayer(requireContext(), video.streamType)
+                val intent =
+                    GlobalFunctions.getIntentPlayer(requireContext(), PlayerModel.STREAM_M3U)
                 PlayListAll.clear()
                 PlayListAll.add(video)
                 startActivity(intent)

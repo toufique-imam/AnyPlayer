@@ -18,6 +18,9 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    dataBinding {
+        enabled = true
+    }
 
 
     buildTypes {
@@ -47,8 +50,8 @@ android {
 
 dependencies {
     implementation files('libs/extension-ffmpeg-release.aar')
-    //implementation files('libs/extension-av1-release.aar')
-    //implementation files('libs/extension-vp9-release.aar')
+    implementation files('libs/extension-av1-release.aar')
+    implementation files('libs/extension-vp9-release.aar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.6.0'
