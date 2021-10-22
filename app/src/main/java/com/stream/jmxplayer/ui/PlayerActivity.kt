@@ -442,47 +442,6 @@ class PlayerActivity : AppCompatActivity(),
             trackDialog?.show()
         }
     }
-
-    /*
-                showVideoTrack { trackNow: TrackInfo ->
-                logger(TAG, trackNow.toString())
-                val parameter = trackSelector.parameters
-                val isDisabled = parameter.getRendererDisabled(trackNow.renderIndex)
-
-                val rendererTrackGroups: TrackGroupArray =
-                    trackSelector.currentMappedTrackInfo!!.getTrackGroups(trackNow.renderIndex)
-
-                val override = parameter.getSelectionOverride(
-                    trackNow.renderIndex,
-                    rendererTrackGroups
-                )
-                val overrides = override?.let { listOf(it) } ?: emptyList()
-
-                trackSelector.parameters = TrackSelectionUtil.updateParametersWithOverride(
-                    parameter,
-                    trackNow.renderIndex,
-                    rendererTrackGroups,
-                    isDisabled,
-                    if (overrides.isNotEmpty()) overrides.get(0)
-                    else null
-                )
-            }
-        private fun showVideoTrack(trackSelectionListener: (TrackInfo) -> Unit) {
-            if (!isStarted()) return
-            tracksDialogFragment.arguments = bundleOf()
-            tracksDialogFragment.show(supportFragmentManager, "fragment_video_tracks")
-            tracksDialogFragment.trackSelectionListener = trackSelectionListener
-            tracksDialogFragment.onBindInitiated = {
-                mPlayer?.currentTrackSelections?.let { it1 ->
-                    tracksDialogFragment.onExoPlayerModelChanged(
-                        trackSelector,
-                        it1
-                    )
-                }
-            }
-        }
-    */
-
     private fun isAudioRenderer(
         mappedTrackInfo: MappingTrackSelector.MappedTrackInfo,
         renderedIndex: Int

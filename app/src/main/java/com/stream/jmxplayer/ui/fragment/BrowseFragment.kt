@@ -108,16 +108,9 @@ class BrowseFragment : Fragment() {
                             )
                         )
                 }
-
-                //toaster(this@PlayerActivity, "connected")
-                //casty.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
-                //casty.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
-                //startCastServer()
             }
 
             override fun onDisconnected() {
-                //toaster(this@PlayerActivity, "disconnected")
-                //hideSystemUi()
             }
         })
     }
@@ -168,8 +161,7 @@ class BrowseFragment : Fragment() {
         permissionRationaleView = view.findViewById(R.id.permission_rationale_view)
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { video, pos ->
             if (video.streamType != PlayerModel.STREAM_OFFLINE_IMAGE) {
-                //val intent = Intent(context, PlayerActivity::class.java)
-//                val intent = Intent(context, VlcActivity::class.java)
+
                 val intent = GlobalFunctions.getIntentPlayer(requireContext(), video.streamType)
                 PlayListAll.clear()
                 PlayListAll.add(video)
