@@ -5,7 +5,7 @@
         app:key="@string/app_name"
         app:title="Interface">
 
-        <DropDownPreference
+        <ListPreference
             android:summary="@string/pref_summary_theme"
             app:entries="@array/pref_entries_theme"
             app:entryValues="@array/pref_entry_values_theme"
@@ -15,9 +15,21 @@
 
     <PreferenceCategory
         app:key="@string/app_name"
+        app:title="Media Player">
+
+        <ListPreference
+            android:summary="@string/pref_summary_player_select"
+            app:entries="@array/pref_entries_player_select"
+            app:entryValues="@array/pref_entry_values_player_select"
+            app:key="@string/pref_key_player_select"
+            app:title="@string/pref_title_player_select" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="@string/app_name"
         app:title="@string/pref_title_exoplayer_video">
 
-        <DropDownPreference
+        <ListPreference
             android:summary="@string/pref_summary_render"
             app:entries="@array/pref_entries_render"
             app:entryValues="@array/pref_entry_values_render"
@@ -41,7 +53,7 @@
             android:summary="@string/pref_summary_media_codec_handle_resolution_change"
             app:key="@string/pref_key_media_codec_handle_resolution_change"
             app:title="@string/pref_title_media_codec_handle_resolution_change" />
-        <DropDownPreference
+        <ListPreference
             app:entries="@array/pref_entries_pixel_format"
             app:entryValues="@array/pref_entry_values_pixel_format"
             app:key="@string/pref_key_pixel_format"

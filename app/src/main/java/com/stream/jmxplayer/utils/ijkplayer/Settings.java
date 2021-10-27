@@ -79,6 +79,23 @@ public class Settings {
         editor.putString(key, val);
         editor.apply();
     }
+    public int getDefaultPlayer() {
+        String key = mAppContext.getString(R.string.pref_key_render);
+        String val = mSharedPreferences.getString(key, "");
+        try {
+            return Integer.parseInt(val);
+        } catch (Exception ex) {
+            Log.e("ExoEx", val);
+            return 0;
+        }
+    }
+
+    public void setDefaultPlayer(String value) {
+        String key = mAppContext.getString(R.string.pref_key_render);
+        editor.putString(key, value);
+        editor.apply();
+    }
+
 
     public int getRenderExo() {
         String key = mAppContext.getString(R.string.pref_key_render);

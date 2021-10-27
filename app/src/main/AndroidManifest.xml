@@ -36,6 +36,7 @@
         android:usesCleartextTraffic="true"
         tools:ignore="UnusedAttribute">
         <activity
+            android:screenOrientation="landscape"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:name=".ui.IJKPlayerActivity"
             android:exported="false" />
@@ -85,6 +86,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:screenOrientation="landscape"
             android:name=".ui.PlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"

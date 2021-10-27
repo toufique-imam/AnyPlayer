@@ -15,6 +15,7 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.IJKPlayerActivity
 import com.stream.jmxplayer.ui.PlayerActivity
+import com.stream.jmxplayer.utils.ijkplayer.Settings
 import me.drakeet.support.toast.ToastCompat
 import java.net.*
 import java.util.*
@@ -207,6 +208,28 @@ class GlobalFunctions {
                 }
             }
             return ans.toString()
+        }
+
+        fun getDefaultPlayer(
+            context: Context,
+            mSettings: Settings,
+            playerModel: PlayerModel
+        ): Intent {
+            val playerNow = mSettings.defaultPlayer
+            when (playerNow) {
+                1 -> return getIntentPlayer(context, PlayerModel.STREAM_M3U)
+                2 -> return getIntentPlayer(context, PlayerModel.STREAM_ONLINE_LIVE)
+                else -> {
+                    val keys = playerModel.headers.keys
+                    for (key in keys) {
+                        logger("KEY" , key)
+                        if (key == "user-agent") continue
+                        else if (key == "User-Agent") continue
+                        else return getIntentPlayer(context, PlayerModel.STREAM_ONLINE_LIVE)
+                    }
+                    return getIntentPlayer(context, PlayerModel.STREAM_M3U)
+                }
+            }
         }
 
         fun getIntentPlayer(context: Context, state: Int): Intent {

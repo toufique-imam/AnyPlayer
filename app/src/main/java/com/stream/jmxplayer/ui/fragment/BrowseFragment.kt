@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.*
 import android.widget.LinearLayout
 import android.widget.SearchView
@@ -32,6 +31,7 @@ import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 
 /**
@@ -159,10 +159,11 @@ class BrowseFragment : Fragment() {
         grantPermissionButton = view.findViewById(R.id.grant_permission_button)
         welcomeView = view.findViewById(R.id.welcome_view)
         permissionRationaleView = view.findViewById(R.id.permission_rationale_view)
+        val mSettings = Settings(requireContext())
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { video, pos ->
             if (video.streamType != PlayerModel.STREAM_OFFLINE_IMAGE) {
 
-                val intent = GlobalFunctions.getIntentPlayer(requireContext(), video.streamType)
+                val intent = GlobalFunctions.getDefaultPlayer(requireContext(), mSettings, video)
                 PlayListAll.clear()
                 PlayListAll.add(video)
                 startActivity(intent)
@@ -277,7 +278,7 @@ class BrowseFragment : Fragment() {
 
     private fun goToSettings() {
         Intent(
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             Uri.parse("package:${activity?.packageName}")
         ).apply {
             addCategory(Intent.CATEGORY_DEFAULT)

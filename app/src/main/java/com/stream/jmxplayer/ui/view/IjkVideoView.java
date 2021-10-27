@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import tv.danmaku.ijk.media.exo.IjkExoMediaPlayer;
 import tv.danmaku.ijk.media.player.AndroidMediaPlayer;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -1046,6 +1047,10 @@ public class IjkVideoView extends
         IMediaPlayer mediaPlayer;
 
         switch (playerType) {
+            case Settings.PV_PLAYER__IjkExoMediaPlayer: {
+                mediaPlayer = new IjkExoMediaPlayer(mAppContext);
+            }
+            break;
             case Settings.PV_PLAYER__AndroidMediaPlayer: {
                 mediaPlayer = new AndroidMediaPlayer();
             }
@@ -1207,7 +1212,7 @@ public class IjkVideoView extends
         adBuilder.show();
     }
 
-    private String buildResolution(int width, int height, int sarNum, int sarDen) {
+    public static String buildResolution(int width, int height, int sarNum, int sarDen) {
         StringBuilder sb = new StringBuilder();
         sb.append(width);
         sb.append(" x ");
@@ -1224,7 +1229,7 @@ public class IjkVideoView extends
         return sb.toString();
     }
 
-    private String buildTimeMilli(long duration) {
+    public static String buildTimeMilli(long duration) {
         long total_seconds = duration / 1000;
         long hours = total_seconds / 3600;
         long minutes = (total_seconds % 3600) / 60;

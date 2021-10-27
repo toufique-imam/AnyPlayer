@@ -24,9 +24,12 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var alertDialogLoading: AlertDialog
     private var mCastContext: CastContext? = null
 
+    private lateinit var mSettings: Settings
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(Settings(this).themeId)
+        mSettings = Settings(this)
+        setTheme(mSettings.themeId)
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
         logger("Splash", "came here")
@@ -56,7 +59,7 @@ class SplashActivity : AppCompatActivity() {
         } else {
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             logger("Splash PlayerModel", playerModel.toString())
-            val intentNext = GlobalFunctions.getIntentPlayer(this , PlayerModel.STREAM_M3U)
+            val intentNext = GlobalFunctions.getDefaultPlayer(this, mSettings, playerModel)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

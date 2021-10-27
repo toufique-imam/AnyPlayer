@@ -163,6 +163,20 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+    <string name="pref_key_player_select">pref.player.select</string>
+    <string name="pref_title_player_select">Default Player</string>
+    <string name="pref_summary_player_select">Select Default Player</string>
+    <string-array name="pref_entries_player_select">
+        <item>Auto</item>
+        <item>JMX Player</item>
+        <item>EXO Player</item>
+    </string-array>
+    <string-array name="pref_entry_values_player_select">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
 
     <string name="pref_key_render">pref.render</string>
     <string name="pref_title_render">Render Mode</string>

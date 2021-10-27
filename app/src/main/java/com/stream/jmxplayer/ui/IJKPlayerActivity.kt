@@ -31,6 +31,7 @@ import com.stream.jmxplayer.ui.view.VideoControlView
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
@@ -215,8 +216,8 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             } else {
                 pauseButton.startAnimation(animationUtils.animationInMid)
                 pauseButton.setImageResource(
-                    if (pauseButton.contentDescription == "play") R.drawable.ic_baseline_play_circle_filled_24
-                    else R.drawable.ic_baseline_pause_circle_filled_24
+                    if (pauseButton.contentDescription == "play") R.drawable.ic_play
+                    else R.drawable.ic_pause
                 )
             }
         }
@@ -334,7 +335,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             viewR.adapter = galleryAdapter
         }
         galleryAdapter.updateData(PlayListAll)
-        recyclerViewPlayList.visibility = View.GONE
+        recyclerViewPlayList.visibility = View.VISIBLE
     }
 
     private fun updateTexts() {
@@ -554,6 +555,13 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         adMobAdUtils.loadAd()
     }
 
+    private fun toggleResize(): String {
+        val id = ijkVideoView?.toggleAspectRatio() ?: IRenderView.AR_ASPECT_FILL_PARENT
+        val str = MeasureHelper.getAspectRatioText(this, id)
+        toaster(this, str)
+        return str
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_change_orientation -> {
@@ -569,17 +577,14 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 showDownloadDialog()
             }
             R.id.menu_open_with_other_app -> {
-                ijkVideoView?.showMediaInfo()
-                //adActivity(4)
+                adActivity(4)
             }
             R.id.menu_resize -> {
                 logger("resize", "here")
-                item.title = MeasureHelper.getAspectRatioText(
-                    this,
-                    ijkVideoView?.toggleAspectRatio() ?: IRenderView.AR_ASPECT_FILL_PARENT
-                )
+                item.title = toggleResize()
             }
             R.id.menu_playlist -> {
+                logger("playlist", "here")
                 if (recyclerViewPlayList.visibility == View.VISIBLE) {
                     recyclerViewPlayList.visibility = View.GONE
                 } else {
@@ -593,7 +598,9 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                     this::yesSure
                 )
             }
-
+            R.id.menu_media_info -> {
+                ijkVideoView?.showMediaInfo()
+            }
         }
         return false
     }

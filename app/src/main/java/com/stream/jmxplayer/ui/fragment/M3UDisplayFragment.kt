@@ -14,6 +14,7 @@ import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils
+import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 class M3UDisplayFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -35,10 +36,19 @@ class M3UDisplayFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.recycler_gallery)
+        val mSettings = Settings(requireContext())
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { _, pos ->
             //val intent = Intent(context, PlayerActivity::class.java)
 //            val intent = Intent(context, VlcActivity::class.java)
-            val intent = GlobalFunctions.getIntentPlayer(requireContext(), PlayerModel.STREAM_M3U)
+            val intent = GlobalFunctions.getDefaultPlayer(
+                requireContext(),
+                mSettings,
+                SharedPreferenceUtils.PlayListAll[pos]
+            )
+//            val intent = GlobalFunctions.getIntentPlayer(
+//                requireContext(),
+//                PlayerModel.STREAM_M3U
+//            )
             intent.putExtra(PlayerModel.SELECTED_MODEL, pos)
             startActivity(intent)
         }, { _, _ -> })

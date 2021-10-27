@@ -24,6 +24,8 @@ import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
+import com.google.android.exoplayer2.source.TrackGroup
+import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
@@ -37,7 +39,8 @@ import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.*
 import com.stream.jmxplayer.model.PlayerModel.Companion.SELECTED_MODEL
-import com.stream.jmxplayer.ui.fragment.TracksDialogFragment
+import com.stream.jmxplayer.ui.view.IjkVideoView
+import com.stream.jmxplayer.ui.view.TableLayoutBinder
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
@@ -45,6 +48,7 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 import kotlin.math.max
+
 @Suppress("Deprecation")
 class PlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
@@ -112,10 +116,122 @@ class PlayerActivity : AppCompatActivity(),
     private val viewModel: DatabaseViewModel by viewModels()
     lateinit var mSettings: Settings
 
+    var mediaMetaData: MediaMetadata? = null
+
     var idxNow = 0
     /*
     Life Cycle
      */
+
+    private fun showMediaInfo() {
+        mediaMetaData = mPlayer?.mediaMetadata
+        if (mediaMetaData == null) return
+
+        val builder = TableLayoutBinder(this)
+        builder.appendSection(R.string.mi_player)
+        builder.appendRow2(R.string.mi_player, "ExoPlayer")
+        builder.appendSection(R.string.mi_media)
+        builder.appendRow2(
+            R.string.mi_resolution,
+            IjkVideoView.buildResolution(
+                mPlayer?.videoFormat?.width ?: 0,
+                mPlayer?.videoFormat?.height ?: 0,
+                0, 0
+            )
+        )
+        builder.appendRow2(
+            R.string.mi_length,
+            IjkVideoView.buildTimeMilli(mPlayer?.duration ?: 0)
+        )
+        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
+        var index = -1
+        if (mappedTrackInfo != null) {
+            for (i in 0 until mappedTrackInfo.rendererCount) {
+                val trackGroupArray = mappedTrackInfo.getTrackGroups(i)
+                val trackType = mappedTrackInfo.getRendererType(i)
+                val typeStr = when (trackType) {
+                    C.TRACK_TYPE_VIDEO -> getString(R.string.TrackType_video)
+                    C.TRACK_TYPE_AUDIO -> getString(R.string.TrackType_audio)
+                    C.TRACK_TYPE_TEXT -> getString(R.string.TrackType_subtitle)
+                    C.TRACK_TYPE_METADATA -> getString(R.string.TrackType_metadata)
+                    C.TRACK_TYPE_DEFAULT -> "Default"
+                    else -> getString(R.string.TrackType_unknown)
+                }
+                for (j in 0 until trackGroupArray.length) {
+                    val y: TrackGroup = trackGroupArray[j]
+                    index++
+                    if (trackSelected(mPlayer?.currentTrackGroups, y)) {
+                        builder.appendSection(
+                            getString(R.string.mi_stream_fmt1, index) + " " +
+                                    getString(R.string.mi__selected_video_track)
+                        )
+                    } else {
+                        builder.appendSection(
+                            getString(
+                                R.string.mi_stream_fmt1,
+                                index
+                            )
+                        )
+                    }
+                    if (y.length > 0) {
+                        val format = y.getFormat(0)
+                        builder.appendRow2(R.string.mi_type, typeStr)
+                        builder.appendRow2(R.string.mi_language, format.language)
+
+                        if (trackType == C.TRACK_TYPE_AUDIO || trackType == C.TRACK_TYPE_VIDEO) {
+                            builder.appendRow2(
+                                R.string.mi_codec, format.codecs
+                            )
+                            if (trackType == C.TRACK_TYPE_VIDEO) {
+                                builder.appendRow2(
+                                    R.string.mi_pixel_format,
+                                    format.pixelCount.toString()
+                                )
+                                builder.appendRow2(
+                                    R.string.mi_resolution,
+                                    IjkVideoView.buildResolution(format.height, format.width, 0, 0)
+                                )
+                                builder.appendRow2(
+                                    R.string.mi_frame_rate,
+                                    format.frameRate.toString()
+                                )
+                            } else {
+                                builder.appendRow2(
+                                    R.string.mi_sample_rate,
+                                    format.sampleRate.toString()
+                                )
+                                builder.appendRow2(
+                                    R.string.mi_channels,
+                                    format.channelCount.toString()
+                                )
+                            }
+
+                            builder.appendRow2(
+                                R.string.mi_bit_rate,
+                                format.averageBitrate.toString()
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        val adBuilder = builder.buildAlertDialogBuilder()
+        adBuilder.setTitle(R.string.media_information)
+        adBuilder.setNegativeButton(R.string.close, null)
+        adBuilder.show()
+    }
+
+    private fun trackSelected(
+        trackSelected: TrackGroupArray?,
+        trackGroupNow: TrackGroup
+    ): Boolean {
+        if (trackSelected != null) {
+            for (i in 0 until trackSelected.length) {
+                if (trackSelected[i] == trackGroupNow) return true
+            }
+        }
+        return false
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         logger("onCreate", "called")
@@ -415,12 +531,12 @@ class PlayerActivity : AppCompatActivity(),
         animationUtils.setMidFocusExoControl(
             playButton,
             R.drawable.ic_baseline_play_circle_red_filled_24,
-            R.drawable.ic_baseline_play_circle_filled_24
+            R.drawable.ic_play
         )
         animationUtils.setMidFocusExoControl(
             pauseButton,
             R.drawable.ic_baseline_pause_circle_red_filled_24,
-            R.drawable.ic_baseline_pause_circle_filled_24
+            R.drawable.ic_play
         )
         nextButton.setOnClickListener {
             idxNow++
@@ -442,6 +558,7 @@ class PlayerActivity : AppCompatActivity(),
             trackDialog?.show()
         }
     }
+
     private fun isAudioRenderer(
         mappedTrackInfo: MappingTrackSelector.MappedTrackInfo,
         renderedIndex: Int
@@ -592,6 +709,9 @@ class PlayerActivity : AppCompatActivity(),
                     "Player will change to IJKPlayer, Are you sure?",
                     this::yesSure
                 )
+            }
+            R.id.menu_media_info -> {
+                showMediaInfo()
             }
         }
         return false

@@ -28,6 +28,10 @@
             android:id="@+id/menu_change_player"
             android:title="Change Player"
             app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/menu_media_info"
+            android:title="Media Info"
+            app:showAsAction="ifRoom" />
 
     </group>
     <!--    <item android:title="Personalize">-->

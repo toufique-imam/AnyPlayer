@@ -225,6 +225,10 @@ class PlayerUtils {
             }
             //playerModel.headers["user-agent"] = playerModel.userAgent
             hashMap["User-Agent"] = playerModel.userAgent
+            if (!hashMap["referer"].isNullOrEmpty()) {
+                hashMap["referrer"] = hashMap["referer"] ?: ""
+                hashMap["Referrer"] = hashMap["referer"] ?: ""
+            }
             playerModel.headers = hashMap
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             logger("playerUtils", playerModel.toString())

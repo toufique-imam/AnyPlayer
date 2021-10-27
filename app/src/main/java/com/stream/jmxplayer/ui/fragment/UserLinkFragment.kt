@@ -28,6 +28,7 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.utils.ijkplayer.Settings
 import com.stream.jmxplayer.utils.m3u.OnScrappingCompleted
 import com.stream.jmxplayer.utils.m3u.Parser
 import com.stream.jmxplayer.utils.m3u.Scrapper
@@ -66,6 +67,7 @@ class UserLinkFragment : Fragment() {
     private var fragmentType: Int = 0
 
     private var playerModelNow = PlayerModel(-1)
+    lateinit var mSettings: Settings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -218,7 +220,11 @@ class UserLinkFragment : Fragment() {
     private fun startStreaming(data: ArrayList<PlayerModel>, selectedIdx: Int = 0) {
         PlayListAll.clear()
         PlayListAll.addAll(data)
-        val intentNext = GlobalFunctions.getIntentPlayer(requireContext(), PlayerModel.STREAM_M3U)
+        val intentNext = GlobalFunctions.getDefaultPlayer(
+            requireContext(),
+            mSettings,
+            data[selectedIdx]
+        )
         //val intentNext = Intent(requireActivity(), VlcActivity::class.java)
         intentNext.putExtra(PlayerModel.SELECTED_MODEL, selectedIdx)
         startActivity(intentNext)
@@ -263,8 +269,11 @@ class UserLinkFragment : Fragment() {
                 index += 2
             }
         }
+        if (!headersPlayer["referer"].isNullOrEmpty()) {
+            headersPlayer["referrer"] = headersPlayer["referer"] ?: ""
+            headersPlayer["Referrer"] = headersPlayer["referer"] ?: ""
+        }
         model.headers = headersPlayer
-
 
         SharedPreferenceUtils.saveUserLastInput(
             requireContext(),
@@ -356,6 +365,7 @@ class UserLinkFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mSettings = Settings(requireContext())
         if (fragmentType == 0) {
             val userPrevData = SharedPreferenceUtils.getUserLastInput(requireContext())
             linkTextView.setText(userPrevData[0])

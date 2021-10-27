@@ -1,13 +1,14 @@
 package com.stream.jmxplayer.ui.fragment
 
 import android.os.Bundle
-import androidx.preference.DropDownPreference
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.ijkplayer.Settings
+
 //todo list preference
 class SettingsFragment : PreferenceFragmentCompat() {
     lateinit var values: Array<String>
@@ -31,7 +32,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         setPreferencesFromResource(R.xml.settings_pref, rootKey)
 
-        val themeDropDown: DropDownPreference? = findPreference(getString(R.string.pref_key_theme))
+        val themeDropDown: ListPreference? = findPreference(getString(R.string.pref_key_theme))
         themeDropDown?.value = mSettings.theme.toString()
         themeDropDown?.summary = themeDropDown?.entries?.get(mSettings.theme)
         themeDropDown?.setOnPreferenceChangeListener { _, newValue ->
@@ -44,7 +45,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             true
         }
-        val pixelFormat: DropDownPreference? =
+        val pixelFormat: ListPreference? =
             findPreference(getString(R.string.pref_key_pixel_format))
         pixelFormat?.value = mSettings.pixelFormat
         pixelFormat?.summary = getPixelValue(mSettings.pixelFormat)
@@ -107,13 +108,24 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 mSettings.enableTextureView = newValue as Boolean
                 true
             }
-        val renderMode = findPreference<DropDownPreference>(getString(R.string.pref_key_render))
+        val renderMode = findPreference<ListPreference>(getString(R.string.pref_key_render))
         renderMode?.value = mSettings.renderExo.toString()
         renderMode?.summary = renderMode?.entries?.get(mSettings.renderExo)
         renderMode?.setOnPreferenceChangeListener { _, newValue ->
             logger("OnPrefChangeExo", "$newValue")
             renderMode.summary = renderMode.entries[Integer.parseInt(newValue.toString())]
             mSettings.setRenderExo(newValue.toString())
+            true
+        }
+
+        val playerSelect =
+            findPreference<ListPreference>(getString(R.string.pref_key_player_select))
+        playerSelect?.value = mSettings.defaultPlayer.toString()
+        playerSelect?.summary = playerSelect?.entries?.get(mSettings.defaultPlayer)
+        playerSelect?.setOnPreferenceChangeListener { _, newValue ->
+            logger("OnPrefChangePlayer", "$newValue")
+            playerSelect.summary = playerSelect.entries[Integer.parseInt(newValue.toString())]
+            mSettings.setDefaultPlayer(newValue.toString())
             true
         }
 
