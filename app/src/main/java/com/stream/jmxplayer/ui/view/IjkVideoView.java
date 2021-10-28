@@ -1016,7 +1016,6 @@ public class IjkVideoView extends
     public int togglePlayer() {
         if (mMediaPlayer != null)
             mMediaPlayer.release();
-
         if (mRenderView != null)
             mRenderView.getView().invalidate();
         openVideo();

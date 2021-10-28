@@ -56,6 +56,12 @@ public class Settings {
         }
     }
 
+    public void setPlayer(String val) {
+        String key = mAppContext.getString(R.string.pref_key_player);
+        editor.putString(key, val);
+        editor.apply();
+    }
+
     public int getTheme() {
         String key = mAppContext.getString(R.string.pref_key_theme);
         String val = mSharedPreferences.getString(key, "");
@@ -79,6 +85,7 @@ public class Settings {
         editor.putString(key, val);
         editor.apply();
     }
+
     public int getDefaultPlayer() {
         String key = mAppContext.getString(R.string.pref_key_render);
         String val = mSharedPreferences.getString(key, "");

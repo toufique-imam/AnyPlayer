@@ -82,7 +82,11 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private lateinit var mediaController: VideoControlView
 
     lateinit var mSettings: Settings
+    var fromError = false
 
+    companion object {
+        const val FROM_ERROR = "FROM_ERROR"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +119,11 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         ijkVideoView?.setOnPreparedListener { audioTrackSelector.visibility = View.VISIBLE }
         ijkVideoView?.setOnErrorListener { _, _, _ ->
             audioTrackSelector.visibility = View.GONE
-            if (PlayListAll.isNotEmpty() && PlayListAll.size > 1) {
+            if (!fromError) {
+                fromError = true
+                yesSure()
+            } else if (PlayListAll.isNotEmpty() && PlayListAll.size > 1) {
+                fromError = false
                 nextTrack()
             }
             true
@@ -383,7 +391,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
 
-    fun initView() {
+    private fun initView() {
         //mHudView = findViewById(R.id.hud_view)
         ijkVideoView = findViewById(R.id.ijk_media_view)
         recyclerViewPlayList = findViewById(R.id.recycler_playlist_ijk)
@@ -486,6 +494,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         if (getIntent() != null) {
             intent = getIntent()
             idxNow = intent.getIntExtra(PlayerModel.SELECTED_MODEL, 0)
+            fromError = intent.getBooleanExtra(FROM_ERROR, false)
         } else {
             idxNow = 0
         }
@@ -607,8 +616,10 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private fun yesSure() {
         ijkVideoView?.stopPlayback()
+        releasePlayer()
         val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_ONLINE_LIVE)
         intent.putExtra(PlayerModel.SELECTED_MODEL, idxNow)
+        intent.putExtra(FROM_ERROR, fromError)
         startActivity(intent)
         finish()
     }

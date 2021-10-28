@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.IJKPlayerActivity
-import com.stream.jmxplayer.ui.PlayerActivity
+import com.stream.jmxplayer.ui.ExoPlayerActivity
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 import me.drakeet.support.toast.ToastCompat
 import java.net.*
@@ -215,14 +215,14 @@ class GlobalFunctions {
             mSettings: Settings,
             playerModel: PlayerModel
         ): Intent {
-            val playerNow = mSettings.defaultPlayer
-            when (playerNow) {
+            logger("KEY", mSettings.defaultPlayer.toString())
+            when (mSettings.defaultPlayer) {
                 1 -> return getIntentPlayer(context, PlayerModel.STREAM_M3U)
                 2 -> return getIntentPlayer(context, PlayerModel.STREAM_ONLINE_LIVE)
                 else -> {
                     val keys = playerModel.headers.keys
                     for (key in keys) {
-                        logger("KEY" , key)
+                        logger("KEY", key)
                         if (key == "user-agent") continue
                         else if (key == "User-Agent") continue
                         else return getIntentPlayer(context, PlayerModel.STREAM_ONLINE_LIVE)
@@ -236,7 +236,7 @@ class GlobalFunctions {
             val intent = Intent(
                 context,
                 when (state) {
-                    PlayerModel.STREAM_ONLINE_LIVE -> PlayerActivity::class.java
+                    PlayerModel.STREAM_ONLINE_LIVE -> ExoPlayerActivity::class.java
                     else -> IJKPlayerActivity::class.java
                 }
             )

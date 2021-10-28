@@ -39,6 +39,7 @@ import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.*
 import com.stream.jmxplayer.model.PlayerModel.Companion.SELECTED_MODEL
+import com.stream.jmxplayer.ui.IJKPlayerActivity.Companion.FROM_ERROR
 import com.stream.jmxplayer.ui.view.IjkVideoView
 import com.stream.jmxplayer.ui.view.TableLayoutBinder
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
@@ -50,7 +51,7 @@ import com.stream.jmxplayer.utils.ijkplayer.Settings
 import kotlin.math.max
 
 @Suppress("Deprecation")
-class PlayerActivity : AppCompatActivity(),
+class ExoPlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
     Player.Listener,
     AnalyticsListener {
@@ -272,12 +273,12 @@ class PlayerActivity : AppCompatActivity(),
         casty.setUpMediaRouteButton(castButton)
         casty.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
-                toaster(this@PlayerActivity, "connected")
+                toaster(this@ExoPlayerActivity, "connected")
                 casty.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
             }
 
             override fun onDisconnected() {
-                toaster(this@PlayerActivity, "disconnected")
+                toaster(this@ExoPlayerActivity, "disconnected")
                 hideSystemUi()
             }
         })
@@ -704,6 +705,7 @@ class PlayerActivity : AppCompatActivity(),
                 }
             }
             R.id.menu_change_player -> {
+                fromError = false
                 GlobalFunctions.areYouSureDialogue(
                     this,
                     "Player will change to IJKPlayer, Are you sure?",
@@ -721,6 +723,7 @@ class PlayerActivity : AppCompatActivity(),
         releasePlayer()
         val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_M3U)
         intent.putExtra(SELECTED_MODEL, idxNow)
+        intent.putExtra(FROM_ERROR, fromError)
         startActivity(intent)
         finish()
     }
@@ -756,6 +759,7 @@ class PlayerActivity : AppCompatActivity(),
         if (getIntent() != null) {
             intent = getIntent()
             idxNow = intent.getIntExtra(SELECTED_MODEL, 0)
+            fromError = intent.getBooleanExtra(FROM_ERROR, false)
         } else {
             idxNow = 0
         }
@@ -933,6 +937,7 @@ class PlayerActivity : AppCompatActivity(),
             }
             ExoPlayer.STATE_ENDED -> {
                 stateString = "STATE_ENDED"
+                mPlayer?.next()
             }
             else -> {
                 stateString = "UNKNOWN"
@@ -947,6 +952,7 @@ class PlayerActivity : AppCompatActivity(),
         logger(TAG, "Error Cause : " + error.cause)
         inErrorState = true
         errorCount++
+        logger(TAG, "Error count : $errorCount")
         if (errorCount == 1) {
             inErrorState = false
             autoPlay = true
@@ -957,18 +963,41 @@ class PlayerActivity : AppCompatActivity(),
         }
 
         if (isDecoderError(error)) {
+            logger(TAG, "Error Decoder")
             inErrorState = false
             //errorCount = 0
             releasePlayer()
             initPlayer(true)
         }
         if (isBehindLiveWindow(error)) {
+            logger(TAG, "behind")
             clearResumePosition()
             initPlayer(true)
         } else {
-            mPlayer?.next()
+            logger(TAG, "Else $fromError")
+            if (!fromError) {
+                fromError = true
+                yesSure()
+            } else {
+                fromError = false
+                nextTrack()
+            }
         }
     }
+
+    private fun nextTrack() {
+        if (PlayListAll.isNotEmpty() && PlayListAll.size > 1) {
+            logger(TAG, "next track")
+            fromError = false
+            if (PlayListAll.isNotEmpty()) {
+                idxNow++
+                idxNow %= PlayListAll.size
+            }
+            updatePlayerModel()
+        }
+    }
+
+    var fromError = false
 
     override fun onPositionDiscontinuity(reason: Int) {
         if (inErrorState) updateResumePosition()
@@ -991,7 +1020,7 @@ class PlayerActivity : AppCompatActivity(),
         }
 
         fun isBehindLiveWindow(exception: PlaybackException): Boolean {
-            if (exception.errorCode != PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
+            if (exception.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
                 return true
             }
             return false

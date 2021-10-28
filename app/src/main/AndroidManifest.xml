@@ -22,8 +22,8 @@
     </queries>
 
     <application
-        android:allowNativeHeapPointerTagging="false"
         android:name=".JMXApplication"
+        android:allowNativeHeapPointerTagging="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -36,10 +36,15 @@
         android:usesCleartextTraffic="true"
         tools:ignore="UnusedAttribute">
         <activity
-            android:screenOrientation="landscape"
+            android:name=".ui.GSYPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity
             android:name=".ui.IJKPlayerActivity"
-            android:exported="false" />
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.BrowserActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -86,17 +91,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:screenOrientation="landscape"
-            android:name=".ui.PlayerActivity"
+            android:name=".ui.ExoPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
-            android:icon="@drawable/circle_cropped_logo" />
-<!--        <activity-->
-<!--            android:name=".ui.VlcActivity"-->
-<!--            android:configChanges="keyboardHidden|orientation|screenSize"-->
-<!--            android:exported="true"-->
-<!--            android:icon="@drawable/circle_cropped_logo" />-->
-
+            android:icon="@drawable/circle_cropped_logo"
+            android:screenOrientation="landscape" /> <!-- <activity -->
+        <!-- android:name=".ui.VlcActivity" -->
+        <!-- android:configChanges="keyboardHidden|orientation|screenSize" -->
+        <!-- android:exported="true" -->
+        <!-- android:icon="@drawable/circle_cropped_logo" /> -->
         <service
             android:name=".services.MediaPlayerService"
             android:enabled="false"
