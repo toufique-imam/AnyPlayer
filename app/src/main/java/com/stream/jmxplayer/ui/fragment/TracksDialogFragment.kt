@@ -7,16 +7,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.stream.jmxplayer.adapter.TrackAdapter
+import com.stream.jmxplayer.adapter.TrackAdapterVLC
 import com.stream.jmxplayer.databinding.PlayerOverlayTracksBinding
 import com.stream.jmxplayer.model.TrackInfo
 import com.stream.jmxplayer.ui.view.IjkVideoView
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import org.videolan.libvlc.MediaPlayer
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
 
 class TracksDialogFragment : JMXBottomSDFragment() {
     private lateinit var binding: PlayerOverlayTracksBinding
     lateinit var trackSelectionListener: (TrackInfo) -> Unit
+    lateinit var trackSelectionListenerVLC: (Int, TrackType) -> Unit
     lateinit var onBindInitiated: (done: Boolean) -> Unit
 
     override fun getDefaultState(): Int = BottomSheetBehavior.STATE_EXPANDED
@@ -24,6 +27,61 @@ class TracksDialogFragment : JMXBottomSDFragment() {
     override fun needToManageOrientation(): Boolean = true
 
     override fun initialFocusedView(): View = binding.subtitleTracks.emptyView
+
+    fun onVLCPlayerModelChanged(mVlcPlayer: MediaPlayer) {
+        mVlcPlayer.let { playbackService ->
+            if (playbackService.videoTracksCount <= 2) {
+                binding.videoTracks.trackContainer.setGone()
+                binding.tracksSeparator3.setGone()
+            }
+            if (playbackService.audioTracksCount <= 0) {
+                binding.audioTracks.trackContainer.setGone()
+                binding.tracksSeparator2.setGone()
+            }
+            if (playbackService.videoTracks != null)
+                playbackService.videoTracks.let { trackList ->
+                    val trackAdapter = TrackAdapterVLC(
+                        trackList as Array<MediaPlayer.TrackDescription>,
+                        trackList.firstOrNull {
+                            it.id == playbackService.videoTrack
+                        })
+                    trackAdapter.setOnTrackSelectedListener { track ->
+                        trackSelectionListenerVLC.invoke(track.id, TrackType.VIDEO)
+                    }
+                    binding.videoTracks.trackList.adapter = trackAdapter
+                }
+
+            if (playbackService.audioTracks != null)
+                playbackService.audioTracks?.let { trackList ->
+                    val trackAdapter = TrackAdapterVLC(
+                        trackList as Array<MediaPlayer.TrackDescription>,
+                        trackList.firstOrNull {
+                            it.id == playbackService.audioTrack
+                        })
+                    trackAdapter.setOnTrackSelectedListener { track ->
+                        trackSelectionListenerVLC.invoke(
+                            track.id, TrackType.AUDIO
+                        )
+                    }
+                    binding.audioTracks.trackList.adapter = trackAdapter
+                }
+            if (playbackService.spuTracks != null)
+                playbackService.spuTracks?.let { trackList ->
+                    val trackAdapter = TrackAdapterVLC(
+                        trackList as Array<MediaPlayer.TrackDescription>,
+                        trackList.firstOrNull {
+                            it.id == playbackService.spuTrack
+                        })
+                    trackAdapter.setOnTrackSelectedListener { track ->
+                        trackSelectionListenerVLC.invoke(
+                            track.id, TrackType.SPU
+                        )
+                    }
+                    binding.subtitleTracks.trackList.adapter = trackAdapter
+                }
+            if (playbackService.spuTracks == null) binding.subtitleTracks.emptyView.setVisible()
+        }
+    }
 
     fun onIJKPlayerModelChanged(ijkVideoView: IjkVideoView) {
         ijkVideoView.let { playbackService ->
@@ -124,5 +182,13 @@ class TracksDialogFragment : JMXBottomSDFragment() {
         logger("TracksDialog", "view created")
         onBindInitiated(true)
         //PlaybackService.serviceFlow.onEach { onServiceChanged(it) }.launchIn(lifecycleScope)
+    }
+
+    enum class TrackType {
+        VIDEO, AUDIO, SPU
+    }
+
+    enum class VideoTrackOption {
+        SUB_DELAY, SUB_PICK, SUB_DOWNLOAD, AUDIO_DELAY
     }
 }

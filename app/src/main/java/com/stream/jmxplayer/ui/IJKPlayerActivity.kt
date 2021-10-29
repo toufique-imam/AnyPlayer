@@ -74,7 +74,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private lateinit var downloaderUtils: DownloaderUtils
 
     private lateinit var tracksDialogFragment: TracksDialogFragment
-
+    private var playerDialog: AlertDialog? = null
 
     private val viewModel: DatabaseViewModel by viewModels()
     private var idxNow = 0
@@ -121,7 +121,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             audioTrackSelector.visibility = View.GONE
             if (!fromError) {
                 fromError = true
-                yesSure()
+                yesSure(Settings.PV_PLAYER__AndroidMediaPlayer)
             } else if (PlayListAll.isNotEmpty() && PlayListAll.size > 1) {
                 fromError = false
                 nextTrack()
@@ -251,7 +251,10 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private fun showVideoTrack(trackSelectionListener: (TrackInfo) -> Unit) {
         if (!isStarted()) return
         tracksDialogFragment.arguments = bundleOf()
-        tracksDialogFragment.show(supportFragmentManager, "fragment_video_tracks")
+        tracksDialogFragment.show(
+            supportFragmentManager,
+            "fragment_video_tracks"
+        )
         tracksDialogFragment.trackSelectionListener = trackSelectionListener
         tracksDialogFragment.onBindInitiated = {
             ijkVideoView?.let { tracksDialogFragment.onIJKPlayerModelChanged(it) }
@@ -302,12 +305,12 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
         cast.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
-                GlobalFunctions.toaster(this@IJKPlayerActivity, "connected")
+                toaster(this@IJKPlayerActivity, "connected")
                 cast.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
             }
 
             override fun onDisconnected() {
-                GlobalFunctions.toaster(this@IJKPlayerActivity, "disconnected")
+                toaster(this@IJKPlayerActivity, "disconnected")
                 hideSystemUi()
             }
         })
@@ -532,7 +535,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             if (intentNow.resolveActivity(packageManager) != null) {
                 startActivity(intentNow)
             } else {
-                GlobalFunctions.toaster(this, GlobalFunctions.NO_APP_FOUND_PLAY_MESSAGE)
+                toaster(this, GlobalFunctions.NO_APP_FOUND_PLAY_MESSAGE)
             }
         }
     }
@@ -601,11 +604,11 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 }
             }
             R.id.menu_change_player -> {
-                GlobalFunctions.areYouSureDialogue(
-                    this,
-                    "Player wll change to ExoPlayer, Are you sure?",
-                    this::yesSure
-                )
+                fromError = false
+                if (playerDialog == null)
+                    playerDialog =
+                        createPlayerDialogue(Settings.PV_PLAYER__IjkMediaPlayer, this::yesSure)
+                playerDialog?.show()
             }
             R.id.menu_media_info -> {
                 ijkVideoView?.showMediaInfo()
@@ -614,10 +617,11 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         return false
     }
 
-    private fun yesSure() {
+    private fun yesSure(playerID: Int) {
+        if (playerID == Settings.PV_PLAYER__IjkExoMediaPlayer) return
         ijkVideoView?.stopPlayback()
         releasePlayer()
-        val intent = GlobalFunctions.getIntentPlayer(this, Settings.PV_PLAYER__IjkExoMediaPlayer)
+        val intent = GlobalFunctions.getIntentPlayer(this, playerID)
         intent.putExtra(PlayerModel.SELECTED_MODEL, idxNow)
         intent.putExtra(FROM_ERROR, fromError)
         startActivity(intent)

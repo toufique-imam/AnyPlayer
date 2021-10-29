@@ -39,7 +39,6 @@ import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.*
 import com.stream.jmxplayer.model.PlayerModel.Companion.SELECTED_MODEL
-import com.stream.jmxplayer.mpv.MPVPlayer
 import com.stream.jmxplayer.ui.IJKPlayerActivity.Companion.FROM_ERROR
 import com.stream.jmxplayer.ui.view.IjkVideoView
 import com.stream.jmxplayer.ui.view.TableLayoutBinder
@@ -71,7 +70,7 @@ class ExoPlayerActivity : AppCompatActivity(),
     private var inErrorState = false
     private var errorCount = 0
 
-    private var mPlayer: BasePlayer? = null
+    private var mPlayer: SimpleExoPlayer? = null
 
     private lateinit var casty: Casty
 
@@ -121,8 +120,6 @@ class ExoPlayerActivity : AppCompatActivity(),
 
     var mediaMetaData: MediaMetadata? = null
 
-    var playerNow = Settings.PV_PLAYER__IjkExoMediaPlayer
-
     var idxNow = 0
     /*
     Life Cycle
@@ -136,16 +133,16 @@ class ExoPlayerActivity : AppCompatActivity(),
         builder.appendSection(R.string.mi_player)
         builder.appendRow2(R.string.mi_player, "ExoPlayer")
         builder.appendSection(R.string.mi_media)
-        if (mPlayer is SimpleExoPlayer) {
-            builder.appendRow2(
-                R.string.mi_resolution,
-                IjkVideoView.buildResolution(
-                    (mPlayer as SimpleExoPlayer).videoFormat?.width ?: 0,
-                    (mPlayer as SimpleExoPlayer).videoFormat?.height ?: 0,
-                    0, 0
-                )
+
+        builder.appendRow2(
+            R.string.mi_resolution,
+            IjkVideoView.buildResolution(
+                mPlayer?.videoFormat?.width ?: 0,
+                mPlayer?.videoFormat?.height ?: 0,
+                0, 0
             )
-        }
+        )
+
         builder.appendRow2(
             R.string.mi_length,
             IjkVideoView.buildTimeMilli(mPlayer?.duration ?: 0)
@@ -250,7 +247,6 @@ class ExoPlayerActivity : AppCompatActivity(),
 
         //historyDB = HistoryDatabase.getInstance(this)
         getDataFromIntent()
-        logger("Intent", "$playerNow")
         setUpOrientation()
 
         downloaderUtils = DownloaderUtils(this, playerModelNow)
@@ -289,40 +285,6 @@ class ExoPlayerActivity : AppCompatActivity(),
                 hideSystemUi()
             }
         })
-    }
-
-    private fun initPlayerSelect() {
-        val dialogView = this.layoutInflater.inflate(R.layout.dialog_tracks, null)
-        val builder = AlertDialog.Builder(this).setTitle("Select Player").setView(dialogView)
-        builder.setCancelable(true)
-        val radioGroup: RadioGroup = dialogView.findViewById(R.id.radio_group_server)
-        playerDialog = builder.create()
-
-        val playerList = resources.getStringArray(R.array.pref_entries_player_select)
-        val playerId = arrayOf(
-            Settings.PV_PLAYER__IjkMediaPlayer,
-            Settings.PV_PLAYER__IjkExoMediaPlayer,
-            Settings.PV_PLAYER__AndroidMediaPlayer
-        )
-        for (i in 1 until playerList.size) {
-            val radioButton = RadioButton(this)
-            radioButton.id = playerId[i - 1]
-            radioButton.text = playerList[i]
-            radioButton.textSize = 15f
-            radioButton.setTextColor(Color.BLACK)
-            if (playerId[i - 1] == playerNow) {
-                radioButton.isChecked = true
-            }
-            radioGroup.addView(radioButton)
-        }
-        val materialButton: MaterialButton = dialogView.findViewById(R.id.button_stream_now)
-
-
-        materialButton.setOnClickListener {
-            playerDialog?.dismiss()
-            //playerNow = radioGroup.checkedRadioButtonId
-            yesSure(radioGroup.checkedRadioButtonId)
-        }
     }
 
     private fun initTrackSelector() {
@@ -747,7 +709,9 @@ class ExoPlayerActivity : AppCompatActivity(),
             }
             R.id.menu_change_player -> {
                 fromError = false
-                if (playerDialog == null) initPlayerSelect()
+                if (playerDialog == null)
+                    playerDialog =
+                        createPlayerDialogue(Settings.PV_PLAYER__IjkExoMediaPlayer, this::yesSure)
                 playerDialog?.show()
             }
             R.id.menu_media_info -> {
@@ -758,17 +722,9 @@ class ExoPlayerActivity : AppCompatActivity(),
     }
 
     private fun yesSure(playerID: Int) {
-        logger("YesSure", "$playerID")
-        if (playerID == playerNow) return
-        playerNow = playerID
-        if (playerID == Settings.PV_PLAYER__IjkExoMediaPlayer || playerID == Settings.PV_PLAYER__AndroidMediaPlayer) {
-            releasePlayer()
-            errorCount = 0
-            initPlayer(false)
-            return
-        }
+        if (playerID == Settings.PV_PLAYER__IjkExoMediaPlayer) return
         releasePlayer()
-        val intent = GlobalFunctions.getPlayer(this, playerID)
+        val intent = GlobalFunctions.getIntentPlayer(this, playerID)
         intent.putExtra(SELECTED_MODEL, idxNow)
         intent.putExtra(FROM_ERROR, fromError)
         startActivity(intent)
@@ -807,8 +763,6 @@ class ExoPlayerActivity : AppCompatActivity(),
             intent = getIntent()
             idxNow = intent.getIntExtra(SELECTED_MODEL, 0)
             fromError = intent.getBooleanExtra(FROM_ERROR, false)
-            playerNow =
-                intent.getIntExtra(GlobalFunctions.PLAYER_ID, Settings.PV_PLAYER__IjkExoMediaPlayer)
         } else {
             idxNow = 0
         }
@@ -897,22 +851,13 @@ class ExoPlayerActivity : AppCompatActivity(),
 
         val renderer = DefaultRenderersFactory(this)
             .setExtensionRendererMode(extensionRendererMode)
-        mPlayer = if (playerNow == Settings.PV_PLAYER__IjkExoMediaPlayer) {
-            logger(TAG, "simpleExoPlayer")
-            SimpleExoPlayer.Builder(this, renderer)
-                .setLoadControl(loadControl)
-                .setTrackSelector(trackSelector)
-                .setSeekBackIncrementMs(15000)
-                .setSeekForwardIncrementMs(15000)
-                .build()
-        } else {
-            logger(TAG, "MPVPlayer")
-            val preferredLanguages = mapOf(
-                C.TRACK_TYPE_AUDIO to "spa",
-                C.TRACK_TYPE_TEXT to "spa"
-            )
-            MPVPlayer(application, true, preferredLanguages, true)
-        }
+        mPlayer = SimpleExoPlayer.Builder(this, renderer)
+            .setLoadControl(loadControl)
+            .setTrackSelector(trackSelector)
+            .setSeekBackIncrementMs(15000)
+            .setSeekForwardIncrementMs(15000)
+            .build()
+
 
     }
 
@@ -1042,7 +987,7 @@ class ExoPlayerActivity : AppCompatActivity(),
             logger(TAG, "Else $fromError")
             if (!fromError) {
                 fromError = true
-                yesSure(1)
+                yesSure(Settings.PV_PLAYER__IjkMediaPlayer)
             } else {
                 fromError = false
                 nextTrack()

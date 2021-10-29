@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
@@ -11,10 +12,12 @@ import android.view.View
 import android.view.WindowInsets
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.getSystemService
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.ExoPlayerActivity
 import com.stream.jmxplayer.ui.IJKPlayerActivity
+import com.stream.jmxplayer.ui.VlcActivity
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 import me.drakeet.support.toast.ToastCompat
 import java.net.*
@@ -229,6 +232,9 @@ class GlobalFunctions {
                 2 -> return getIntentPlayer(context, Settings.PV_PLAYER__IjkExoMediaPlayer)
                 3 -> return getIntentPlayer(context, Settings.PV_PLAYER__AndroidMediaPlayer)
                 else -> {
+                    if (PlayerModel.isLocal(playerModel.streamType)) {
+                        return getIntentPlayer(context, Settings.PV_PLAYER__AndroidMediaPlayer)
+                    }
                     val keys = playerModel.headers.keys
                     for (key in keys) {
                         logger("KEY", key)
@@ -241,33 +247,85 @@ class GlobalFunctions {
             }
         }
 
-        const val PLAYER_ID = "PLAYER_ID"
         fun getIntentPlayer(context: Context, state: Int): Intent {
             val intent = Intent(
                 context,
                 when (state) {
                     Settings.PV_PLAYER__IjkExoMediaPlayer -> ExoPlayerActivity::class.java
                     Settings.PV_PLAYER__IjkMediaPlayer -> IJKPlayerActivity::class.java
-                    else -> ExoPlayerActivity::class.java
+                    else -> VlcActivity::class.java
                 }
             )
-            if (state == Settings.PV_PLAYER__AndroidMediaPlayer) {
-                intent.putExtra(PLAYER_ID, Settings.PV_PLAYER__AndroidMediaPlayer)
-            }
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             return intent
         }
 
-        fun areYouSureDialogue(context: Context, message: String, action: () -> Unit) {
-            AlertDialog.Builder(context)
-                .setMessage(message)
-                .setCancelable(true)
-                .setPositiveButton(
-                    R.string.accept
-                ) { _, _ ->
-                    action()
-                }
-                .show()
+        fun getVLCOptions(context: Context): ArrayList<String> {
+            var audiotrackSessionId = 0
+            val audioManager = context.getSystemService<AudioManager>()!!
+            audiotrackSessionId = audioManager.generateAudioSessionId()
+            val options = ArrayList<String>(50)
+            val subtitlesEncoding = ""
+            val frameSkip = false
+            val chroma = "RV16"
+            val verboseMode = true
+
+            val deblocking = -1
+
+            val networkCaching = 60000
+
+            val freetypeRelFontsize = "16"
+            val freetypeBold = false
+            val freetypeColor = "16777215"
+            val freetypeBackground = false
+            val opengl = -1
+            options.add("--audio-time-stretch")
+            options.add("--avcodec-skiploopfilter")
+            options.add("" + deblocking)
+            options.add("--avcodec-skip-frame")
+            options.add(if (frameSkip) "2" else "0")
+            options.add("--avcodec-skip-idct")
+            options.add(if (frameSkip) "2" else "0")
+            options.add("--subsdec-encoding")
+            options.add(subtitlesEncoding)
+            options.add("--stats")
+            if (networkCaching > 0) options.add("--network-caching=$networkCaching")
+            options.add("--android-display-chroma")
+            options.add(chroma)
+            options.add("--audio-resampler")
+            options.add("soxr")
+            options.add("--audiotrack-session-id=$audiotrackSessionId")
+
+            options.add("--freetype-rel-fontsize=$freetypeRelFontsize")
+            if (freetypeBold) options.add("--freetype-bold")
+            options.add("--freetype-color=$freetypeColor")
+
+            options.add(if (freetypeBackground) "--freetype-background-opacity=128" else "--freetype-background-opacity=0")
+            if (opengl == 1) options.add("--vout=gles2,none")
+            else if (opengl == 0) options.add("--vout=android_display,none")
+
+            options.add(if (verboseMode) "-vv" else "-v")
+            options.add("--no-sout-chromecast-audio-passthrough")
+            options.add(
+                "--sout-chromecast-conversion-quality=2"
+            )
+            options.add("--sout-keep")
+            options.add("--smb-force-v1")
+//            options.add("--aout=opensles")
+            options.add("--http-reconnect")
+            return options
         }
+
+        fun getReferer(playerModel: PlayerModel): String {
+            if (!playerModel.headers["referer"].isNullOrEmpty()) return playerModel.headers["referer"]
+                ?: "JMX Player"
+            if (!playerModel.headers["Referrer"].isNullOrEmpty()) return playerModel.headers["Referrer"]
+                ?: "JMX Player"
+            if (!playerModel.headers["referrer"].isNullOrEmpty()) return playerModel.headers["referrer"]
+                ?: "JMX Player"
+            return "JMX Player"
+
+        }
+
     }
 }

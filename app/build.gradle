@@ -99,7 +99,7 @@ dependencies {
     //volley
     implementation 'com.android.volley:volley:1.2.1'
     //libVLC
-    //implementation 'org.videolan.android:libvlc-all:3.4.2'
+    implementation 'org.videolan.android:libvlc-all:3.4.2'
     //ijkPlayer
     implementation fileTree(include: ['*.aar'], dir: 'libs')
 }
