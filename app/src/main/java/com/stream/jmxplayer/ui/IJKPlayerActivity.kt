@@ -617,7 +617,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private fun yesSure() {
         ijkVideoView?.stopPlayback()
         releasePlayer()
-        val intent = GlobalFunctions.getIntentPlayer(this, PlayerModel.STREAM_ONLINE_LIVE)
+        val intent = GlobalFunctions.getIntentPlayer(this, Settings.PV_PLAYER__IjkExoMediaPlayer)
         intent.putExtra(PlayerModel.SELECTED_MODEL, idxNow)
         intent.putExtra(FROM_ERROR, fromError)
         startActivity(intent)

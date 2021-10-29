@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlinx-serialization'
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -101,9 +102,4 @@ dependencies {
     //implementation 'org.videolan.android:libvlc-all:3.4.2'
     //ijkPlayer
     implementation fileTree(include: ['*.aar'], dir: 'libs')
-    //GSY
-    implementation 'com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.1.6-jitpack'
-    implementation 'com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-ex_so:v8.1.6-jitpack'
-
-
 }

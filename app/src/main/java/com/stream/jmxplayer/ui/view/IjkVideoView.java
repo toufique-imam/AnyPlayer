@@ -1101,6 +1101,9 @@ public class IjkVideoView extends
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 1);
 
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
+                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "protocol_whitelist",
+                            "rtmp,concat,ffconcat,file,subfile,http,https,tls,rtp,tcp,udp,crypto");
+                    ;
                 }
                 mediaPlayer = ijkMediaPlayer;
             }

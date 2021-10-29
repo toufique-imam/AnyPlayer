@@ -170,11 +170,13 @@
         <item>Auto</item>
         <item>JMX Player</item>
         <item>EXO Player</item>
+        <item>MPV Player</item>
     </string-array>
     <string-array name="pref_entry_values_player_select">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
 

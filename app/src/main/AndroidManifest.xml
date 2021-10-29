@@ -35,11 +35,7 @@
         android:theme="@style/Theme.JMXPlayer.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:ignore="UnusedAttribute">
-        <activity
-            android:name=".ui.GSYPlayerActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="false"
-            android:screenOrientation="landscape" />
+
         <activity
             android:name=".ui.IJKPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

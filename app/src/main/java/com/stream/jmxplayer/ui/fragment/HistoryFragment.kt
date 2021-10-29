@@ -16,6 +16,7 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 class HistoryFragment : Fragment() {
 
@@ -44,7 +45,7 @@ class HistoryFragment : Fragment() {
             { video, _ ->
                 //val intent = Intent(context, PlayerActivity::class.java)
                 val intent =
-                    GlobalFunctions.getIntentPlayer(requireContext(), PlayerModel.STREAM_M3U)
+                    GlobalFunctions.getIntentPlayer(requireContext(), Settings.PV_PLAYER__IjkMediaPlayer)
                 PlayListAll.clear()
                 PlayListAll.add(video)
                 startActivity(intent)
