@@ -9,7 +9,6 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
-//todo list preference
 class SettingsFragment : PreferenceFragmentCompat() {
     lateinit var values: Array<String>
     private lateinit var formats: Array<String>

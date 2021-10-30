@@ -317,6 +317,7 @@ class VlcActivity : AppCompatActivity(),
             viewR.adapter = galleryAdapter
         }
         galleryAdapter.updateData(PlayListAll)
+        recyclerViewPlayList.visibility = View.VISIBLE
     }
 
     private fun initCast() {
@@ -713,17 +714,13 @@ class VlcActivity : AppCompatActivity(),
     }
 
     private fun preparePlayer() {
-        if (mediaNow.isReleased) {
-            addSource()
-        }
+        addSource()
         audioTrackSelector.visibility = View.GONE
         scaleNow = MediaPlayer.ScaleType.SURFACE_BEST_FIT
         mVlcPlayer?.stop()
-
-        mVlcPlayer?.media = mediaNow
+        mVlcPlayer?.play(mediaNow)
         mVlcPlayer?.videoScale = scaleNow
         mediaNow.release()
-        mVlcPlayer?.play()
     }
 
     private fun yesSure(playerID: Int) {

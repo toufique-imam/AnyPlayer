@@ -156,7 +156,8 @@ class GlobalFunctions {
 
         fun createAlertDialogueLoading(activity: Activity): AlertDialog {
             val dialogueView =
-                activity.layoutInflater.inflate(R.layout.custom_loading_dialogue, null)
+                activity.layoutInflater.inflate(
+                    R.layout.custom_dialog_loading, null)
             return AlertDialog.Builder(activity)
                 .setView(dialogueView)
                 .setCancelable(false)

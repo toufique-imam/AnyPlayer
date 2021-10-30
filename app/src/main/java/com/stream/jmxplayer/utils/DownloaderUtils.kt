@@ -28,7 +28,7 @@ class DownloaderUtils(val activity: Activity, var playerModel: PlayerModel) {
 
     fun showDownloadDialog(hideSystemUi: () -> Unit, resultListener: IResultListener) {
         val dialogueView: View =
-            activity.layoutInflater.inflate(R.layout.custom_dialogue_download, null)
+            activity.layoutInflater.inflate(R.layout.custom_dialog_download, null)
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
         builder.setTitle("Descargar con")
         builder.setView(dialogueView)

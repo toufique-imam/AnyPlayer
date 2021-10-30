@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/circle_background.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.25925925925925924" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_delay_donw.xml" value="0.2703125" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_fast_forward.xml" value="0.1361111111111111" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_pause.xml" value="0.1361111111111111" />
@@ -25,6 +26,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_ijk.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_player.xml" value="0.1742354031510658" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_vlc.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_dialog_user_input.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_dialogue_download.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_loading_dialogue.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/dialog_tracks.xml" value="0.13020833333333334" />
@@ -34,6 +36,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_settings.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_stream.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_track_list.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_user_input_m3u.xml" value="0.264" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_user_stream.xml" value="0.22685185185185186" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/gallery_item.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/history_item.xml" value="0.22962962962962963" />

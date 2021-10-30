@@ -1,10 +1,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -136,30 +135,6 @@
 
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_stream_cancel"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:text="@string/reject"
-                    android:textColor="@color/Red"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    app:backgroundTint="@color/White" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_stream_edit"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:text="Edit"
-                    android:textColor="@color/DeepSkyBlue"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    app:backgroundTint="@color/White" />
-
-                <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_stream_confirm"
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="wrap_content"
@@ -171,19 +146,9 @@
                     app:backgroundTint="@color/White" />
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_m3u"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="80dp"
-                tools:listitem="@layout/history_item" />
         </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
-
-    <include
-        layout="@layout/bottom_sheet_m3u"
-        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -43,8 +43,8 @@ class StreamFragment : Fragment() {
 
 
     class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        private val userLinkFragment0 = UserLinkFragment.newInstance(0)
-        private val userLinkFragment1 = UserLinkFragment.newInstance(1)
+        private val userLinkFragment0 = UserLinkFragment.newInstance()
+        private val userLinkFragment1 = M3UInputFragment.newInstance()
         override fun getItemCount(): Int {
             return 2
         }
