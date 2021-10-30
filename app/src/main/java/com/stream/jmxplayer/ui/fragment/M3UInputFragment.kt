@@ -195,7 +195,7 @@ class M3UInputFragment : Fragment() {
         bottomSheetBehavior.isDraggable = false
         playButton.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            parseM3U(playerModelNow.link)
+            parseM3U(playerModelNow.link, playerModelNow.userAgent)
         }
         editButtonBS.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -237,7 +237,7 @@ class M3UInputFragment : Fragment() {
             val title = "${playerModel.title}\n${playerModel.link}"
             titleTextViewM3U.text = title
             if (isClicked)
-                parseM3U(playerModelNow.link)
+                parseM3U(playerModelNow.link, playerModelNow.userAgent)
             else {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
@@ -272,9 +272,17 @@ class M3UInputFragment : Fragment() {
                 uri.lastPathSegment ?: "User M3U"
             }, "UTF-8"
         )
+        val userAgentNow = if (userAgentInput.text.toString()
+                .isNotEmpty()
+        ) userAgentInput.text.toString() else GlobalFunctions.USER_AGENT
         SharedPreferenceUtils.setUserM3U(requireContext(), urlNow, token)
         val playerModel =
-            PlayerModel(link = urlNow, streamType = PlayerModel.STREAM_M3U, title = token)
+            PlayerModel(
+                link = urlNow,
+                streamType = PlayerModel.STREAM_M3U,
+                title = token,
+                userAgent = userAgentNow
+            )
         playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
         if (!newInsert) {
             deleteModel(playerModelNow)
@@ -284,13 +292,13 @@ class M3UInputFragment : Fragment() {
         recyclerView.smoothScrollToPosition(galleryAdapter.addData(playerModel))
     }
 
-    private fun parseM3U(urlNow: String) {
+    private fun parseM3U(urlNow: String, userAgent: String) {
         val scrapper = Scrapper(requireContext(), urlNow)
         val loading = GlobalFunctions.createAlertDialogueLoading(requireActivity())
         scrapper.onFinish(object : OnScrappingCompleted {
             override fun onComplete(response: String) {
                 loading.dismiss()
-                val data = Parser.ParseM3UString(response, "User")
+                val data = Parser.ParseM3UString(response, userAgent)
                 if (data.isNotEmpty()) {
                     m3uDataAction(data)
                 } else

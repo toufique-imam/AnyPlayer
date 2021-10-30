@@ -17,7 +17,6 @@ import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
-//todo make m3u list seprate and input from dialog
 class UserLinkFragment : Fragment() {
     private lateinit var titleTextView: TextInputEditText
     private lateinit var linkTextView: TextInputEditText

@@ -15,7 +15,6 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.ijkplayer.Settings
-//todo add category
 class M3UDisplayFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     lateinit var galleryAdapter: GalleryAdapter

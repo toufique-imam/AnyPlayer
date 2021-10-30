@@ -1,7 +1,6 @@
 package com.stream.jmxplayer.utils.m3u;
 
 import com.stream.jmxplayer.model.PlayerModel;
-import com.stream.jmxplayer.utils.GlobalFunctions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +53,7 @@ public class Parser {
         return "";
     }
 
-    public static ArrayList<PlayerModel> ParseM3UString(String req, String category) {
+    public static ArrayList<PlayerModel> ParseM3UString(String req, String user_agent_input) {
         ArrayList<PlayerModel> channelModels = new ArrayList<>();
         PlayerModel channelModel;
         String[] lines = req.split("\\r?\\n");
@@ -73,7 +72,7 @@ public class Parser {
                 referrer = getVlcOption(lines[i + 1], "http-referrer");
                 i++;
             }
-            if (userAgent.isEmpty()) userAgent = GlobalFunctions.USER_AGENT;
+            if (userAgent.isEmpty()) userAgent = user_agent_input;
             String channelLink = lines[i + 1];
             //    GlobalFunctions.Companion.logger("parser", channelInfo + "\n" + channelLink);
             String language = getLanguage(channelInfo);
