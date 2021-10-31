@@ -56,7 +56,6 @@ public class MediaData {
 
     private final List<String> imageUrls;
 
-    //todo make it support PlayerModel
     private MediaData(String url) {
         this.url = url;
         imageUrls = new ArrayList<>();
