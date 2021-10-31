@@ -13,16 +13,20 @@ import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
-import com.stream.jmxplayer.utils.SharedPreferenceUtils
+import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
-class M3UDisplayFragment : Fragment() {
+class CategoryFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     lateinit var galleryAdapter: GalleryAdapter
+    private var categoryName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        arguments?.let {
+            categoryName = it.getString(ARG_CATEGORY_NAME) ?: ""
+        }
     }
 
     override fun onCreateView(
@@ -41,13 +45,18 @@ class M3UDisplayFragment : Fragment() {
             val intent = GlobalFunctions.getDefaultPlayer(
                 requireContext(),
                 mSettings,
-                SharedPreferenceUtils.PlayListAll[pos]
+                galleryAdapter.galleryData[pos]
             )
-            intent.putExtra(PlayerModel.SELECTED_MODEL, pos)
+            intent.putExtra(
+                PlayerModel.SELECTED_MODEL,
+                PlayListAll.lastIndexOf(galleryAdapter.galleryData[pos])
+            )
             startActivity(intent)
         }, { _, _ -> })
         galleryAdapter.setHasStableIds(true)
-        galleryAdapter.updateData(SharedPreferenceUtils.PlayListAll)
+        galleryAdapter.updateData(
+            M3uDisplayCategoryFragment.categoryData[categoryName] ?: ArrayList()
+        )
         val spanCount = GlobalFunctions.getGridSpanCount(requireActivity())
 
         recyclerView.also { viewR ->
@@ -80,7 +89,13 @@ class M3UDisplayFragment : Fragment() {
     }
 
     companion object {
+        const val ARG_CATEGORY_NAME = "CATEGORY_NAME"
+
         @JvmStatic
-        fun newInstance() = M3UDisplayFragment()
+        fun newInstance(categoryName: String) = CategoryFragment().apply {
+            arguments = Bundle().apply {
+                putString(ARG_CATEGORY_NAME, categoryName)
+            }
+        }
     }
 }

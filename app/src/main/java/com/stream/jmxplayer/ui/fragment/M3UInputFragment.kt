@@ -219,10 +219,13 @@ class M3UInputFragment : Fragment() {
 
     }
 
-    fun m3uDataAction(data: ArrayList<PlayerModel>) {
-        PlayListAll.clear()
-        PlayListAll.addAll(data)
+    fun m3uDataAction() {
         requireView().findNavController().navigate(R.id.action_streamFragment_to_m3UDisplayFragment)
+    }
+
+    fun m3uDataActionNew() {
+        requireView().findNavController()
+            .navigate(R.id.action_streamFragment_to_m3uDisplayCategoryFragment)
     }
 
     private fun deleteModel(playerModel: PlayerModel) {
@@ -298,9 +301,14 @@ class M3UInputFragment : Fragment() {
         scrapper.onFinish(object : OnScrappingCompleted {
             override fun onComplete(response: String) {
                 loading.dismiss()
+                //logger("m3uParse", response)
                 val data = Parser.ParseM3UString(response, userAgent)
+                val dataNew = Parser.ParseM3UStringWithCategory(response, userAgent)
+                M3uDisplayCategoryFragment.categoryData = dataNew
+                PlayListAll.clear()
+                PlayListAll.addAll(data)
                 if (data.isNotEmpty()) {
-                    m3uDataAction(data)
+                    m3uDataActionNew()
                 } else
                     toaster(requireActivity(), "Empty List/Parsing Failed")
             }
