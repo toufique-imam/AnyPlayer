@@ -125,6 +125,7 @@ class VideoControlView : FrameLayout {
 
     private fun initControllerView(view: View) {
         mPauseButton = view.findViewById(R.id.vlc_pause)
+        mPauseButton?.contentDescription = "play"
         mPauseButton?.setOnClickListener(mPauseListener)
         mPlayButton = view.findViewById(R.id.vlc_play)
         mPlayButton?.visibility = View.GONE
@@ -303,7 +304,7 @@ class VideoControlView : FrameLayout {
 
         val keyCode = event?.keyCode
         val uniqueDown = event?.repeatCount == 0 && event.action == KeyEvent.ACTION_DOWN
-
+        logger("dispatchKeyEvent", "$keyCode $uniqueDown $mShowing")
         if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK
             || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
             || keyCode == KeyEvent.KEYCODE_SPACE
@@ -313,8 +314,6 @@ class VideoControlView : FrameLayout {
                 show(sDefaultTimeout)
                 if (mPauseButton?.isVisible == true)
                     mPauseButton?.requestFocus()
-//                if (mPlayButton?.isVisible == true)
-//                    mPlayButton?.requestFocus()
             }
             return true
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
@@ -346,7 +345,7 @@ class VideoControlView : FrameLayout {
             return true
         }
 
-        show(sDefaultTimeout)
+        //show(sDefaultTimeout)
         return super.dispatchKeyEvent(event)
     }
 
@@ -356,18 +355,14 @@ class VideoControlView : FrameLayout {
     }
 
     fun updatePausePlay() {
-        logger("updatePausePlay", "${mPauseButton?.visibility}")
         if (mRoot == null || mPlayer == null) return
-
+        logger(TAG, "${mPauseButton?.contentDescription} ")
         if (mPlayer!!.isPlaying) {
             mPauseButton?.setImageResource(R.drawable.ic_pause)
-//            mPlayButton?.visibility = View.GONE
             mPauseButton?.contentDescription = "play"
         } else {
             mPauseButton?.setImageResource(R.drawable.ic_play)
             mPauseButton?.contentDescription = "pause"
-//            mPauseButton?.visibility = View.GONE
-//            mPlayButton?.visibility = View.VISIBLE
         }
     }
 

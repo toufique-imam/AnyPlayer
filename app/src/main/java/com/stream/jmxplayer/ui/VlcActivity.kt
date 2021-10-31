@@ -594,7 +594,7 @@ class VlcActivity : AppCompatActivity(),
         return false
     }
 
-    fun showMediaInfo() {
+    private fun showMediaInfo() {
         val builder = TableLayoutBinder(this)
         builder.appendSection(R.string.mi_player)
         builder.appendRow2(R.string.mi_player, "libVLC")
