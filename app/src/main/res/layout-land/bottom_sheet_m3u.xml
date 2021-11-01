@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Play"
+            android:text="@string/play"
             app:icon="@drawable/ic_outline_play_arrow_24"
             app:iconGravity="textStart"
             app:iconPadding="5dp" />
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Edit"
+            android:text="@string/edit"
             app:icon="@drawable/ic_outline_edit_24"
             app:iconGravity="textStart"
             app:iconPadding="5dp" />
@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Delete"
+            android:text="@string/delete"
             app:icon="@drawable/ic_outline_delete_outline_24"
             app:iconGravity="textStart"
             app:iconPadding="5dp" />
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Share"
+            android:text="@string/share"
             app:icon="@drawable/ic_outline_share_24"
             app:iconGravity="textStart"
             app:iconPadding="5dp" />
