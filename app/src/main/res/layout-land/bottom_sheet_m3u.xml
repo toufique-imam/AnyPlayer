@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linear_layout_bottom_sheet"
+    style="@style/Widget.MaterialComponents.CardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp"
+    app:behavior_peekHeight="90dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <ImageView
+        android:id="@+id/image_view_direction_bs"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/TransparentWhite"
+        android:rotation="180"
+        android:src="@drawable/quantum_ic_keyboard_arrow_down_white_36"
+        app:tint="@color/Red" />
+
+
+    <TextView
+        android:id="@+id/text_view_title_bs"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_margin="2dp"
+        android:text="@string/bottom_sheet_header_none"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/material_button_play_bs"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Play"
+            app:icon="@drawable/ic_outline_play_arrow_24"
+            app:iconGravity="textStart"
+            app:iconPadding="5dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/material_button_edit_bs"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Edit"
+            app:icon="@drawable/ic_outline_edit_24"
+            app:iconGravity="textStart"
+            app:iconPadding="5dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/material_button_delete_bs"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Delete"
+            app:icon="@drawable/ic_outline_delete_outline_24"
+            app:iconGravity="textStart"
+            app:iconPadding="5dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/material_button_share_bs"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Share"
+            app:icon="@drawable/ic_outline_share_24"
+            app:iconGravity="textStart"
+            app:iconPadding="5dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

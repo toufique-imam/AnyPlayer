@@ -47,7 +47,7 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".ui.BrowserActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboardHidden|screenSize"
             android:exported="true" />
 
         <meta-data

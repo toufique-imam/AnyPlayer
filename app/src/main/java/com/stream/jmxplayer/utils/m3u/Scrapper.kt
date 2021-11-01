@@ -11,10 +11,18 @@ import com.stream.jmxplayer.utils.TextFileUtils
 import java.net.HttpURLConnection
 import java.net.URL
 
-class Scrapper(val context: Context, private val url: String) {
+class Scrapper(val context: Context, private var url: String) {
     lateinit var onComplete: OnScrappingCompleted
     var mRequestQueue: RequestQueue? = null
     var textFileUtils = TextFileUtils(context)
+
+    fun updateUrl(url: String) {
+        this.url = url
+    }
+
+    fun deletePrevious() {
+        textFileUtils.saveM3UFile(url, "")
+    }
 
     fun startScrapping() {
         val savedData = textFileUtils.getSavedM3UFile(url)

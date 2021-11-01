@@ -50,6 +50,7 @@
         app:icon="@drawable/ic_outline_edit_24"
         app:iconPadding="5dp" />
 
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/material_button_delete_bs"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"

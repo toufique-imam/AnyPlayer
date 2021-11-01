@@ -49,6 +49,7 @@ class M3UInputFragment : Fragment() {
     private lateinit var deleteButton: MaterialButton
     private lateinit var directionButton: ImageView
     private lateinit var fabAddM3U: FloatingActionButton
+    private lateinit var scrapper: Scrapper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +64,7 @@ class M3UInputFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_user_input_m3u, container, false)
         recyclerView = view.findViewById(R.id.recycler_m3u)
         fabAddM3U = view.findViewById(R.id.fab_add_m3u)
+        scrapper = Scrapper(requireContext(), "")
         initBottomSheet(view)
         return view
     }
@@ -213,7 +215,10 @@ class M3UInputFragment : Fragment() {
         deleteButton.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             deleteModel(playerModelNow)
+            scrapper.updateUrl(playerModelNow.link)
+            scrapper.deletePrevious()
             playerModelNow = PlayerModel(-1)
+
             historyItemClicked(playerModelNow, false)
         }
 
@@ -296,7 +301,7 @@ class M3UInputFragment : Fragment() {
     }
 
     private fun parseM3U(urlNow: String, userAgent: String) {
-        val scrapper = Scrapper(requireContext(), urlNow)
+        scrapper.updateUrl(urlNow)
         val loading = GlobalFunctions.createAlertDialogueLoading(requireActivity())
         scrapper.onFinish(object : OnScrappingCompleted {
             override fun onComplete(response: String) {
