@@ -80,7 +80,7 @@ class BrowseFragment : Fragment() {
                     when (tab.text) {
                         "Video" -> typeNow = PlayerModel.STREAM_OFFLINE_VIDEO
                         "Audio" -> typeNow = PlayerModel.STREAM_OFFLINE_AUDIO
-                        "Image" -> typeNow = PlayerModel.STREAM_OFFLINE_IMAGE
+                        "Imagen" -> typeNow = PlayerModel.STREAM_OFFLINE_IMAGE
                     }
                     if (prevType != typeNow) {
                         showVideos()

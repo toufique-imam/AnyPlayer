@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="@string/reject"
-                android:textColor="@color/Red"
+                android:textColor="@color/ic_launcher_background"
                 android:textSize="12sp"
                 android:visibility="gone"
                 app:backgroundTint="@color/White" />
@@ -113,7 +113,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="Edit"
+                android:text="@string/edit"
                 android:textColor="@color/DeepSkyBlue"
                 android:textSize="12sp"
                 android:visibility="gone"

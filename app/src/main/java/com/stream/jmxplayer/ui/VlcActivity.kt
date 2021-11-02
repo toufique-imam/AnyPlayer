@@ -148,6 +148,7 @@ class VlcActivity : AppCompatActivity(),
     override fun onStop() {
         super.onStop()
         releasePlayer()
+        mediaController.setMediaPlayer(null)
     }
 
     override fun onDestroy() {
