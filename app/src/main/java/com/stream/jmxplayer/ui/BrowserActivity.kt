@@ -38,7 +38,10 @@ class BrowserActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         navController.addOnDestinationChangedListener { controller, _, _ ->
             toolbar.title = controller.currentDestination?.label ?: toolbar.title
-            if (controller.currentDestination?.id != R.id.settingsFragment) {
+            if (controller.currentDestination?.id == R.id.browseFragment) {
+                adMobAdUtils!!.loadAd()
+            }
+            if (controller.currentDestination?.id == R.id.historyFragment) {
                 adMobAdUtils!!.loadAd()
             }
         }

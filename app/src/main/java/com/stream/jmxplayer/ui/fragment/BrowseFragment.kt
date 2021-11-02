@@ -57,9 +57,6 @@ class BrowseFragment : Fragment() {
     var overlayView: ImageOverlayView? = null
     var imageViewer: StfalconImageViewer<PlayerModel>? = null
     var casty: Casty? = null
-    var adMobAdUtils: AdMobAdUtils? = null
-    lateinit var alertDialogLoading: AlertDialog
-    lateinit var iAdListener: IAdListener
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +85,6 @@ class BrowseFragment : Fragment() {
                     if (prevType != typeNow) {
                         showVideos()
                     }
-                    adMobAdUtils?.loadAd()
                 }
             }
 
@@ -157,35 +153,8 @@ class BrowseFragment : Fragment() {
             .withOverlayView(overlayView).show()
     }
 
-    private fun initAdListener() {
-        iAdListener = object : IAdListener {
-            override fun onAdActivityDone(result: String) {
-                alertDialogLoading.dismiss()
-            }
-
-            override fun onAdLoadingStarted() {
-                alertDialogLoading.show()
-            }
-
-            override fun onAdLoaded() {
-                alertDialogLoading.dismiss()
-                adMobAdUtils?.showAd()
-            }
-
-            override fun onAdError(error: String) {
-                alertDialogLoading.dismiss()
-                GlobalFunctions.toaster(requireActivity(), "Ad error $error")
-                GlobalFunctions.logger("Splash Ad", error)
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adMobAdUtils = AdMobAdUtils(requireActivity())
-        alertDialogLoading = requireActivity().createAlertDialogueLoading()
-        initAdListener()
-        adMobAdUtils?.setAdListener(iAdListener)
         tabLayout = view.findViewById(R.id.tab_custom_browse)
         gallery = view.findViewById(R.id.gallery)
         openAlbum = view.findViewById(R.id.open_album)

@@ -1,6 +1,5 @@
 package com.stream.jmxplayer.ui.fragment
 
-import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.util.Patterns
@@ -10,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
@@ -22,14 +22,12 @@ import com.google.android.material.textfield.TextInputEditText
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
+import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
-import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
-import com.stream.jmxplayer.utils.PlayerUtils
-import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.createAlertDialogueLoading
 import com.stream.jmxplayer.utils.m3u.OnScrappingCompleted
 import com.stream.jmxplayer.utils.m3u.Parser
 import com.stream.jmxplayer.utils.m3u.Scrapper
@@ -52,6 +50,36 @@ class M3UInputFragment : Fragment() {
     private lateinit var fabAddM3U: FloatingActionButton
     private lateinit var scrapper: Scrapper
 
+    var adMobAdUtils: AdMobAdUtils? = null
+    lateinit var alertDialogLoading: AlertDialog
+    lateinit var iAdListener: IAdListener
+
+
+    private fun initAdListener() {
+        iAdListener = object : IAdListener {
+            override fun onAdActivityDone(result: String) {
+                alertDialogLoading.dismiss()
+                m3uDataActionNew()
+            }
+
+            override fun onAdLoadingStarted() {
+                alertDialogLoading.show()
+            }
+
+            override fun onAdLoaded() {
+                alertDialogLoading.dismiss()
+                adMobAdUtils?.showAd()
+            }
+
+            override fun onAdError(error: String) {
+                alertDialogLoading.dismiss()
+                toaster(requireActivity(), "Ad error $error")
+                GlobalFunctions.logger("Splash Ad", error)
+                m3uDataActionNew()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -72,6 +100,11 @@ class M3UInputFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        adMobAdUtils = AdMobAdUtils(requireActivity())
+        alertDialogLoading = requireActivity().createAlertDialogueLoading()
+        initAdListener()
+        adMobAdUtils?.setAdListener(iAdListener)
+
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.M3U_LIST,
             { video, _ -> historyItemClicked(video, true) },
             { video, _ -> historyItemClicked(video, false) }
@@ -161,7 +194,6 @@ class M3UInputFragment : Fragment() {
 
     }
 
-
     private fun initBottomSheet(view: View) {
         bottomSheetLinearLayout = view.findViewById(R.id.linear_layout_bottom_sheet)
         titleTextViewM3U = view.findViewById(R.id.text_view_title_bs)
@@ -224,10 +256,6 @@ class M3UInputFragment : Fragment() {
         }
 
     }
-
-//    fun m3uDataAction() {
-//        requireView().findNavController().navigate(R.id.action_streamFragment_to_m3UDisplayFragment)
-//    }
 
     fun m3uDataActionNew() {
         requireView().findNavController()
@@ -314,7 +342,7 @@ class M3UInputFragment : Fragment() {
                 PlayListAll.clear()
                 PlayListAll.addAll(data)
                 if (data.isNotEmpty()) {
-                    m3uDataActionNew()
+                    adMobAdUtils?.loadAd()
                 } else
                     toaster(requireActivity(), "Empty List/Parsing Failed")
             }
