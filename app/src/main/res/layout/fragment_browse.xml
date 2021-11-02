@@ -16,19 +16,19 @@
             android:id="@+id/tab_item_video"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Video" />
+            android:text="@string/video" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/tab_item_audio"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Audio" />
+            android:text="@string/audio" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/tab_item_image"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Image" />
+            android:text="@string/image" />
     </com.google.android.material.tabs.TabLayout>
 
     <include

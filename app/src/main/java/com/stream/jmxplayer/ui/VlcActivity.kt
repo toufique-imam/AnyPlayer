@@ -104,7 +104,7 @@ class VlcActivity : AppCompatActivity(),
         mSettings = Settings(this)
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_vlc)
-        alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
+        alertDialogLoading = createAlertDialogueLoading()
 
         getDataFromIntent()
         setUpOrientation()

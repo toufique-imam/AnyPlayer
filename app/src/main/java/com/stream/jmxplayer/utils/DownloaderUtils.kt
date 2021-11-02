@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.view.View
-import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.button.MaterialButton
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IResultListener
 import com.stream.jmxplayer.model.PlayerModel
@@ -32,8 +32,8 @@ class DownloaderUtils(val activity: Activity, var playerModel: PlayerModel) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
         builder.setTitle("Descargar con")
         builder.setView(dialogueView)
-        val positiveButton: Button = dialogueView.findViewById(R.id.button_exit_ac)
-        val negativeButton: Button = dialogueView.findViewById(R.id.button_exit_wa)
+        val positiveButton: MaterialButton = dialogueView.findViewById(R.id.button_exit_ac)
+        val negativeButton: MaterialButton = dialogueView.findViewById(R.id.button_exit_wa)
 
         val alertDialog: AlertDialog = builder.create()
         val radioGroup: RadioGroup = dialogueView.findViewById(R.id.radio_group_download)

@@ -243,7 +243,7 @@ class ExoPlayerActivity : AppCompatActivity(),
         mSettings = Settings(this)
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_player)
-        alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
+        alertDialogLoading = createAlertDialogueLoading()
 
         //historyDB = HistoryDatabase.getInstance(this)
         getDataFromIntent()

@@ -37,7 +37,7 @@ class StreamFragment : Fragment() {
         collectionAdapter = ViewPagerAdapter(this)
         viewPager2.adapter = collectionAdapter
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            tab.text = if (position == 0) "Stream M3U Link" else "Stream link"
+            tab.text = if (position == 0) "Listas M3U" else "Link M3U"
         }.attach()
     }
 

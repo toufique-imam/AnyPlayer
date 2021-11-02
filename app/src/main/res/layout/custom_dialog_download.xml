@@ -20,7 +20,6 @@
             <RadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/Red"
                 android:padding="3dp"
                 android:text="IDM"
                 android:textSize="18sp" />
@@ -28,7 +27,6 @@
             <RadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/Red"
                 android:padding="3dp"
                 android:text="ADM"
                 android:textSize="18sp" />
@@ -41,25 +39,24 @@
             android:gravity="end"
             android:padding="10dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_exit_ac"
-                style="?android:attr/buttonBarButtonStyle"
+                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="3dp"
-                android:text="Aceptar"
-                android:textColor="@color/Red"
-                app:backgroundTint="@color/White" />
+                android:text="@string/accept"
+                android:textColor="@color/white" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_exit_wa"
-                style="?android:attr/buttonBarButtonStyle"
+                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="3dp"
-                android:text="Cancelar"
-                android:textColor="@color/Green"
-                app:backgroundTint="@color/White" />
+                android:text="@string/cancel"
+                android:textColor="@color/ic_launcher_background"
+                app:backgroundTint="@color/white" />
         </LinearLayout>
     </LinearLayout>
 

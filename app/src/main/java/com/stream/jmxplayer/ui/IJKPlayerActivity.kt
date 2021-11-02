@@ -95,7 +95,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         setContentView(R.layout.activity_ijkplayer)
 
         adMobAdUtils = AdMobAdUtils(this)
-        alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
+        alertDialogLoading = createAlertDialogueLoading()
         getDataFromIntent()
         initView()
 
@@ -618,7 +618,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     private fun yesSure(playerID: Int) {
-        if (playerID == Settings.PV_PLAYER__IjkExoMediaPlayer) return
+        if (playerID == Settings.PV_PLAYER__IjkMediaPlayer) return
         ijkVideoView?.stopPlayback()
         releasePlayer()
         val intent = GlobalFunctions.getIntentPlayer(this, playerID)

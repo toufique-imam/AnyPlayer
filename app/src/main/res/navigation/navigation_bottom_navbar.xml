@@ -22,9 +22,9 @@
         <action
             android:id="@+id/action_streamFragment_to_historyFragment2"
             app:destination="@id/historyFragment" />
-        <action
-            android:id="@+id/action_streamFragment_to_m3UDisplayFragment"
-            app:destination="@id/m3UDisplayFragment" />
+        <!--        <action-->
+        <!--            android:id="@+id/action_streamFragment_to_m3UDisplayFragment"-->
+        <!--            app:destination="@id/m3UDisplayFragment" />-->
         <action
             android:id="@+id/action_streamFragment_to_m3uDisplayCategoryFragment"
             app:destination="@id/m3uDisplayCategoryFragment" />
@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/historyFragment"
         android:name="com.stream.jmxplayer.ui.fragment.HistoryFragment"
-        android:label="History"
+        android:label="@string/history"
         tools:layout="@layout/fragment_list_view">
         <action
             android:id="@+id/action_historyFragment_to_settingsFragment2"
@@ -43,11 +43,11 @@
         android:name="com.stream.jmxplayer.ui.fragment.SettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
-    <fragment
-        android:id="@+id/m3UDisplayFragment"
-        android:name="com.stream.jmxplayer.ui.fragment.M3UDisplayFragment"
-        android:label="M3U Playlist"
-        tools:layout="@layout/fragment_list_view" />
+    <!--    <fragment-->
+    <!--        android:id="@+id/m3UDisplayFragment"-->
+    <!--        android:name="com.stream.jmxplayer.ui.fragment.M3UDisplayFragment"-->
+    <!--        android:label="M3U Playlist"-->
+    <!--        tools:layout="@layout/fragment_list_view" />-->
     <fragment
         android:id="@+id/m3uDisplayCategoryFragment"
         android:name="com.stream.jmxplayer.ui.fragment.M3uDisplayCategoryFragment"

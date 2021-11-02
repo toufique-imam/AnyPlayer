@@ -25,7 +25,7 @@
     <string name="reject">CANCELAR</string>
     <string name="splash_logo">splash_logo</string>
     <string name="casty_introduction_text">Utilice este botón para conectarse con Chromecast</string>
-    <string name="bottom_sheet_header_none">Ningún artículo seleccionado</string>
+    <string name="bottom_sheet_header_none">Ninguna lista seleccionada</string>
     <string name="no_track">No track</string>
     <string name="trackName">%1$s, %2$s</string>
 
@@ -46,10 +46,10 @@
     <string name="coverimage">coverImage</string>
     <string name="optional">Opcional</string>
     <string name="track_selector">Selector de pista</string>
-    <string name="browse">Navegar</string>
+    <string name="browse">Galeria</string>
     <string name="stream">Stream</string>
-    <string name="history">Historia</string>
-    <string name="settings">Settings</string>
+    <string name="history">Historial</string>
+    <string name="settings">Ajustes</string>
     <string name="playlist">Lista de reproducción</string>
     <string name="search">Buscar</string>
     <string name="refresh">Actualizar</string>
@@ -151,12 +151,12 @@
         <item>IjkExoMediaPlayer</item>
     </string-array>
     <string name="pref_key_theme">pref.theme</string>
-    <string name="pref_title_theme">App Theme</string>
+    <string name="pref_title_theme">Tema para App</string>
     <string name="pref_summary_theme">Select App theme</string>
     <string-array name="pref_entries_theme">
         <item>Auto</item>
-        <item>Day</item>
-        <item>Night</item>
+        <item>Claro</item>
+        <item>Oscuro</item>
     </string-array>
     <string-array name="pref_entry_values_theme">
         <item>0</item>
@@ -165,18 +165,18 @@
     </string-array>
     <string name="pref_key_player_select">pref.player.select</string>
     <string name="pref_title_player_select">Default Player</string>
-    <string name="pref_summary_player_select">Select Default Player</string>
+    <string name="pref_summary_player_select">Seleccionar Reproductor</string>
     <string-array name="pref_entries_player_select">
         <item>Auto</item>
-        <item>JMX Player</item>
-        <item>EXO Player</item>
         <item>VLC Player</item>
+        <item>EXO Player</item>
+        <item>IJK Player</item>
     </string-array>
     <string-array name="pref_entry_values_player_select">
         <item>0</item>
-        <item>1</item>
-        <item>2</item>
         <item>3</item>
+        <item>2</item>
+        <item>1</item>
     </string-array>
 
 
@@ -278,7 +278,11 @@
     <string name="playlist_prev">Playlist Prev</string>
     <string name="subtitles">Subtitles</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="play">Play</string>
-    <string name="edit">Edit</string>
-    <string name="share">Share</string>
+    <string name="play">REPRODUCIR</string>
+    <string name="edit">EDITAR</string>
+    <string name="share">COMPARTIR</string>
+    <string name="video">Video</string>
+    <string name="audio">Audio</string>
+    <string name="image">Imagen</string>
+    <string name="cancel">Cancelar</string>
 </resources>

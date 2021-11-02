@@ -1,5 +1,6 @@
 package com.stream.jmxplayer.utils
 
+import android.app.Activity
 import android.content.res.Resources
 import android.graphics.Color
 import android.view.View
@@ -99,9 +100,9 @@ fun AppCompatActivity.createPlayerDialogue(playerID: Int, yesSure: (Int) -> Unit
     val playerDialog = builder.create()
     val playerList = resources.getStringArray(R.array.pref_entries_player_select)
     val playerId = arrayOf(
-        Settings.PV_PLAYER__IjkMediaPlayer,
+        Settings.PV_PLAYER__AndroidMediaPlayer,
         Settings.PV_PLAYER__IjkExoMediaPlayer,
-        Settings.PV_PLAYER__AndroidMediaPlayer
+        Settings.PV_PLAYER__IjkMediaPlayer
     )
     for (i in 1 until playerList.size) {
         val radioButton = RadioButton(this)
@@ -123,6 +124,17 @@ fun AppCompatActivity.createPlayerDialogue(playerID: Int, yesSure: (Int) -> Unit
         yesSure(radioGroup.checkedRadioButtonId)
     }
     return playerDialog
+}
+
+fun Activity.createAlertDialogueLoading(): AlertDialog {
+    val dialogueView =
+        layoutInflater.inflate(
+            R.layout.custom_dialog_loading, null
+        )
+    return AlertDialog.Builder(this)
+        .setView(dialogueView)
+        .setCancelable(false)
+        .create()
 }
 /*
 fun AppCompatActivity.areYouSureDialogue(message: String, action: () -> Unit) {

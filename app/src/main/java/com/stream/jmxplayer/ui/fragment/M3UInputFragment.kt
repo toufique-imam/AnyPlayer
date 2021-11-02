@@ -29,6 +29,7 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.utils.createAlertDialogueLoading
 import com.stream.jmxplayer.utils.m3u.OnScrappingCompleted
 import com.stream.jmxplayer.utils.m3u.Parser
 import com.stream.jmxplayer.utils.m3u.Scrapper
@@ -224,9 +225,9 @@ class M3UInputFragment : Fragment() {
 
     }
 
-    fun m3uDataAction() {
-        requireView().findNavController().navigate(R.id.action_streamFragment_to_m3UDisplayFragment)
-    }
+//    fun m3uDataAction() {
+//        requireView().findNavController().navigate(R.id.action_streamFragment_to_m3UDisplayFragment)
+//    }
 
     fun m3uDataActionNew() {
         requireView().findNavController()
@@ -302,7 +303,7 @@ class M3UInputFragment : Fragment() {
 
     private fun parseM3U(urlNow: String, userAgent: String) {
         scrapper.updateUrl(urlNow)
-        val loading = GlobalFunctions.createAlertDialogueLoading(requireActivity())
+        val loading = requireActivity().createAlertDialogueLoading()
         scrapper.onFinish(object : OnScrappingCompleted {
             override fun onComplete(response: String) {
                 loading.dismiss()

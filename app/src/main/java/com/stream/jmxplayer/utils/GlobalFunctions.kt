@@ -154,16 +154,6 @@ class GlobalFunctions {
             }
         }
 
-        fun createAlertDialogueLoading(activity: Activity): AlertDialog {
-            val dialogueView =
-                activity.layoutInflater.inflate(
-                    R.layout.custom_dialog_loading, null)
-            return AlertDialog.Builder(activity)
-                .setView(dialogueView)
-                .setCancelable(false)
-                .create()
-        }
-
         fun milliSecondToString(duration: Int): String {
             val seconds = (duration / (1000)) % 60
             val minutes = (duration / (60 * 1000)) % 60
@@ -243,7 +233,7 @@ class GlobalFunctions {
                         else if (key == "User-Agent") continue
                         else return getIntentPlayer(context, Settings.PV_PLAYER__IjkExoMediaPlayer)
                     }
-                    return getIntentPlayer(context, Settings.PV_PLAYER__IjkMediaPlayer)
+                    return getIntentPlayer(context, Settings.PV_PLAYER__AndroidMediaPlayer)
                 }
             }
         }

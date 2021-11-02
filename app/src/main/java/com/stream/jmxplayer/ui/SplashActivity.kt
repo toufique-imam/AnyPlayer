@@ -14,6 +14,7 @@ import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.utils.createAlertDialogueLoading
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 class SplashActivity : AppCompatActivity() {
@@ -39,7 +40,7 @@ class SplashActivity : AppCompatActivity() {
         playerModel = PlayerUtils.parseIntent(intentNow)
 
 
-        alertDialogLoading = GlobalFunctions.createAlertDialogueLoading(this)
+        alertDialogLoading = this.createAlertDialogueLoading()
 //        workAfterAdActivity()
         MobileAds.initialize(this) {
             adMobAdUtils = AdMobAdUtils(this)
