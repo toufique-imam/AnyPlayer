@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import tv.danmaku.ijk.media.exo.IjkExoMediaPlayer;
 import tv.danmaku.ijk.media.player.AndroidMediaPlayer;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -1046,10 +1045,10 @@ public class IjkVideoView extends
         IMediaPlayer mediaPlayer;
 
         switch (playerType) {
-            case Settings.PV_PLAYER__IjkExoMediaPlayer: {
-                mediaPlayer = new IjkExoMediaPlayer(mAppContext);
-            }
-            break;
+//            case Settings.PV_PLAYER__IjkExoMediaPlayer: {
+//                mediaPlayer = new IjkExoMediaPlayer(mAppContext);
+//            }
+//            break;
             case Settings.PV_PLAYER__AndroidMediaPlayer: {
                 mediaPlayer = new AndroidMediaPlayer();
             }

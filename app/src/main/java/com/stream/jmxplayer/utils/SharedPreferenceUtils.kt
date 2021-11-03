@@ -2,7 +2,6 @@ package com.stream.jmxplayer.utils
 
 import android.app.Activity
 import android.content.Context
-import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 
 class SharedPreferenceUtils {

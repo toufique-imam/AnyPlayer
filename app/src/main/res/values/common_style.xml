@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="custom_TabLayout" parent="Widget.MaterialComponents.TabLayout">
-        <item name="tabTextAppearance">@style/TextAppearance.MaterialComponents.Headline6</item>
-    </style>
-
     <style name="Theme.JMXPlayer.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>

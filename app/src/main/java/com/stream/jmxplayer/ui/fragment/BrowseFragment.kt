@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout
 import android.widget.SearchView
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -25,16 +24,13 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
-import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.view.ImageOverlayView
 import com.stream.jmxplayer.ui.viewmodel.LocalVideoViewModel
-import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.createAlertDialogueLoading
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 

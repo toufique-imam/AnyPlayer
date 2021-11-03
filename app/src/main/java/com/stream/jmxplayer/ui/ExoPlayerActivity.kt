@@ -125,118 +125,6 @@ class ExoPlayerActivity : AppCompatActivity(),
     Life Cycle
      */
 
-    private fun showMediaInfo() {
-        mediaMetaData = mPlayer?.mediaMetadata
-        if (mediaMetaData == null) return
-
-        val builder = TableLayoutBinder(this)
-        builder.appendSection(R.string.mi_player)
-        builder.appendRow2(R.string.mi_player, "ExoPlayer")
-        builder.appendSection(R.string.mi_media)
-
-        builder.appendRow2(
-            R.string.mi_resolution,
-            IjkVideoView.buildResolution(
-                mPlayer?.videoFormat?.width ?: 0,
-                mPlayer?.videoFormat?.height ?: 0,
-                0, 0
-            )
-        )
-
-        builder.appendRow2(
-            R.string.mi_length,
-            IjkVideoView.buildTimeMilli(mPlayer?.duration ?: 0)
-        )
-        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
-        var index = -1
-        if (mappedTrackInfo != null) {
-            for (i in 0 until mappedTrackInfo.rendererCount) {
-                val trackGroupArray = mappedTrackInfo.getTrackGroups(i)
-                val trackType = mappedTrackInfo.getRendererType(i)
-                val typeStr = when (trackType) {
-                    C.TRACK_TYPE_VIDEO -> getString(R.string.TrackType_video)
-                    C.TRACK_TYPE_AUDIO -> getString(R.string.TrackType_audio)
-                    C.TRACK_TYPE_TEXT -> getString(R.string.TrackType_subtitle)
-                    C.TRACK_TYPE_METADATA -> getString(R.string.TrackType_metadata)
-                    C.TRACK_TYPE_DEFAULT -> "Default"
-                    else -> getString(R.string.TrackType_unknown)
-                }
-                for (j in 0 until trackGroupArray.length) {
-                    val y: TrackGroup = trackGroupArray[j]
-                    index++
-                    if (trackSelected(mPlayer?.currentTrackGroups, y)) {
-                        builder.appendSection(
-                            getString(R.string.mi_stream_fmt1, index) + " " +
-                                    getString(R.string.mi__selected_video_track)
-                        )
-                    } else {
-                        builder.appendSection(
-                            getString(
-                                R.string.mi_stream_fmt1,
-                                index
-                            )
-                        )
-                    }
-                    if (y.length > 0) {
-                        val format = y.getFormat(0)
-                        builder.appendRow2(R.string.mi_type, typeStr)
-                        builder.appendRow2(R.string.mi_language, format.language)
-
-                        if (trackType == C.TRACK_TYPE_AUDIO || trackType == C.TRACK_TYPE_VIDEO) {
-                            builder.appendRow2(
-                                R.string.mi_codec, format.codecs
-                            )
-                            if (trackType == C.TRACK_TYPE_VIDEO) {
-                                builder.appendRow2(
-                                    R.string.mi_pixel_format,
-                                    format.pixelCount.toString()
-                                )
-                                builder.appendRow2(
-                                    R.string.mi_resolution,
-                                    IjkVideoView.buildResolution(format.height, format.width, 0, 0)
-                                )
-                                builder.appendRow2(
-                                    R.string.mi_frame_rate,
-                                    format.frameRate.toString()
-                                )
-                            } else {
-                                builder.appendRow2(
-                                    R.string.mi_sample_rate,
-                                    format.sampleRate.toString()
-                                )
-                                builder.appendRow2(
-                                    R.string.mi_channels,
-                                    format.channelCount.toString()
-                                )
-                            }
-
-                            builder.appendRow2(
-                                R.string.mi_bit_rate,
-                                format.averageBitrate.toString()
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        val adBuilder = builder.buildAlertDialogBuilder()
-        adBuilder.setTitle(R.string.media_information)
-        adBuilder.setNegativeButton(R.string.close, null)
-        adBuilder.show()
-    }
-
-    private fun trackSelected(
-        trackSelected: TrackGroupArray?,
-        trackGroupNow: TrackGroup
-    ): Boolean {
-        if (trackSelected != null) {
-            for (i in 0 until trackSelected.length) {
-                if (trackSelected[i] == trackGroupNow) return true
-            }
-        }
-        return false
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         logger("onCreate", "called")
         super.onCreate(savedInstanceState)
@@ -285,57 +173,6 @@ class ExoPlayerActivity : AppCompatActivity(),
                 hideSystemUi()
             }
         })
-    }
-
-    private fun initTrackSelector() {
-        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
-        if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
-        trackSelectorDialog.clear()
-        val dialogView = this.layoutInflater.inflate(R.layout.dialog_tracks, null)
-
-        val builder = AlertDialog.Builder(this).setTitle("Select Tracks").setView(dialogView)
-        builder.setCancelable(true)
-        val radioGroup: RadioGroup = dialogView.findViewById(R.id.radio_group_server)
-
-        trackDialog = builder.create()
-        var cnt = 0
-        trackSelectorDialog.clear()
-        for (i in 0 until mappedTrackInfo.rendererCount) {
-            if (isVideoRenderer(mappedTrackInfo, i) || isAudioRenderer(
-                    mappedTrackInfo,
-                    i
-                ) || isSubtitleRenderer(mappedTrackInfo, i)
-            ) {
-                trackSelectorDialog.add(
-                    TrackSelectionDialogBuilder(
-                        this,
-                        "Select audio track",
-                        trackSelector,
-                        i
-                    ).build()
-                )
-                val radioButton = RadioButton(this)
-                radioButton.id = cnt
-                radioButton.text = mappedTrackInfo.getRendererName(i)
-                radioButton.textSize = 15f
-                radioButton.setTextColor(Color.BLACK)
-                if (cnt == 0) {
-                    radioButton.isChecked = true
-                }
-                radioGroup.addView(radioButton)
-                cnt++
-            }
-        }
-        if (cnt == 0)
-            audioTrackSelector.visibility = View.GONE
-
-        val materialButton: MaterialButton = dialogView.findViewById(R.id.button_stream_now)
-
-
-        materialButton.setOnClickListener {
-            trackDialog?.dismiss()
-            trackSelectorDialog[radioGroup.checkedRadioButtonId]?.show()
-        }
     }
 
     override fun onStart() {
@@ -512,6 +349,173 @@ class ExoPlayerActivity : AppCompatActivity(),
     }
 
     /*
+    Track and media infos
+     */
+    private fun showMediaInfo() {
+        mediaMetaData = mPlayer?.mediaMetadata
+        if (mediaMetaData == null) return
+
+        val builder = TableLayoutBinder(this)
+        builder.appendSection(R.string.mi_player)
+        builder.appendRow2(R.string.mi_player, "ExoPlayer")
+        builder.appendSection(R.string.mi_media)
+
+        builder.appendRow2(
+            R.string.mi_resolution,
+            IjkVideoView.buildResolution(
+                mPlayer?.videoFormat?.width ?: 0,
+                mPlayer?.videoFormat?.height ?: 0,
+                0, 0
+            )
+        )
+
+        builder.appendRow2(
+            R.string.mi_length,
+            IjkVideoView.buildTimeMilli(mPlayer?.duration ?: 0)
+        )
+        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
+        var index = -1
+        if (mappedTrackInfo != null) {
+            for (i in 0 until mappedTrackInfo.rendererCount) {
+                val trackGroupArray = mappedTrackInfo.getTrackGroups(i)
+                val trackType = mappedTrackInfo.getRendererType(i)
+                val typeStr = when (trackType) {
+                    C.TRACK_TYPE_VIDEO -> getString(R.string.TrackType_video)
+                    C.TRACK_TYPE_AUDIO -> getString(R.string.TrackType_audio)
+                    C.TRACK_TYPE_TEXT -> getString(R.string.TrackType_subtitle)
+                    C.TRACK_TYPE_METADATA -> getString(R.string.TrackType_metadata)
+                    C.TRACK_TYPE_DEFAULT -> "Default"
+                    else -> getString(R.string.TrackType_unknown)
+                }
+                for (j in 0 until trackGroupArray.length) {
+                    val y: TrackGroup = trackGroupArray[j]
+                    index++
+                    if (trackSelected(mPlayer?.currentTrackGroups, y)) {
+                        builder.appendSection(
+                            getString(R.string.mi_stream_fmt1, index) + " " +
+                                    getString(R.string.mi__selected_video_track)
+                        )
+                    } else {
+                        builder.appendSection(
+                            getString(
+                                R.string.mi_stream_fmt1,
+                                index
+                            )
+                        )
+                    }
+                    if (y.length > 0) {
+                        val format = y.getFormat(0)
+                        builder.appendRow2(R.string.mi_type, typeStr)
+                        builder.appendRow2(R.string.mi_language, format.language)
+
+                        if (trackType == C.TRACK_TYPE_AUDIO || trackType == C.TRACK_TYPE_VIDEO) {
+                            builder.appendRow2(
+                                R.string.mi_codec, format.codecs
+                            )
+                            if (trackType == C.TRACK_TYPE_VIDEO) {
+                                builder.appendRow2(
+                                    R.string.mi_pixel_format,
+                                    format.pixelCount.toString()
+                                )
+                                builder.appendRow2(
+                                    R.string.mi_resolution,
+                                    IjkVideoView.buildResolution(format.height, format.width, 0, 0)
+                                )
+                                builder.appendRow2(
+                                    R.string.mi_frame_rate,
+                                    format.frameRate.toString()
+                                )
+                            } else {
+                                builder.appendRow2(
+                                    R.string.mi_sample_rate,
+                                    format.sampleRate.toString()
+                                )
+                                builder.appendRow2(
+                                    R.string.mi_channels,
+                                    format.channelCount.toString()
+                                )
+                            }
+
+                            builder.appendRow2(
+                                R.string.mi_bit_rate,
+                                format.averageBitrate.toString()
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        val adBuilder = builder.buildAlertDialogBuilder()
+        adBuilder.setTitle(R.string.media_information)
+        adBuilder.setNegativeButton(R.string.close, null)
+        adBuilder.show()
+    }
+
+    private fun trackSelected(
+        trackSelected: TrackGroupArray?,
+        trackGroupNow: TrackGroup
+    ): Boolean {
+        if (trackSelected != null) {
+            for (i in 0 until trackSelected.length) {
+                if (trackSelected[i] == trackGroupNow) return true
+            }
+        }
+        return false
+    }
+
+    private fun initTrackSelector() {
+        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
+        if (mappedTrackInfo == null) return else audioTrackSelector.visibility = View.VISIBLE
+        trackSelectorDialog.clear()
+        val dialogView = this.layoutInflater.inflate(R.layout.dialog_tracks, null)
+
+        val builder = AlertDialog.Builder(this).setTitle("Select Tracks").setView(dialogView)
+        builder.setCancelable(true)
+        val radioGroup: RadioGroup = dialogView.findViewById(R.id.radio_group_server)
+
+        trackDialog = builder.create()
+        var cnt = 0
+        trackSelectorDialog.clear()
+        for (i in 0 until mappedTrackInfo.rendererCount) {
+            if (isVideoRenderer(mappedTrackInfo, i) || isAudioRenderer(
+                    mappedTrackInfo,
+                    i
+                ) || isSubtitleRenderer(mappedTrackInfo, i)
+            ) {
+                trackSelectorDialog.add(
+                    TrackSelectionDialogBuilder(
+                        this,
+                        "Select audio track",
+                        trackSelector,
+                        i
+                    ).build()
+                )
+                val radioButton = RadioButton(this)
+                radioButton.id = cnt
+                radioButton.text = mappedTrackInfo.getRendererName(i)
+                radioButton.textSize = 15f
+                radioButton.setTextColor(Color.BLACK)
+                if (cnt == 0) {
+                    radioButton.isChecked = true
+                }
+                radioGroup.addView(radioButton)
+                cnt++
+            }
+        }
+        if (cnt == 0)
+            audioTrackSelector.visibility = View.GONE
+
+        val materialButton: MaterialButton = dialogView.findViewById(R.id.button_stream_now)
+
+
+        materialButton.setOnClickListener {
+            trackDialog?.dismiss()
+            trackSelectorDialog[radioGroup.checkedRadioButtonId]?.show()
+        }
+    }
+
+
+    /*
     View SetUps
      */
     private fun updateTexts() {
@@ -526,22 +530,38 @@ class ExoPlayerActivity : AppCompatActivity(),
 
         animationUtils.setMidFocusExoControl(
             forwardButton,
-            R.drawable.ic_forward_red, R.drawable.forward
+            R.drawable.ic_fast_forward_red, R.drawable.ic_fast_forward
         )
         animationUtils.setMidFocusExoControl(
             rewindButton,
-            R.drawable.ic_backward_red, R.drawable.backward
+            R.drawable.ic_rewind_red, R.drawable.ic_rewind
         )
         animationUtils.setMidFocusExoControl(
             playButton,
-            R.drawable.ic_baseline_play_circle_red_filled_24,
+            R.drawable.ic_play_red,
             R.drawable.ic_play
         )
         animationUtils.setMidFocusExoControl(
             pauseButton,
-            R.drawable.ic_baseline_pause_circle_red_filled_24,
-            R.drawable.ic_play
+            R.drawable.ic_pause_red,
+            R.drawable.ic_pause
         )
+        animationUtils.setMidFocusExoControl(
+            audioTrackSelector,
+            R.drawable.ic_baseline_video_settings_24_red,
+            R.drawable.ic_baseline_video_settings_24
+        )
+        animationUtils.setMidFocusExoControl(
+            nextButton,
+            R.drawable.ic_skip_forward_red,
+            R.drawable.ic_skip_forward
+        )
+        animationUtils.setMidFocusExoControl(
+            previousButton,
+            R.drawable.ic_skip_back_red,
+            R.drawable.ic_skip_back
+        )
+
         nextButton.setOnClickListener {
             idxNow++
             if (PlayListAll.isNotEmpty())
@@ -842,10 +862,11 @@ class ExoPlayerActivity : AppCompatActivity(),
                 2 -> DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
                 3 -> DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
                 else -> {
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
-                        DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
-                    else
-                        DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+                    DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+//                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
+//                        DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
+//                    else
+//                        DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
                 }
             }
 

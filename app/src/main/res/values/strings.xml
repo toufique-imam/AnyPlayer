@@ -3,23 +3,17 @@
     <string name="grant_permission">Conceder permiso</string>
 
     <string name="permission_not_granted">La aplicación requiere acceso al almacenamiento para acceder a los elementos almacenados en MediaStore.</string>
-    <string name="lockscreen_transport_play_description">lockscreen_transport_play_description</string>
-    <string name="lockscreen_transport_pause_description">lockscreen_transport_pause_description</string>
     <string name="receiver_id">8639B975</string>
     <string name="app_name">JMX Player</string>
     <string name="rotate">Orientacion de pantalla</string>
     <string name="resize">Ajuste Pantalla</string>
-    <string name="aspect_ratio">Relación de aspecto</string>Open Album
+    Open Album
     <string name="download_video">Guardar en el dispositivo</string>
     <string name="open_with">Abrir con...</string>
     <string name="enter_ua">User-Agent</string>
     <string name="enter_header">Encabezados adicionales</string>
-    <string name="how_to_header">separe la clave y los valores con una coma, vea la sugerencia como ejemplo</string>
     <string name="how_to_header_whint">separe la clave y los valores con una coma, vea la sugerencia como ejemplo , ex : Origin,jmxplayer.com,Referer,www.jmxplayer.com</string>
-    <string name="user_agent">JMX Player 1.2</string>
-    <string name="stream_link">http://tv2.ebox.live:8080/live/nk-six.m3u8</string>
     <string name="enter_stream_link">Enlace de transmisión</string>
-    <string name="your_stream_name">Nombre de transmisión personalizado</string>
     <string name="enter_stream_name">Nombre de Transmisión</string>
     <string name="accept">ACEPTAR</string>
     <string name="reject">CANCELAR</string>
@@ -57,23 +51,6 @@
 
     <string name="N_A">N/A</string>
     <string name="close">Close</string>
-    <string name="exit">Exit</string>
-    <string name="sample">Sample</string>
-    <string name="recent">Recent</string>
-    <string name="tracks">Tracks</string>
-    <string name="toggle_player">Player</string>
-    <string name="toggle_render">Render</string>
-    <string name="toggle_ratio">Scale</string>
-    <string name="show_info">Info</string>
-    <string name="vdec">vdec</string>
-    <string name="fps">fps</string>
-    <string name="v_cache">v-cache</string>
-    <string name="a_cache">a-cache</string>
-    <string name="load_cost">load-cost</string>
-    <string name="seek_cost">seek_cost</string>
-    <string name="seek_load_cost">seek_load_cost</string>
-    <string name="tcp_speed">tcp_speed</string>
-    <string name="bit_rate">bit_rate</string>
 
     <string name="media_information">Media Information</string>
     <string name="mi_player">Player</string>
@@ -116,40 +93,13 @@
     <string name="VideoView_render_surface_view">Render: SurfaceView</string>
     <string name="VideoView_render_texture_view">Render: TextureView</string>
 
-    <string name="VideoView_player_none">Player: None</string>
     <string name="VideoView_player_AndroidMediaPlayer">Player: AndroidMediaPlayer</string>
     <string name="VideoView_player_IjkMediaPlayer">Player: IjkMediaPlayer</string>
     <string name="VideoView_player_IjkExoMediaPlayer">Player: IjkExoMediaPlayer</string>
-    <string name="pref_title_general">General</string>
 
     <string name="pref_key_enable_background_play">pref.enable_background_play</string>
-    <string name="pref_title_enable_background_play">Enable background play</string>
-    <string name="pref_summary_enable_background_play">need Android 4.0+</string>
-
-    <string name="pref_key_using_android_player">pref.using_android_player</string>
-    <string name="pref_title_using_android_player">Using system player</string>
-    <string name="pref_summary_using_android_player" />
 
     <string name="pref_key_player">pref.player</string>
-    <string name="pref_title_player">Choose Player</string>
-    <string-array name="pref_entries_player">
-        <item>Auto Select</item>
-        <item>AndroidMediaPlayer</item>
-        <item>IjkMediaPlayer</item>
-        <item>IjkExoMediaPlayer</item>
-    </string-array>
-    <string-array name="pref_entry_values_player">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-    <string-array name="pref_entry_summaries_player">
-        <item>Auto Select</item>
-        <item>AndroidMediaPlayer</item>
-        <item>IjkMediaPlayer</item>
-        <item>IjkExoMediaPlayer</item>
-    </string-array>
     <string name="pref_key_theme">pref.theme</string>
     <string name="pref_title_theme">Tema para App</string>
     <string name="pref_summary_theme">Select App theme</string>
@@ -174,9 +124,9 @@
     </string-array>
     <string-array name="pref_entry_values_player_select">
         <item>0</item>
-        <item>3</item>
-        <item>2</item>
         <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 
 
@@ -248,11 +198,8 @@
     <string name="pref_summary_using_opensl_es" />
 
     <!-- -->
-    <string name="pref_title_render_view">RenderView</string>
 
     <string name="pref_key_enable_no_view">pref.enable_no_view</string>
-    <string name="pref_title_enable_no_view">Enable NoView</string>
-    <string name="pref_summary_enable_no_view" />
 
     <string name="pref_key_enable_surface_view">pref.enable_surface_view</string>
     <string name="pref_title_enable_surface_view">Enable SurfaceView</string>
@@ -263,21 +210,15 @@
     <string name="pref_summary_enable_texture_view" />
 
     <string name="pref_key_enable_detached_surface_texture">pref.enable_detached_surface_texture</string>
-    <string name="pref_title_enable_detached_surface_texture">Enable detached SurfaceTexture</string>
-    <string name="pref_summary_enable_detached_surface_texture" />
 
     <!-- -->
-    <string name="pref_title_misc">Misc</string>
     <string name="pref_key_using_mediadatasource">pref.using_mediadatasource</string>
-    <string name="pref_title_using_mediadatasource">Using MediaDataSource</string>
-    <string name="pref_summary_using_mediadatasource" />
 
     <!-- -->
     <string name="pref_key_last_directory" />
     <string name="playlist_next">Playlist Next</string>
     <string name="playlist_prev">Playlist Prev</string>
     <string name="subtitles">Subtitles</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="play">REPRODUCIR</string>
     <string name="edit">EDITAR</string>
     <string name="share">COMPARTIR</string>

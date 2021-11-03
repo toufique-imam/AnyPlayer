@@ -7,6 +7,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.25925925925925924" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_delay_donw.xml" value="0.2703125" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_fast_forward.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_fast_forward_red.xml" value="0.10648148148148148" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_pause.xml" value="0.1361111111111111" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_play.xml" value="0.1361111111111111" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_rewind.xml" value="0.1361111111111111" />
@@ -62,7 +63,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/play_menu.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/toolbar_browse.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/toolbar_history.xml" value="0.13020833333333334" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/xml/settings_pref.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/xml/settings_pref.xml" value="0.25025641025641027" />
       </map>
     </option>
   </component>

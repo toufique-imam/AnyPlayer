@@ -111,7 +111,7 @@ public class Settings {
             return Integer.parseInt(val);
         } catch (Exception ex) {
             Log.e("ExoEx", val);
-            return 0;
+            return 1;
         }
     }
 

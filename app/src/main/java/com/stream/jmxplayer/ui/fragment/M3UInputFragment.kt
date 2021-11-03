@@ -169,10 +169,17 @@ class M3UInputFragment : Fragment() {
             acceptButton.visibility = View.GONE
             editButtonBS.visibility = View.VISIBLE
             cancelButton.visibility = View.VISIBLE
+            linkInput.setText(playerModelNow.link)
+            titleInput.setText(playerModelNow.title)
+            if (playerModelNow.userAgent != GlobalFunctions.USER_AGENT)
+                userAgentInput.setText(playerModelNow.userAgent)
         } else {
             acceptButton.visibility = View.VISIBLE
             editButtonBS.visibility = View.GONE
             cancelButton.visibility = View.GONE
+            linkInput.text?.clear()
+            titleInput.text?.clear()
+            userAgentInput.text?.clear()
         }
         acceptButton.setOnClickListener {
             if (linkChecker()) {

@@ -12,7 +12,7 @@
         android:layout_marginTop="2dp"
         android:background="@color/TransparentWhite"
         android:focusable="true"
-        android:nextFocusDown="@id/exo_back"
+        android:nextFocusDown="@id/vlc_back"
         android:orientation="horizontal"
         android:padding="3dp">
 
@@ -24,7 +24,7 @@
             android:layout_gravity="start"
             android:contentDescription="@string/back_button"
             android:focusable="true"
-            android:nextFocusDown="@id/exo_track_selector"
+            android:nextFocusDown="@id/vlc_track_selector"
             android:scaleType="centerInside"
             android:src="@drawable/ic_baseline_arrow_back_ios_24"
             app:layout_constraintBottom_toBottomOf="@id/constraint_layout_vlc"
@@ -79,7 +79,7 @@
             android:layout_height="match_parent"
             android:contentDescription="@string/track_selector"
             android:focusable="true"
-            android:nextFocusDown="@id/exo_custom_cast"
+            android:nextFocusDown="@id/vlc_custom_cast"
             android:padding="10dp"
             android:scaleType="fitEnd"
             android:src="@drawable/ic_baseline_video_settings_24"
@@ -95,13 +95,14 @@
             android:layout_height="match_parent"
             android:contentDescription="@string/cast_button"
             android:focusable="true"
-            android:nextFocusDown="@id/exo_menu"
+            android:nextFocusDown="@id/vlc_menu"
             android:padding="10dp"
             android:scaleType="fitEnd"
             app:externalRouteEnabledDrawable="@drawable/ic_baseline_cast_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/vlc_menu"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:mediaRouteButtonTint="@color/White" />
 
         <ImageButton
             android:id="@+id/vlc_menu"
@@ -129,7 +130,7 @@
         android:layout_alignParentTop="true"
         android:focusable="true"
         android:gravity="center"
-        android:nextFocusDown="@id/exo_rew"
+        android:nextFocusDown="@id/playlistPrev"
         android:orientation="horizontal"
         android:padding="5dp">
 
@@ -139,6 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
             android:background="@drawable/transparent_circle_background"
+            android:nextFocusDown="@id/vlc_rew"
             android:padding="16dp"
             android:src="@drawable/ic_skip_back" />
 
@@ -157,6 +159,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/circle_background"
             android:backgroundTint="@color/white"
+            android:nextFocusDown="@id/vlc_forward"
             android:padding="16dp"
             android:src="@drawable/ic_play"
             app:tint="@color/black" />
@@ -167,6 +170,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/circle_background"
             android:backgroundTint="@color/white"
+            android:nextFocusDown="@id/vlc_forward"
             android:padding="16dp"
             android:src="@drawable/ic_pause"
             android:visibility="gone"
@@ -178,6 +182,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:background="@drawable/transparent_circle_background"
+            android:nextFocusDown="@id/playlistNext"
             android:padding="16dp"
             android:src="@drawable/ic_fast_forward" />
 
@@ -187,6 +192,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:background="@drawable/transparent_circle_background"
+            android:nextFocusDown="@id/line"
             android:padding="16dp"
             android:src="@drawable/ic_skip_forward" />
 

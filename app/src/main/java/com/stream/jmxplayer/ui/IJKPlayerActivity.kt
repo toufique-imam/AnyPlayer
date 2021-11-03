@@ -208,18 +208,34 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private fun setUpPlayerViewControl() {
         animationUtils.setMidFocusExoControl(
             forwardButton,
-            R.drawable.ic_forward_red, R.drawable.forward
+            R.drawable.ic_fast_forward_red, R.drawable.ic_fast_forward
         )
         animationUtils.setMidFocusExoControl(
             rewindButton,
-            R.drawable.ic_backward_red, R.drawable.backward
+            R.drawable.ic_rewind_red, R.drawable.ic_rewind
+        )
+
+        animationUtils.setMidFocusExoControl(
+            audioTrackSelector,
+            R.drawable.ic_baseline_video_settings_24_red,
+            R.drawable.ic_baseline_video_settings_24
+        )
+        animationUtils.setMidFocusExoControl(
+            mNextButton,
+            R.drawable.ic_skip_forward_red,
+            R.drawable.ic_skip_forward
+        )
+        animationUtils.setMidFocusExoControl(
+            mPrevButton,
+            R.drawable.ic_skip_back_red,
+            R.drawable.ic_skip_back
         )
         pauseButton.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 pauseButton.startAnimation(animationUtils.animationInMid)
                 pauseButton.setImageResource(
-                    if (pauseButton.contentDescription == "play") R.drawable.ic_baseline_play_circle_red_filled_24
-                    else R.drawable.ic_baseline_pause_circle_red_filled_24
+                    if (pauseButton.contentDescription == "play") R.drawable.ic_play_red
+                    else R.drawable.ic_pause_red
                 )
             } else {
                 pauseButton.startAnimation(animationUtils.animationInMid)

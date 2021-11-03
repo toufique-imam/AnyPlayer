@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
@@ -219,9 +218,9 @@ class GlobalFunctions {
         ): Intent {
             logger("KEY", mSettings.defaultPlayer.toString())
             when (mSettings.defaultPlayer) {
-                1 -> return getIntentPlayer(context, Settings.PV_PLAYER__IjkMediaPlayer)
+                1 -> return getIntentPlayer(context, Settings.PV_PLAYER__AndroidMediaPlayer)
                 2 -> return getIntentPlayer(context, Settings.PV_PLAYER__IjkExoMediaPlayer)
-                3 -> return getIntentPlayer(context, Settings.PV_PLAYER__AndroidMediaPlayer)
+                3 -> return getIntentPlayer(context, Settings.PV_PLAYER__IjkMediaPlayer)
                 else -> {
                     if (PlayerModel.isLocal(playerModel.streamType)) {
                         return getIntentPlayer(context, Settings.PV_PLAYER__AndroidMediaPlayer)
