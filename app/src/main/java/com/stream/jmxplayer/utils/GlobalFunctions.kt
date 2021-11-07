@@ -12,6 +12,7 @@ import android.view.View
 import android.view.WindowInsets
 import android.widget.Toast
 import androidx.core.content.getSystemService
+import com.stream.jmxplayer.BuildConfig
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.ExoPlayerActivity
@@ -315,6 +316,10 @@ class GlobalFunctions {
                 ?: "JMX Player"
             return "JMX Player"
 
+        }
+
+        fun isProVersion(): Boolean {
+            return BuildConfig.FLAVOR == "paid"
         }
 
     }

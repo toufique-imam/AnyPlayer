@@ -15,6 +15,7 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
+import com.stream.jmxplayer.utils.showProMode
 
 class CategoryFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -68,7 +69,11 @@ class CategoryFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
-        inflater.inflate(R.menu.toolbar_browse, menu)
+        if (GlobalFunctions.isProVersion()) {
+            inflater.inflate(R.menu.toolbar_browse_pro, menu)
+        } else {
+            inflater.inflate(R.menu.toolbar_browse, menu)
+        }
         val searchManager =
             requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val searchView = menu.findItem(R.id.action_search)?.actionView as SearchView

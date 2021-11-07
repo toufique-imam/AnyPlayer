@@ -29,9 +29,11 @@ import com.stream.jmxplayer.ui.view.ImageOverlayView
 import com.stream.jmxplayer.ui.viewmodel.LocalVideoViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.isProVersion
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
+import com.stream.jmxplayer.utils.showProMode
 
 
 /**
@@ -194,7 +196,11 @@ class BrowseFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
-        inflater.inflate(R.menu.toolbar_browse, menu)
+        if (isProVersion()) {
+            inflater.inflate(R.menu.toolbar_browse_pro, menu)
+        } else {
+            inflater.inflate(R.menu.toolbar_browse, menu)
+        }
         val searchManager =
             requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val searchView = menu.findItem(R.id.action_search)?.actionView as SearchView
@@ -214,17 +220,14 @@ class BrowseFragment : Fragment() {
         })
     }
 
-
-    override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-            R.id.action_refresh -> {
-                openMediaStore()
-                true
-            }
-            else -> {
-                super.onOptionsItemSelected(item)
-            }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.action_refresh) {
+            openMediaStore()
+            true
+        }  else {
+            super.onOptionsItemSelected(item)
         }
+    }
 
 
     private fun showVideos() {

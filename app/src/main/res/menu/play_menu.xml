@@ -8,15 +8,6 @@
             app:showAsAction="ifRoom" />
 
         <item
-            android:id="@+id/menu_download_video"
-            android:title="@string/download_video"
-            app:showAsAction="ifRoom" />
-
-        <item
-            android:id="@+id/menu_open_with_other_app"
-            android:title="@string/open_with"
-            app:showAsAction="ifRoom" />
-        <item
             android:id="@+id/menu_resize"
             android:title="@string/resize"
             app:showAsAction="ifRoom" />
@@ -26,23 +17,12 @@
             app:showAsAction="ifRoom" />
         <item
             android:id="@+id/menu_change_player"
-            android:title="Change Player"
+            android:title="@string/change_player"
             app:showAsAction="ifRoom" />
         <item
             android:id="@+id/menu_media_info"
-            android:title="Media Info"
+            android:title="@string/media_info"
             app:showAsAction="ifRoom" />
-
     </group>
-    <!--    <item android:title="Personalize">-->
-    <!--        <menu>-->
-    <!--            <item-->
-    <!--                android:id="@+id/menu_custom_stream"-->
-    <!--                android:title="Stream Personal" />-->
-    <!--            <item-->
-    <!--                android:id="@+id/menu_m3u"-->
-    <!--                android:title="Stream M3U Playlist" />-->
-    <!--        </menu>-->
-    <!--    </item>-->
 
 </menu>

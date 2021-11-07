@@ -87,9 +87,9 @@ class SplashActivity : AppCompatActivity() {
                 alertDialogLoading.show()
             }
 
-            override fun onAdLoaded() {
+            override fun onAdLoaded(type: Int) {
                 alertDialogLoading.dismiss()
-                adMobAdUtils?.showAd()
+                adMobAdUtils?.showFullScreenAd()
             }
 
             override fun onAdError(error: String) {
@@ -101,7 +101,7 @@ class SplashActivity : AppCompatActivity() {
 
         if (adMobAdUtils != null) {
             adMobAdUtils!!.setAdListener(iAdListener)
-            adMobAdUtils!!.loadAd()
+            adMobAdUtils!!.loadFullScreenAd()
         } else {
             workAfterAdActivity()
         }

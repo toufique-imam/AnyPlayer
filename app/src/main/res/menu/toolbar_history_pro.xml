@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_search"
+        android:id="@+id/action_search_history"
         android:icon="@drawable/ic_baseline_search_24"
         android:title="@string/search"
         app:actionViewClass="android.widget.SearchView"
@@ -11,15 +11,8 @@
 
     <!-- Settings, should always be in the overflow -->
     <item
-        android:id="@+id/action_refresh"
-        android:icon="@drawable/ic_baseline_refresh_24"
-        android:title="@string/refresh"
+        android:id="@+id/action_delete_history"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="@string/delete"
         app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_pro"
-        android:icon="@drawable/no_ads"
-        android:title="@string/pro"
-        app:showAsAction="ifRoom" />
-
 </menu>

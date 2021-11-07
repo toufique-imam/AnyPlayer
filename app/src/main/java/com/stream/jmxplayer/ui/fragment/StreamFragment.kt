@@ -1,15 +1,15 @@
 package com.stream.jmxplayer.ui.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.stream.jmxplayer.R
+import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.showProMode
 
 class StreamFragment : Fragment() {
 
@@ -17,6 +17,21 @@ class StreamFragment : Fragment() {
     private lateinit var viewPager2: ViewPager2
     private lateinit var collectionAdapter: ViewPagerAdapter
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!GlobalFunctions.isProVersion()) {
+            setHasOptionsMenu(true)
+        }
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        if (!GlobalFunctions.isProVersion()) {
+            menu.clear()
+            inflater.inflate(R.menu.non_pro, menu)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

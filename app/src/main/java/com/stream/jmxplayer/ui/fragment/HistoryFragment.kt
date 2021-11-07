@@ -17,6 +17,7 @@ import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
+import com.stream.jmxplayer.utils.showProMode
 
 class HistoryFragment : Fragment() {
 
@@ -45,7 +46,10 @@ class HistoryFragment : Fragment() {
             { video, _ ->
                 //val intent = Intent(context, PlayerActivity::class.java)
                 val intent =
-                    GlobalFunctions.getIntentPlayer(requireContext(), Settings.PV_PLAYER__IjkMediaPlayer)
+                    GlobalFunctions.getIntentPlayer(
+                        requireContext(),
+                        Settings.PV_PLAYER__IjkMediaPlayer
+                    )
                 PlayListAll.clear()
                 PlayListAll.add(video)
                 startActivity(intent)
@@ -69,7 +73,11 @@ class HistoryFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
-        inflater.inflate(R.menu.toolbar_history, menu)
+        if (GlobalFunctions.isProVersion()) {
+            inflater.inflate(R.menu.toolbar_history_pro, menu)
+        } else {
+            inflater.inflate(R.menu.toolbar_history, menu)
+        }
         val searchManager =
             requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val searchView = menu.findItem(R.id.action_search_history)?.actionView as SearchView
@@ -103,14 +111,13 @@ class HistoryFragment : Fragment() {
         galleryAdapter.deleteData(playerModel)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-            R.id.action_delete_history -> {
-                deleteHistory()
-                true
-            }
-            else -> {
-                super.onOptionsItemSelected(item)
-            }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.action_delete_history) {
+            deleteHistory()
+            true
+        }  else {
+            super.onOptionsItemSelected(item)
         }
+    }
 }

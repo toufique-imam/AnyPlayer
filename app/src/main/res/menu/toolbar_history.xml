@@ -16,4 +16,12 @@
         android:title="@string/delete"
         app:showAsAction="ifRoom" />
 
+
+    <item
+        android:id="@+id/action_pro"
+        android:icon="@drawable/no_ads"
+        android:title="@string/pro"
+        app:showAsAction="ifRoom" />
+
+
 </menu>

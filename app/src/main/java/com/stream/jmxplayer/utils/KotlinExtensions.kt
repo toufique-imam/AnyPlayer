@@ -1,8 +1,11 @@
 package com.stream.jmxplayer.utils
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
+import android.net.Uri
 import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -149,5 +152,38 @@ fun AppCompatActivity.areYouSureDialogue(message: String, action: () -> Unit) {
         .show()
 }
  */
+
+fun AppCompatActivity.showProMode(rewardAdAction: () -> Unit) {
+    val dialogView = layoutInflater.inflate(R.layout.custom_dialog_pro, null)
+    val builder = AlertDialog.Builder(this)
+        .setTitle(R.string.pro_dialog_title)
+        .setView(dialogView)
+    val rewardButton: MaterialButton = dialogView.findViewById(R.id.material_button_reward)
+    val proButton: MaterialButton = dialogView.findViewById(R.id.material_button_buy_pro)
+    val dialogNow = builder.create()
+    rewardButton.setOnClickListener {
+        dialogNow.dismiss()
+        rewardAdAction()
+    }
+    proButton.setOnClickListener {
+        dialogNow.dismiss()
+        try {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=$packageName.paid")
+                )
+            )
+        } catch (e2: ActivityNotFoundException) {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=$packageName.paid")
+                )
+            )
+        }
+    }
+    dialogNow.show()
+}
 
 fun Double.round(decimals: Int = 2): Double = "%.${decimals}f".format(this).toDouble()

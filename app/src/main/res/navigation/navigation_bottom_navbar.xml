@@ -13,6 +13,7 @@
         <action
             android:id="@+id/action_browseFragment_to_streamFragment2"
             app:destination="@id/streamFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/streamFragment"
@@ -28,6 +29,7 @@
         <action
             android:id="@+id/action_streamFragment_to_m3uDisplayCategoryFragment"
             app:destination="@id/m3uDisplayCategoryFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/historyFragment"

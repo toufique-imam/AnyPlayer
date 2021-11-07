@@ -38,7 +38,14 @@ class Scrapper(val context: Context, private var url: String) {
                 textFileUtils.saveM3UFile(url, response)
                 onComplete.onComplete(response)
             },
-            { onComplete.onError() }
+            {
+                if (url.startsWith("http:")) {
+                    url = url.replace("http:", "https:")
+                    startScrapping()
+                } else {
+                    onComplete.onError()
+                }
+            }
         )
         addToRequestQueue(localData)
     }

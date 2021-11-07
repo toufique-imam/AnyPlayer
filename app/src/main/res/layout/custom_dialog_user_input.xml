@@ -104,7 +104,6 @@
                 android:text="@string/reject"
                 android:textColor="@color/ic_launcher_background"
                 android:textSize="12sp"
-                android:visibility="gone"
                 app:backgroundTint="@color/White" />
 
             <com.google.android.material.button.MaterialButton
@@ -116,7 +115,6 @@
                 android:text="@string/edit"
                 android:textColor="@color/DeepSkyBlue"
                 android:textSize="12sp"
-                android:visibility="gone"
                 app:backgroundTint="@color/White" />
 
             <com.google.android.material.button.MaterialButton

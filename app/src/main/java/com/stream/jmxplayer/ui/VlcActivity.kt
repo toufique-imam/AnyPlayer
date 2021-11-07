@@ -47,9 +47,6 @@ class VlcActivity : AppCompatActivity(),
     private lateinit var alertDialogLoading: AlertDialog
     private lateinit var playerModelNow: PlayerModel
 
-    //private var playList = ArrayList<PlayerModel>()
-    private lateinit var btnClick: String
-
     private lateinit var cast: Casty
 
     private lateinit var animationUtils: MAnimationUtils
@@ -73,11 +70,6 @@ class VlcActivity : AppCompatActivity(),
 
     private lateinit var recyclerViewPlayList: RecyclerView
     private lateinit var galleryAdapter: GalleryAdapter
-
-    lateinit var adMobAdUtils: AdMobAdUtils
-    private lateinit var iAdListener: IAdListener
-
-    private lateinit var downloaderUtils: DownloaderUtils
 
     private var playerDialog: AlertDialog? = null
 
@@ -108,8 +100,6 @@ class VlcActivity : AppCompatActivity(),
 
         getDataFromIntent()
         setUpOrientation()
-
-        downloaderUtils = DownloaderUtils(this, playerModelNow)
         animationUtils = MAnimationUtils(this)
 
         initView()
@@ -134,7 +124,6 @@ class VlcActivity : AppCompatActivity(),
         initPlaylist()
         setUpPlayerViewControl()
 
-        adMobAdUtils = AdMobAdUtils(this)
         tracksDialogFragment = TracksDialogFragment()
     }
 
@@ -344,7 +333,7 @@ class VlcActivity : AppCompatActivity(),
         cast.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
             override fun onConnected() {
                 toaster(this@VlcActivity, "connected")
-                cast.player.loadMediaAndPlayInBackground(PlayerUtils.createMediaData(playerModelNow))
+                cast.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
             }
 
             override fun onDisconnected() {
@@ -490,15 +479,6 @@ class VlcActivity : AppCompatActivity(),
         }
     }
 
-    //drawer functions
-    private fun showDownloadDialog() {
-        downloaderUtils.showDownloadDialog(this::hideSystemUi, object : IResultListener {
-            override fun workResult(result: Any) {
-                btnClick = result as String
-                goAction()
-            }
-        })
-    }
 
     private fun setUpMenuButton() {
         menuButton.setOnClickListener {
@@ -520,53 +500,6 @@ class VlcActivity : AppCompatActivity(),
         }
     }
 
-    private fun goAction() {
-        if (btnClick == "ADM") {
-            adActivity(2)
-        } else if (btnClick == "IDM") {
-            adActivity(1)
-        }
-    }
-
-    private fun workAfterAdActivity(state: Int) {
-        if (state < 3) downloaderUtils.downloadVideo(state)
-        else if (state == 4) {
-            mVlcPlayer?.pause()
-            val intentNow = PlayerUtils.createViewIntent(playerModelNow)
-            if (intentNow.resolveActivity(packageManager) != null) {
-                startActivity(intentNow)
-            } else {
-                toaster(this, GlobalFunctions.NO_APP_FOUND_PLAY_MESSAGE)
-            }
-        }
-    }
-
-    private fun adActivity(state: Int) {
-        iAdListener = object : IAdListener {
-            override fun onAdActivityDone(result: String) {
-                alertDialogLoading.dismiss()
-                logger("Ad", result)
-                workAfterAdActivity(state)
-            }
-
-            override fun onAdLoadingStarted() {
-                alertDialogLoading.show()
-            }
-
-            override fun onAdLoaded() {
-                alertDialogLoading.dismiss()
-                adMobAdUtils.showAd()
-            }
-
-            override fun onAdError(error: String) {
-                alertDialogLoading.dismiss()
-                logger("Ad ", error)
-                workAfterAdActivity(state)
-            }
-        }
-        adMobAdUtils.setAdListener(iAdListener)
-        adMobAdUtils.loadAd()
-    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -577,13 +510,6 @@ class VlcActivity : AppCompatActivity(),
                     } else {
                         ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                     }
-            }
-            R.id.menu_download_video -> {
-                mVlcPlayer?.pause()
-                showDownloadDialog()
-            }
-            R.id.menu_open_with_other_app -> {
-                adActivity(4)
             }
             R.id.menu_resize -> {
                 item.title =

@@ -97,7 +97,7 @@ class PlayerUtils {
             val configNow = JSONObject()
             configNow.put(languageIntent, playerModel.mLanguage)
             configNow.put(descriptionIntent, playerModel.description)
-            configNow.put("LOCAL", false)
+            configNow.put("LOCAL", PlayerModel.isLocal(playerModel.streamType))
             if (playerModel.userAgent.isNotEmpty())
                 configNow.put(userAgentIntent, playerModel.userAgent)
             if (playerModel.drmSting.isNotEmpty()) {

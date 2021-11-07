@@ -7,11 +7,14 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
 
 class AdMobAdUtils(var activity: Activity) {
     var mInterstitialAd: InterstitialAd? = null
+    var mRewardedAd: RewardedAd? = null
     var adRequest: AdRequest = AdRequest.Builder().build()
     lateinit var iAdListener: IAdListener
 
@@ -19,14 +22,41 @@ class AdMobAdUtils(var activity: Activity) {
         this.iAdListener = iAdListener
     }
 
-    fun loadAd() {
+    fun loadRewardAd() {
+        if (GlobalFunctions.isProVersion() || isRewarded()) {
+            iAdListener.onAdActivityDone("paid")
+            return
+        }
+        iAdListener.onAdLoadingStarted()
+        RewardedAd.load(
+            activity,
+            activity.getString(R.string.REWARD_AD_ID),
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdLoaded(p0: RewardedAd) {
+                    mRewardedAd = p0
+                    iAdListener.onAdLoaded(1)
+                }
+
+                override fun onAdFailedToLoad(p0: LoadAdError) {
+                    mRewardedAd = null
+                    iAdListener.onAdError(p0.message)
+                }
+            })
+    }
+
+    fun loadFullScreenAd() {
+        if (GlobalFunctions.isProVersion() || isRewarded()) {
+            iAdListener.onAdActivityDone("paid")
+            return
+        }
         iAdListener.onAdLoadingStarted()
         InterstitialAd.load(activity,
             activity.getString(R.string.Interstitial_AD_ID),
             adRequest, object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(p0: InterstitialAd) {
                     mInterstitialAd = p0
-                    iAdListener.onAdLoaded()
+                    iAdListener.onAdLoaded(0)
                 }
 
                 override fun onAdFailedToLoad(p0: LoadAdError) {
@@ -36,7 +66,7 @@ class AdMobAdUtils(var activity: Activity) {
             })
     }
 
-    fun showAd() {
+    fun showFullScreenAd() {
         if (mInterstitialAd == null) return
         mInterstitialAd!!.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
@@ -52,6 +82,39 @@ class AdMobAdUtils(var activity: Activity) {
             }
         }
         mInterstitialAd!!.show(activity)
+    }
+
+    fun showRewardAd() {
+        if (mRewardedAd == null) return
+        mRewardedAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                iAdListener.onAdError(p0.message)
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                mInterstitialAd = null
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                iAdListener.onAdActivityDone("Done")
+            }
+        }
+        mRewardedAd!!.show(activity) {
+            saveReward()
+        }
+    }
+
+    private fun saveReward() {
+//todo disable ads for 1h
+        //get current time
+        //save currenttime+1h
+    }
+
+    private fun isRewarded(): Boolean {
+        //todo check for time
+        //get current time
+        //compare it with saved time
+        return false
     }
 
 }

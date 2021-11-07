@@ -42,10 +42,10 @@ class M3UInputFragment : Fragment() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var bottomSheetLinearLayout: LinearLayout
     private lateinit var titleTextViewM3U: TextView
-    private lateinit var playButton: MaterialButton
-    private lateinit var editButtonBS: MaterialButton
-    private lateinit var shareButton: MaterialButton
-    private lateinit var deleteButton: MaterialButton
+    private lateinit var playButtonBottomSheet: MaterialButton
+    private lateinit var editButtonBottomSheet: MaterialButton
+    private lateinit var shareButtonBottomSheet: MaterialButton
+    private lateinit var deleteButtonBottomSheet: MaterialButton
     private lateinit var directionButton: ImageView
     private lateinit var fabAddM3U: FloatingActionButton
     private lateinit var scrapper: Scrapper
@@ -66,9 +66,9 @@ class M3UInputFragment : Fragment() {
                 alertDialogLoading.show()
             }
 
-            override fun onAdLoaded() {
+            override fun onAdLoaded(type: Int) {
                 alertDialogLoading.dismiss()
-                adMobAdUtils?.showAd()
+                adMobAdUtils?.showFullScreenAd()
             }
 
             override fun onAdError(error: String) {
@@ -146,14 +146,24 @@ class M3UInputFragment : Fragment() {
         cancelButton = dialogView.findViewById(R.id.button_stream_cancel)
 
         acceptButton.setOnClickListener {
-            alertDialog?.dismiss()
-            userInputM3U(true)
+            if (linkChecker()) {
+                alertDialog?.dismiss()
+                userInputM3U(true)
+            } else {
+                linkInput.error = "Link error"
+                linkInput.requestFocus()
+            }
         }
         editButton.setOnClickListener {
-            alertDialog?.dismiss()
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            userInputM3U(false)
-            toaster(requireActivity(), "updated")
+            if (linkChecker()) {
+                alertDialog?.dismiss()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                userInputM3U(false)
+                toaster(requireActivity(), "updated")
+            } else {
+                linkInput.error = "Link error"
+                linkInput.requestFocus()
+            }
         }
         cancelButton.setOnClickListener {
             alertDialog?.dismiss()
@@ -167,7 +177,7 @@ class M3UInputFragment : Fragment() {
         if (alertDialog == null) initM3UDialog()
         if (editing) {
             acceptButton.visibility = View.GONE
-            editButtonBS.visibility = View.VISIBLE
+            editButton.visibility = View.VISIBLE
             cancelButton.visibility = View.VISIBLE
             linkInput.setText(playerModelNow.link)
             titleInput.setText(playerModelNow.title)
@@ -175,39 +185,23 @@ class M3UInputFragment : Fragment() {
                 userAgentInput.setText(playerModelNow.userAgent)
         } else {
             acceptButton.visibility = View.VISIBLE
-            editButtonBS.visibility = View.GONE
+            editButton.visibility = View.GONE
             cancelButton.visibility = View.GONE
             linkInput.text?.clear()
             titleInput.text?.clear()
             userAgentInput.text?.clear()
         }
-        acceptButton.setOnClickListener {
-            if (linkChecker()) {
-                alertDialog?.dismiss()
-                userInputM3U(true)
-            }
-        }
-        editButtonBS.setOnClickListener {
-            if (linkChecker()) {
-                alertDialog?.dismiss()
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                userInputM3U(false)
-            }
-        }
-        cancelButton.setOnClickListener {
-            alertDialog?.dismiss()
-        }
-        alertDialog?.show()
 
+        alertDialog?.show()
     }
 
     private fun initBottomSheet(view: View) {
         bottomSheetLinearLayout = view.findViewById(R.id.linear_layout_bottom_sheet)
         titleTextViewM3U = view.findViewById(R.id.text_view_title_bs)
-        playButton = view.findViewById(R.id.material_button_play_bs)
-        editButtonBS = view.findViewById(R.id.material_button_edit_bs)
-        shareButton = view.findViewById(R.id.material_button_share_bs)
-        deleteButton = view.findViewById(R.id.material_button_delete_bs)
+        playButtonBottomSheet = view.findViewById(R.id.material_button_play_bs)
+        editButtonBottomSheet = view.findViewById(R.id.material_button_edit_bs)
+        shareButtonBottomSheet = view.findViewById(R.id.material_button_share_bs)
+        deleteButtonBottomSheet = view.findViewById(R.id.material_button_delete_bs)
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLinearLayout)
         directionButton = view.findViewById(R.id.image_view_direction_bs)
@@ -235,15 +229,15 @@ class M3UInputFragment : Fragment() {
             }
         })
         bottomSheetBehavior.isDraggable = false
-        playButton.setOnClickListener {
+        playButtonBottomSheet.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             parseM3U(playerModelNow.link, playerModelNow.userAgent)
         }
-        editButtonBS.setOnClickListener {
+        editButtonBottomSheet.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             createM3UDialog(true)
         }
-        shareButton.setOnClickListener {
+        shareButtonBottomSheet.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             val intentNow = PlayerUtils.createViewIntent(playerModelNow)
             if (intentNow.resolveActivity(requireActivity().packageManager) != null) {
@@ -252,7 +246,7 @@ class M3UInputFragment : Fragment() {
                 toaster(requireActivity(), GlobalFunctions.NO_APP_FOUND_PLAY_MESSAGE)
             }
         }
-        deleteButton.setOnClickListener {
+        deleteButtonBottomSheet.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             deleteModel(playerModelNow)
             scrapper.updateUrl(playerModelNow.link)
@@ -349,7 +343,7 @@ class M3UInputFragment : Fragment() {
                 PlayListAll.clear()
                 PlayListAll.addAll(data)
                 if (data.isNotEmpty()) {
-                    adMobAdUtils?.loadAd()
+                    adMobAdUtils?.loadFullScreenAd()
                 } else
                     toaster(requireActivity(), "Empty List/Parsing Failed")
             }

@@ -2,6 +2,7 @@ package com.stream.jmxplayer.ui
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -15,6 +16,7 @@ import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.createAlertDialogueLoading
 import com.stream.jmxplayer.utils.ijkplayer.Settings
+import com.stream.jmxplayer.utils.showProMode
 
 
 class BrowserActivity : AppCompatActivity() {
@@ -39,10 +41,10 @@ class BrowserActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { controller, _, _ ->
             toolbar.title = controller.currentDestination?.label ?: toolbar.title
             if (controller.currentDestination?.id == R.id.browseFragment) {
-                adMobAdUtils!!.loadAd()
+                adMobAdUtils!!.loadFullScreenAd()
             }
             if (controller.currentDestination?.id == R.id.historyFragment) {
-                adMobAdUtils!!.loadAd()
+                adMobAdUtils!!.loadFullScreenAd()
             }
         }
         NavigationUI.setupWithNavController(bottomNavBar, navController)
@@ -58,9 +60,11 @@ class BrowserActivity : AppCompatActivity() {
                 alertDialog.show()
             }
 
-            override fun onAdLoaded() {
+            override fun onAdLoaded(type: Int) {
                 alertDialog.dismiss()
-                adMobAdUtils?.showAd()
+
+                if (type == 0) adMobAdUtils?.showFullScreenAd()
+                else adMobAdUtils?.showRewardAd()
             }
 
             override fun onAdError(error: String) {
@@ -76,6 +80,16 @@ class BrowserActivity : AppCompatActivity() {
         menu?.clear()
         //menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (!GlobalFunctions.isProVersion() && item.itemId == R.id.action_pro) {
+            showProMode {
+                toaster(this, "Came Browse Activity")
+                adMobAdUtils?.loadRewardAd()
+            }
+            true
+        } else super.onOptionsItemSelected(item)
     }
 
 }

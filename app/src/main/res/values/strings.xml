@@ -36,6 +36,7 @@
     <string name="play_button">play button</string>
     <string name="ADMOB_ID">ca-app-pub-3940256099942544~3347511713</string>
     <string name="Interstitial_AD_ID">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="REWARD_AD_ID">ca-app-pub-3940256099942544/5224354917</string>
 
     <string name="coverimage">coverImage</string>
     <string name="optional">Opcional</string>
@@ -226,4 +227,13 @@
     <string name="audio">Audio</string>
     <string name="image">Imagen</string>
     <string name="cancel">Cancelar</string>
+    <string name="change_player">Cambiar Reproductor</string>
+    <string name="media_info">Info Video</string>
+    <string name="pro">Pro</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="reward_unlock_message">VER VIDEO PARA ELIMINAR ANUNCIOS POR 60 MINUTOS</string>
+    <string name="pro_message_caption">Puedes ver los videos que sean necesarios para eliminar anuncios</string>
+    <string name="pro_unlock_message">ELIMINAR ANUNCIOS PARA SIEMPRE</string>
+    <string name="pro_dialog_title">Eliminar Anuncios</string>
 </resources>
