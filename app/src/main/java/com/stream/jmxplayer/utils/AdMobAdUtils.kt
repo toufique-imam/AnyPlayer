@@ -11,19 +11,23 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import kotlin.math.max
 
 class AdMobAdUtils(var activity: Activity) {
     var mInterstitialAd: InterstitialAd? = null
     var mRewardedAd: RewardedAd? = null
     var adRequest: AdRequest = AdRequest.Builder().build()
     lateinit var iAdListener: IAdListener
-
+    private val preference =
+        activity.getSharedPreferences(SharedPreferenceUtils.SHARED_PREF, Activity.MODE_PRIVATE)
+    private val editor = preference.edit()
     fun setAdListener(iAdListener: IAdListener) {
         this.iAdListener = iAdListener
     }
 
     fun loadRewardAd() {
-        if (GlobalFunctions.isProVersion() || isRewarded()) {
+        if (GlobalFunctions.isProVersion()) {
             iAdListener.onAdActivityDone("paid")
             return
         }
@@ -46,8 +50,13 @@ class AdMobAdUtils(var activity: Activity) {
     }
 
     fun loadFullScreenAd() {
-        if (GlobalFunctions.isProVersion() || isRewarded()) {
+        if (GlobalFunctions.isProVersion()) {
             iAdListener.onAdActivityDone("paid")
+            return
+        }
+        if (isRewarded()) {
+            logger("rewardAd", "rewarded")
+            iAdListener.onAdActivityDone("reward")
             return
         }
         iAdListener.onAdLoadingStarted()
@@ -104,17 +113,21 @@ class AdMobAdUtils(var activity: Activity) {
         }
     }
 
+    private val STOP_AD = "JMX_REWARD_PRO"
     private fun saveReward() {
-//todo disable ads for 1h
-        //get current time
-        //save currenttime+1h
+        val time: Long
+        val timeNow = preference.getLong(STOP_AD, 0L)
+        time = max(timeNow, System.currentTimeMillis()) + 3600000L
+        logger("RewardAd", "$time")
+        editor.putLong(STOP_AD, time)
+        editor.apply()
     }
 
     private fun isRewarded(): Boolean {
-        //todo check for time
-        //get current time
-        //compare it with saved time
-        return false
+        val timeNow = System.currentTimeMillis()
+        val timeReward = preference.getLong(STOP_AD, 0L)
+        logger("rewardAdCheck", "$timeNow $timeReward")
+        return timeNow < timeReward
     }
 
 }

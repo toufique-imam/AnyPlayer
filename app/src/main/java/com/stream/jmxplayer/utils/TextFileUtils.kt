@@ -46,11 +46,12 @@ class TextFileUtils(val context: Context) {
     fun saveM3UFile(link: String, response: String) {
         val fileName = base64Encode(link.toByteArray())
         if (fileName.isEmpty()) return
+        logger("saveM3UFile", "$link\n$response")
         writeText(tempPath, fileName, response)
     }
 
 
-    fun readText(pathNow: String, fileName: String): Pair<Boolean, String> {
+    private fun readText(pathNow: String, fileName: String): Pair<Boolean, String> {
         val ans = StringBuilder()
         try {
             val root = File(context.filesDir, pathNow)
@@ -85,7 +86,7 @@ class TextFileUtils(val context: Context) {
         return Pair(true, ans.toString())
     }
 
-    fun writeText(
+    private fun writeText(
         pathNow: String,
         fileName: String,
         sBody: String,
@@ -113,6 +114,4 @@ class TextFileUtils(val context: Context) {
             return "Error : " + ex.message
         }
     }
-
-
 }

@@ -23,6 +23,6 @@ interface PlayerModelDAO {
     @Delete
     fun deleteModel(vararg playerModel: PlayerModel)
 
-    @Query("DELETE FROM playerModel")
+    @Query("DELETE FROM playerModel WHERE streamType != ${PlayerModel.STREAM_M3U}")
     suspend fun deleteAll()
 }

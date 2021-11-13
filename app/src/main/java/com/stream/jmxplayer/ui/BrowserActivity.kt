@@ -85,7 +85,6 @@ class BrowserActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (!GlobalFunctions.isProVersion() && item.itemId == R.id.action_pro) {
             showProMode {
-                toaster(this, "Came Browse Activity")
                 adMobAdUtils?.loadRewardAd()
             }
             true

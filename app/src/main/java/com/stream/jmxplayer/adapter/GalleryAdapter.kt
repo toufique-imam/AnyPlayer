@@ -2,6 +2,7 @@ package com.stream.jmxplayer.adapter
 
 import android.graphics.Color
 import android.net.Uri
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -107,8 +108,14 @@ class GalleryAdapter(
         } else {
             holder.durationView.text = playerModel.link
         }
-
+//        holder.titleView.text = "ñ"
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+//            holder.titleView.text = Html.fromHtml(playerModel.title, Html.FROM_HTML_MODE_LEGACY)
+//        } else {
+//            holder.titleView.text = Html.fromHtml(playerModel.title)
+//        }
         holder.titleView.text = playerModel.title
+        //logger("holder", playerModel.title)
         if (type == GalleryItemViewHolder.SINGLE_NO_DELETE) {
             holder.titleView.setTextColor(Color.WHITE)
             holder.durationView.setTextColor(Color.WHITE)

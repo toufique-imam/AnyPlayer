@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/circle_background.xml" value="0.1361111111111111" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.25925925925925924" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_baseline_arrow_back_ios_24.xml" value="1.2975" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_delay_donw.xml" value="0.2703125" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_fast_forward.xml" value="0.1361111111111111" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_fast_forward_red.xml" value="0.10648148148148148" />
@@ -14,6 +15,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_skip_back.xml" value="0.1361111111111111" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/ic_skip_forward.xml" value="0.1361111111111111" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/drawable/tranparent_circle_background.xml" value="0.1361111111111111" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/font/assets.xml" value="1.1875" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout-land/bottom_sheet_m3u.xml" value="0.176" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout-land/player_overlay_tracks.xml" value="0.3412322274881517" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/activity_browser.xml" value="0.2" />
@@ -30,12 +32,12 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/content_vlc.xml" value="0.16" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_dialog_download.xml" value="0.25364583333333335" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_dialog_loading.xml" value="0.25364583333333335" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_dialog_pro.xml" value="0.4" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_dialog_pro.xml" value="1.2" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_dialog_user_input.xml" value="0.264" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_dialogue_download.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/custom_loading_dialogue.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/dialog_tracks.xml" value="0.264" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/exo_player_view_style.xml" value="0.264" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/exo_player_view_style.xml" value="1.2" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_browse.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_list_view.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/fragment_m3u_display_category.xml" value="0.1685185185185185" />
@@ -59,7 +61,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/table_media_info_section.xml" value="0.2" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/video_track_item.xml" value="0.2" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/video_track_item_vlc.xml" value="0.25416666666666665" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/vlc_player_view_style.xml" value="0.264" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/vlc_player_view_style.xml" value="0.72" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/bottom_navbar_menu.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/casty_discovery.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/non_pro.xml" value="0.264" />
