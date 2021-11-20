@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -22,12 +22,14 @@ import com.google.android.material.textfield.TextInputEditText
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
-import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
-import com.stream.jmxplayer.utils.*
+import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
+import com.stream.jmxplayer.utils.PlayerUtils
+import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.utils.createAlertDialogueLoading
 import com.stream.jmxplayer.utils.m3u.OnScrappingCompleted
 import com.stream.jmxplayer.utils.m3u.Parser
 import com.stream.jmxplayer.utils.m3u.Scrapper
@@ -49,36 +51,8 @@ class M3UInputFragment : Fragment() {
     private lateinit var directionButton: ImageView
     private lateinit var fabAddM3U: FloatingActionButton
     private lateinit var scrapper: Scrapper
-
-    var adMobAdUtils: AdMobAdUtils? = null
     lateinit var alertDialogLoading: AlertDialog
-    lateinit var iAdListener: IAdListener
 
-
-    private fun initAdListener() {
-        iAdListener = object : IAdListener {
-            override fun onAdActivityDone(result: String) {
-                alertDialogLoading.dismiss()
-                m3uDataActionNew()
-            }
-
-            override fun onAdLoadingStarted() {
-                alertDialogLoading.show()
-            }
-
-            override fun onAdLoaded(type: Int) {
-                alertDialogLoading.dismiss()
-                adMobAdUtils?.showFullScreenAd()
-            }
-
-            override fun onAdError(error: String) {
-                alertDialogLoading.dismiss()
-                toaster(requireActivity(), "Ad error $error")
-                GlobalFunctions.logger("Splash Ad", error)
-                m3uDataActionNew()
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,15 +69,14 @@ class M3UInputFragment : Fragment() {
         fabAddM3U = view.findViewById(R.id.fab_add_m3u)
         scrapper = Scrapper(requireContext(), "")
         initBottomSheet(view)
+
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adMobAdUtils = AdMobAdUtils(requireActivity())
+
         alertDialogLoading = requireActivity().createAlertDialogueLoading()
-        initAdListener()
-        adMobAdUtils?.setAdListener(iAdListener)
 
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.M3U_LIST,
             { video, _ -> historyItemClicked(video, true) },
@@ -112,6 +85,12 @@ class M3UInputFragment : Fragment() {
         recyclerView.also { viewR ->
             viewR.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             viewR.adapter = galleryAdapter
+        }
+        if (requireActivity().intent.getBooleanExtra(PlayerUtils.M3U_INTENT, false)) {
+//todo check code
+            viewModel.insertModel(playerModelNow)
+            playerModelNow = PlayListAll[0]
+            historyItemClicked(playerModelNow, false)
         }
         viewModel.videos.observe(viewLifecycleOwner, { videos ->
             galleryAdapter.updateData(videos)
@@ -259,7 +238,8 @@ class M3UInputFragment : Fragment() {
     }
 
     fun m3uDataActionNew() {
-        requireView().findNavController()
+        toaster(requireActivity(), "m3uDataActionNew")
+        findNavController()
             .navigate(R.id.action_streamFragment_to_m3uDisplayCategoryFragment)
     }
 
@@ -343,7 +323,7 @@ class M3UInputFragment : Fragment() {
                 PlayListAll.clear()
                 PlayListAll.addAll(data)
                 if (data.isNotEmpty()) {
-                    adMobAdUtils?.loadFullScreenAd()
+                    m3uDataActionNew()
                 } else
                     toaster(requireActivity(), "Empty List/Parsing Failed")
             }

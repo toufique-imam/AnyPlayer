@@ -107,7 +107,7 @@ class GlobalFunctions {
         }
 
         fun logger(TAG: String, message: String?) {
-            Log.e(TAG, message ?: "Message")
+            Log.e("NUHASH$TAG", message ?: "Message")
         }
 
         const val USER_AGENT =
@@ -321,6 +321,5 @@ class GlobalFunctions {
         fun isProVersion(): Boolean {
             return BuildConfig.FLAVOR == "paid"
         }
-
     }
 }

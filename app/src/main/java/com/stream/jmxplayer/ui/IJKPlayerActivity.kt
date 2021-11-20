@@ -131,6 +131,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             }
 
         })
+        ijkVideoView?.mMediaController?.show(5)
 
         tracksDialogFragment = TracksDialogFragment()
     }
@@ -256,10 +257,11 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private fun showVideoTrack(trackSelectionListener: (TrackInfo) -> Unit) {
         if (!isStarted()) return
+        if (tracksDialogFragment.isAdded) return
         tracksDialogFragment.arguments = bundleOf()
         tracksDialogFragment.show(
             supportFragmentManager,
-            "fragment_video_tracks"
+            "fragment_video_tracks_ijk"
         )
         tracksDialogFragment.trackSelectionListener = trackSelectionListener
         tracksDialogFragment.onBindInitiated = {
@@ -565,7 +567,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         val intent = GlobalFunctions.getIntentPlayer(this, playerID)
         intent.putExtra(PlayerModel.SELECTED_MODEL, idxNow)
         intent.putExtra(FROM_ERROR, fromError)
-        startActivity(intent)
         finish()
+        startActivity(intent)
     }
 }

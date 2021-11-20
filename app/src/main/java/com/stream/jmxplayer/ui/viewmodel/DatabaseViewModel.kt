@@ -20,12 +20,16 @@ class DatabaseViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun deleteModel(playerModel: PlayerModel) {
-        database.playerModelDao().deleteModel(playerModel)
+        viewModelScope.launch {
+            database.playerModelDao().deleteModel(playerModel)
+        }
+
     }
 
     fun deleteAll() {
         viewModelScope.launch {
             database.playerModelDao().deleteAll()
+            _videos.postValue(emptyList())
         }
     }
 

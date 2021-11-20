@@ -2,7 +2,6 @@ package com.stream.jmxplayer.adapter
 
 import android.graphics.Color
 import android.net.Uri
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,9 +43,7 @@ class GalleryAdapter(
 
     fun deleteData(playerModel: PlayerModel) {
         val position = galleryData.indexOf(playerModel)
-        logger("deleteData1", "$playerModel $position")
-        logger("deleteData2", "${galleryData[position]} ${mainData[position]}")
-        if (position != -1 && position < galleryData.size) {
+        if (position > -1 && position < galleryData.size) {
             galleryData.removeAt(position)
             mainData.remove(playerModel)
             notifyItemRemoved(position)
@@ -70,12 +67,7 @@ class GalleryAdapter(
             }
 
         return GalleryItemViewHolder(viewNow).apply {
-//            if (type != GalleryItemViewHolder.GRID_NO_DELETE) {
             initHistory(type)
-//            }
-//            if (type == GalleryItemViewHolder.SINGLE_NO_DELETE || type == GalleryItemViewHolder.M3U_LIST) {
-//                configPlaylist()
-//            }
         }
     }
 
@@ -108,14 +100,7 @@ class GalleryAdapter(
         } else {
             holder.durationView.text = playerModel.link
         }
-//        holder.titleView.text = "ñ"
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-//            holder.titleView.text = Html.fromHtml(playerModel.title, Html.FROM_HTML_MODE_LEGACY)
-//        } else {
-//            holder.titleView.text = Html.fromHtml(playerModel.title)
-//        }
         holder.titleView.text = playerModel.title
-        //logger("holder", playerModel.title)
         if (type == GalleryItemViewHolder.SINGLE_NO_DELETE) {
             holder.titleView.setTextColor(Color.WHITE)
             holder.durationView.setTextColor(Color.WHITE)

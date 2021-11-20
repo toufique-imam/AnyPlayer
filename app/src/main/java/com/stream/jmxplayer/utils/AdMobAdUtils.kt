@@ -76,8 +76,11 @@ class AdMobAdUtils(var activity: Activity) {
     }
 
     fun showFullScreenAd() {
-        if (mInterstitialAd == null) return
-        mInterstitialAd!!.fullScreenContentCallback = object : FullScreenContentCallback() {
+        if (mInterstitialAd == null) {
+            iAdListener.onAdError("null")
+            return
+        }
+        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                 iAdListener.onAdError(p0.message)
             }
@@ -90,11 +93,14 @@ class AdMobAdUtils(var activity: Activity) {
                 iAdListener.onAdActivityDone("Done")
             }
         }
-        mInterstitialAd!!.show(activity)
+        mInterstitialAd?.show(activity)
     }
 
     fun showRewardAd() {
-        if (mRewardedAd == null) return
+        if (mRewardedAd == null) {
+            iAdListener.onAdError("null")
+            return
+        }
         mRewardedAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                 iAdListener.onAdError(p0.message)

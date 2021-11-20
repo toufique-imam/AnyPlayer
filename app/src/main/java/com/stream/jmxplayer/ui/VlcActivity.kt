@@ -164,10 +164,11 @@ class VlcActivity : AppCompatActivity(),
 
     private fun showVideoTrack(trackSelectionListener: (Int, TracksDialogFragment.TrackType) -> Unit) {
         if (!isStarted()) return
+        if (tracksDialogFragment.isAdded) return
         tracksDialogFragment.arguments = bundleOf()
         tracksDialogFragment.show(
             supportFragmentManager,
-            "fragment_video_tracks"
+            "fragment_video_tracks_vlc"
         )
         tracksDialogFragment.trackSelectionListenerVLC = trackSelectionListener
         tracksDialogFragment.onBindInitiated = {
@@ -672,8 +673,8 @@ class VlcActivity : AppCompatActivity(),
         val intent = GlobalFunctions.getIntentPlayer(this, playerID)
         intent.putExtra(PlayerModel.SELECTED_MODEL, idxNow)
         intent.putExtra(FROM_ERROR, fromError)
-        startActivity(intent)
         finish()
+        startActivity(intent)
     }
 
     private fun initPlayer() {

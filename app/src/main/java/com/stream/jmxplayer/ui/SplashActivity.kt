@@ -12,6 +12,7 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.createAlertDialogueLoading
@@ -39,16 +40,12 @@ class SplashActivity : AppCompatActivity() {
         intentNow = intent
         playerModel = PlayerUtils.parseIntent(intentNow)
 
-
+        //todo-check cant gets past this why?
         alertDialogLoading = this.createAlertDialogueLoading()
-//        workAfterAdActivity()
         MobileAds.initialize(this) {
+            toaster(this, "MobileAds $it")
             adMobAdUtils = AdMobAdUtils(this)
-
             adActivity()
-//            Handler(Looper.myLooper()!!).postDelayed({
-//                adActivity()
-//            }, 200)
         }
     }
 
@@ -60,6 +57,14 @@ class SplashActivity : AppCompatActivity() {
         } else {
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             logger("Splash PlayerModel", playerModel.toString())
+            if (playerModel.link.endsWith("m3u")) {
+                //todo check code
+                playerModel.streamType = PlayerModel.STREAM_M3U
+                val intent = Intent(this, BrowserActivity::class.java)
+                intent.putExtra(PlayerUtils.M3U_INTENT, true)
+                startActivity(intent)
+                return
+            }
             val intentNext = GlobalFunctions.getDefaultPlayer(this, mSettings, playerModel)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

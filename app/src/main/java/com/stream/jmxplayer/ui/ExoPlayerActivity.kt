@@ -649,6 +649,7 @@ class ExoPlayerActivity : AppCompatActivity(),
                 changeResize()
                 item.title =
                     resources.getString(R.string.resize) + " : " + resizeUtils.resizeMode.valueStr
+                drawerLayout.closeDrawer(GravityCompat.END)
             }
             R.id.menu_playlist -> {
                 if (recyclerViewPlayList.visibility == View.VISIBLE) {
@@ -656,15 +657,18 @@ class ExoPlayerActivity : AppCompatActivity(),
                 } else {
                     recyclerViewPlayList.visibility = View.VISIBLE
                 }
+                drawerLayout.closeDrawer(GravityCompat.END)
             }
             R.id.menu_change_player -> {
                 fromError = false
                 if (playerDialog == null)
                     playerDialog =
                         createPlayerDialogue(Settings.PV_PLAYER__IjkExoMediaPlayer, this::yesSure)
+                drawerLayout.closeDrawer(GravityCompat.END)
                 playerDialog?.show()
             }
             R.id.menu_media_info -> {
+                drawerLayout.closeDrawer(GravityCompat.END)
                 showMediaInfo()
             }
         }
@@ -677,8 +681,9 @@ class ExoPlayerActivity : AppCompatActivity(),
         val intent = GlobalFunctions.getIntentPlayer(this, playerID)
         intent.putExtra(SELECTED_MODEL, idxNow)
         intent.putExtra(FROM_ERROR, fromError)
-        startActivity(intent)
         finish()
+        startActivity(intent)
+
     }
 
     /*

@@ -11,12 +11,9 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
-import com.stream.jmxplayer.utils.AdMobAdUtils
-import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
-import com.stream.jmxplayer.utils.createAlertDialogueLoading
 import com.stream.jmxplayer.utils.ijkplayer.Settings
-import com.stream.jmxplayer.utils.showProMode
 
 
 class BrowserActivity : AppCompatActivity() {
@@ -41,13 +38,20 @@ class BrowserActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { controller, _, _ ->
             toolbar.title = controller.currentDestination?.label ?: toolbar.title
             if (controller.currentDestination?.id == R.id.browseFragment) {
-                adMobAdUtils!!.loadFullScreenAd()
+                adMobAdUtils?.loadFullScreenAd()
             }
             if (controller.currentDestination?.id == R.id.historyFragment) {
-                adMobAdUtils!!.loadFullScreenAd()
+                adMobAdUtils?.loadFullScreenAd()
+            }
+            if (controller.currentDestination?.id == R.id.m3uDisplayCategoryFragment) {
+                adMobAdUtils?.loadFullScreenAd()
             }
         }
         NavigationUI.setupWithNavController(bottomNavBar, navController)
+        //todo check code
+        if (intent.getBooleanExtra(PlayerUtils.M3U_INTENT, false)) {
+            navController.navigate(R.id.streamFragment)
+        }
     }
 
     private fun initAdListener() {

@@ -173,9 +173,10 @@ class PlayerUtils {
             val playerModel = PlayerModel()
             if (intent.getStringExtra(linkIntent) != null) {
                 playerModel.link = intent.getStringExtra(linkIntent)!!
-            } else {
-                playerModel.link = intent.data.toString()
-            }
+            } else
+                playerModel.link =
+                    intent.getStringExtra(Intent.EXTRA_TEXT) ?: intent.data.toString()
+
             if (intent.getStringExtra(mainLinkIntent) != null) {
                 playerModel.mainLink = intent.getStringExtra(mainLinkIntent) ?: playerModel.link
             }
@@ -329,7 +330,9 @@ class PlayerUtils {
             }
         }
 
+        const val M3U_INTENT = "M3UDATA"
     }
+
 }
 /*
     private fun userInputStream() {

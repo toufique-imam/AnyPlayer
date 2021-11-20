@@ -33,7 +33,6 @@ import com.stream.jmxplayer.utils.GlobalFunctions.Companion.isProVersion
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
-import com.stream.jmxplayer.utils.showProMode
 
 
 /**
@@ -81,7 +80,7 @@ class BrowseFragment : Fragment() {
                         "Imagen" -> typeNow = PlayerModel.STREAM_OFFLINE_IMAGE
                     }
                     if (prevType != typeNow) {
-                        showVideos()
+                        openMediaStore()
                     }
                 }
             }
@@ -224,13 +223,17 @@ class BrowseFragment : Fragment() {
         return if (item.itemId == R.id.action_refresh) {
             openMediaStore()
             true
-        }  else {
+        } else {
             super.onOptionsItemSelected(item)
         }
     }
 
 
     private fun showVideos() {
+        if (!haveStoragePermission()) {
+            requestPermission()
+            return
+        }
         viewModel.loadMedia(typeNow)
         //galleryAdapter.notifyDataSetChanged()
         welcomeView.visibility = View.GONE

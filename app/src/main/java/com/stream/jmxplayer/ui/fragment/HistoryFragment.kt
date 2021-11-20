@@ -17,7 +17,6 @@ import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
-import com.stream.jmxplayer.utils.showProMode
 
 class HistoryFragment : Fragment() {
 
@@ -54,7 +53,7 @@ class HistoryFragment : Fragment() {
                 PlayListAll.add(video)
                 startActivity(intent)
             }, { video, pos ->
-                deleteHistory(video, pos)
+                deleteHistory(video)
             }
         )
         galleryAdapter.setHasStableIds(true)
@@ -99,16 +98,11 @@ class HistoryFragment : Fragment() {
 
     private fun deleteHistory() {
         viewModel.deleteAll()
-        viewModel.getAll()
-        //historyDatabase.playerModelDao().deleteAll()
-        //galleryAdapter.updateData(historyDatabase.playerModelDao().getAll())
     }
 
-    private fun deleteHistory(playerModel: PlayerModel, pos: Int) {
-        GlobalFunctions.logger("deleteHistory", "$playerModel $pos")
-        viewModel.deleteModel(playerModel)
-        //historyDatabase.playerModelDao().deleteModel(playerModel)
+    private fun deleteHistory(playerModel: PlayerModel) {
         galleryAdapter.deleteData(playerModel)
+        viewModel.deleteModel(playerModel)
     }
 
 
@@ -116,7 +110,7 @@ class HistoryFragment : Fragment() {
         return if (item.itemId == R.id.action_delete_history) {
             deleteHistory()
             true
-        }  else {
+        } else {
             super.onOptionsItemSelected(item)
         }
     }
