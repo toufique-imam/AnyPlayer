@@ -29,6 +29,8 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.stream.jmxplayer.R;
 import com.stream.jmxplayer.ui.ExpandedControlsActivity;
 import com.stream.jmxplayer.utils.GlobalFunctions;
+import com.stream.jmxplayer.utils.KotlinExtensionsKt;
+import com.stream.jmxplayer.utils.UiModeType;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -81,11 +83,15 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
      */
     public static Casty create(@NonNull Activity activity) {
         int playServicesState = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity);
-        if (playServicesState == ConnectionResult.SUCCESS) {
-            return new Casty(activity);
-        } else {
-            Log.w(Casty.TAG, "Google Play services not found on a device, Casty won't work.");
-            GlobalFunctions.Companion.toaster(activity, "Google Play services not found on a device, Casty won't work.");
+        try {
+            if (KotlinExtensionsKt.getUiModeType(activity) == UiModeType.TV && playServicesState == ConnectionResult.SUCCESS) {
+                return new Casty(activity);
+            } else {
+                Log.w(Casty.TAG, "Google Play services not found on a device, Casty won't work.");
+                GlobalFunctions.INSTANCE.toaster(activity, "Google Play services not found on a device, Casty won't work.");
+                return new CastyNoOp();
+            }
+        } catch (Exception exception) {
             return new CastyNoOp();
         }
     }

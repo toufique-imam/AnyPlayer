@@ -1,11 +1,16 @@
 package com.stream.jmxplayer.utils
 
 import android.app.Activity
+import android.app.UiModeManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.net.Uri
+import android.os.BatteryManager
+import android.os.Build
 import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -187,3 +192,49 @@ fun AppCompatActivity.showProMode(rewardAdAction: () -> Unit) {
 }
 
 fun Double.round(decimals: Int = 2): Double = "%.${decimals}f".format(this).toDouble()
+
+val sdkInt = Build.VERSION.SDK_INT
+
+enum class UiModeType {
+    NORMAL, DESK, CAR, TV, APPLIANCE, WATCH, VR
+}
+
+fun Activity.getUiModeType(): UiModeType {
+    val uiModeManager = getSystemService(Activity.UI_MODE_SERVICE) as UiModeManager
+    val currentMode = uiModeManager.currentModeType
+    when (currentMode) {
+        Configuration.UI_MODE_TYPE_APPLIANCE -> return UiModeType.APPLIANCE
+        Configuration.UI_MODE_TYPE_CAR -> return UiModeType.CAR
+        Configuration.UI_MODE_TYPE_DESK -> return UiModeType.DESK
+        Configuration.UI_MODE_TYPE_TELEVISION -> return UiModeType.TV
+    }
+    if (sdkInt >= Build.VERSION_CODES.KITKAT_WATCH && currentMode == Configuration.UI_MODE_TYPE_WATCH)
+        return UiModeType.WATCH
+    if (sdkInt >= Build.VERSION_CODES.O && currentMode == Configuration.UI_MODE_TYPE_VR_HEADSET)
+        return UiModeType.VR
+    if (isLikelyTelevision()) return UiModeType.TV
+    return UiModeType.NORMAL
+}
+
+fun Activity.hasSystemService(serviceName: String): Boolean {
+    return packageManager.hasSystemFeature(serviceName)
+}
+
+fun Activity.isLikelyTelevision(): Boolean {
+    if (sdkInt >= Build.VERSION_CODES.LOLLIPOP && hasSystemService(PackageManager.FEATURE_LEANBACK)) return true
+    if (sdkInt < Build.VERSION_CODES.LOLLIPOP && hasSystemService(PackageManager.FEATURE_TELEVISION)) return true
+    if (isBatteryAbsent() && hasSystemService(PackageManager.FEATURE_USB_HOST) && hasSystemService(
+            PackageManager.FEATURE_ETHERNET
+        ) && !hasSystemService(PackageManager.FEATURE_TOUCHSCREEN)
+    ) return true
+    return false
+}
+
+fun Activity.isBatteryAbsent(): Boolean {
+    val batteryManager = getSystemService(Activity.BATTERY_SERVICE) as BatteryManager
+    return if (sdkInt >= Build.VERSION_CODES.LOLLIPOP) {
+        batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) == 0
+    } else {
+        false
+    }
+}

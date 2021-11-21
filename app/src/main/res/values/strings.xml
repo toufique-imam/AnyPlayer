@@ -23,7 +23,7 @@
     <string name="no_track">No track</string>
     <string name="trackName">%1$s, %2$s</string>
 
-    <string name="loading">Cargando Contenido..\nExpere un momento por favor.</string>
+    <string name="loading">Cargando Contenido..</string>
     <string name="movie_name">Nombre de pelicula</string>
     <string name="season_episode">Temporada | Episodio</string>
     <string name="language_name">Nombre del lenguaje</string>
