@@ -11,8 +11,8 @@ import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.AdMobAdUtils
 import com.stream.jmxplayer.utils.GlobalFunctions
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.createAlertDialogueLoading

@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.text.isDigitsOnly
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.MediaFileUtils
 import fi.iki.elonen.NanoHTTPD
 import java.io.File

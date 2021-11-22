@@ -8,7 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat

@@ -6,7 +6,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.stream.jmxplayer.R
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 class SettingsFragment : PreferenceFragmentCompat() {

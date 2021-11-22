@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
 
 class GalleryAdapter(
     val type: Int, val onClick: (PlayerModel, Int) -> Unit,

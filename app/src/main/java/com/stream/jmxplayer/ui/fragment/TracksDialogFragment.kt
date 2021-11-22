@@ -12,7 +12,6 @@ import com.stream.jmxplayer.databinding.PlayerOverlayTracksBinding
 import com.stream.jmxplayer.model.TrackInfo
 import com.stream.jmxplayer.ui.view.IjkVideoView
 import com.stream.jmxplayer.utils.*
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
 import org.videolan.libvlc.MediaPlayer
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
 
@@ -179,7 +178,6 @@ class TracksDialogFragment : JMXBottomSDFragment() {
         binding.tracksSeparator2.isEnabled = false
 
         super.onViewCreated(view, savedInstanceState)
-        logger("TracksDialog", "view created")
         onBindInitiated(true)
         //PlaybackService.serviceFlow.onEach { onServiceChanged(it) }.launchIn(lifecycleScope)
     }

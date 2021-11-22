@@ -13,7 +13,7 @@ import android.widget.*
 import androidx.core.view.isVisible
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.MediaPlayerControl
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import java.lang.ref.WeakReference
 import java.util.*
 

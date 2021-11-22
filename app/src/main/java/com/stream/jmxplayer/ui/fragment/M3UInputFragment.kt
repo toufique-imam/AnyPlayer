@@ -25,7 +25,7 @@ import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
+import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll

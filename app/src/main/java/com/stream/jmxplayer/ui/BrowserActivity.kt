@@ -12,7 +12,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.utils.*
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 
@@ -73,7 +72,6 @@ class BrowserActivity : AppCompatActivity() {
 
             override fun onAdError(error: String) {
                 alertDialog.dismiss()
-                toaster(this@BrowserActivity, "Ad error $error")
                 GlobalFunctions.logger("Splash Ad", error)
             }
         }

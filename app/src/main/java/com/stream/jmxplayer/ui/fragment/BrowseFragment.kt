@@ -28,8 +28,8 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.view.ImageOverlayView
 import com.stream.jmxplayer.ui.viewmodel.LocalVideoViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.getGridSpanCount
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.isProVersion
+import com.stream.jmxplayer.utils.GlobalFunctions.getGridSpanCount
+import com.stream.jmxplayer.utils.GlobalFunctions.isProVersion
 import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings

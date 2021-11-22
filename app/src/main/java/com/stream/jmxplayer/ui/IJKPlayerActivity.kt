@@ -30,8 +30,9 @@ import com.stream.jmxplayer.ui.view.MeasureHelper
 import com.stream.jmxplayer.ui.view.VideoControlView
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.*
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.toaster
+
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 import tv.danmaku.ijk.media.player.IjkMediaPlayer

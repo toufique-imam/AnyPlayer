@@ -6,7 +6,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.HttpHeaderParser
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import java.nio.charset.StandardCharsets
 
 class CustomRequest(
@@ -28,7 +28,6 @@ class CustomRequest(
             val json = String(
                 response?.data ?: ByteArray(0),
                 StandardCharsets.UTF_8
-//                Charset.forName(HttpHeaderParser.parseCharset(response?.headers))
             )
             Response.success(json, HttpHeaderParser.parseCacheHeaders(response))
         } catch (e: Exception) {
@@ -36,13 +35,6 @@ class CustomRequest(
         }
     }
 
-//    private fun fromHtml(html: String): Spanned? {
-//        val htmlNew = (html.replace("&lt;", "<").replace("&gt;", ">"))
-//        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            Html.fromHtml(html.trim(), Html.FROM_HTML_MODE_LEGACY)
-//        } else Html.fromHtml(html.trim())
-//        return result
-//    }
 
     override fun deliverResponse(response: String?) {
         listener.onResponse(response)

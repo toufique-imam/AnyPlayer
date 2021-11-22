@@ -2,7 +2,7 @@ package com.stream.jmxplayer.utils
 
 import android.content.Context
 import android.util.Base64
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import java.io.*
 import java.nio.charset.StandardCharsets
 

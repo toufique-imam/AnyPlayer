@@ -196,7 +196,7 @@ public class CastyPlayer {
             if (cd != null) {
                 log = log + cd.toString();
             }
-            GlobalFunctions.Companion.logger("MediaLoadCallback", log);
+            GlobalFunctions.INSTANCE.logger("MediaLoadCallback", log);
         });
         return true;
     }

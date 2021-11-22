@@ -44,8 +44,8 @@ import com.stream.jmxplayer.ui.view.IjkVideoView
 import com.stream.jmxplayer.ui.view.TableLayoutBinder
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.*
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.logger
-import com.stream.jmxplayer.utils.GlobalFunctions.Companion.toaster
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 import kotlin.math.max
@@ -118,7 +118,6 @@ class ExoPlayerActivity : AppCompatActivity(),
      */
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        logger("onCreate", "called")
         super.onCreate(savedInstanceState)
         mSettings = Settings(this)
         setTheme(mSettings.themeId)
@@ -165,7 +164,6 @@ class ExoPlayerActivity : AppCompatActivity(),
     }
 
     override fun onStart() {
-        logger("Came here", "onStart")
         super.onStart()
         if (Util.SDK_INT > 23) {
             initPlayer(false)
@@ -174,7 +172,6 @@ class ExoPlayerActivity : AppCompatActivity(),
 
     override fun onResume() {
         super.onResume()
-        logger("Came here", "onResume")
         // start in pure full screen
         hideSystemUi()
         if (Util.SDK_INT <= 23) {
@@ -185,7 +182,6 @@ class ExoPlayerActivity : AppCompatActivity(),
 
     override fun onPause() {
         super.onPause()
-        logger("Came here", "onPause")
         if (Util.SDK_INT <= 23) {
             releasePlayer()
             //stopCastServer()
@@ -194,7 +190,6 @@ class ExoPlayerActivity : AppCompatActivity(),
 
     override fun onStop() {
         super.onStop()
-        logger("Came here", "onStop")
         if (Util.SDK_INT > 23) {
             releasePlayer()
         }
@@ -789,8 +784,6 @@ class ExoPlayerActivity : AppCompatActivity(),
                 .setPreferredTextLanguage("es")
                 .setPreferredAudioLanguage("es")
         )
-
-        logger(TAG, "render " + mSettings.renderExo)
         @DefaultRenderersFactory.ExtensionRendererMode val extensionRendererMode =
             when (mSettings.renderExo) {
                 1 -> DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
@@ -872,7 +865,6 @@ class ExoPlayerActivity : AppCompatActivity(),
         loadEventInfo: LoadEventInfo,
         mediaLoadData: MediaLoadData
     ) {
-        logger("Loading", loadEventInfo.uri.toString())
         if (loadEventInfo.uri.toString() == MAGNA_TV_BLOCKED) {
             playerModelNow.link = ""
             inErrorState = true
@@ -909,7 +901,6 @@ class ExoPlayerActivity : AppCompatActivity(),
                 stateString = "UNKNOWN"
             }
         }
-        logger(TAG, "changed state to $stateString")
     }
 
     override fun onPlayerError(eventTime: AnalyticsListener.EventTime, error: PlaybackException) {
