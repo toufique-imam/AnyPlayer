@@ -86,16 +86,20 @@ class M3UInputFragment : Fragment() {
             viewR.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             viewR.adapter = galleryAdapter
         }
-        if (requireActivity().intent.getBooleanExtra(PlayerUtils.M3U_INTENT, false)) {
-//todo check code
-            viewModel.insertModel(playerModelNow)
-            playerModelNow = PlayListAll[0]
-            historyItemClicked(playerModelNow, false)
-        }
+
         viewModel.videos.observe(viewLifecycleOwner, { videos ->
             galleryAdapter.updateData(videos)
         })
+
+        if (requireActivity().intent.getBooleanExtra(PlayerUtils.M3U_INTENT, false)) {
+//todo check code
+            playerModelNow = PlayListAll[0]
+            viewModel.insertModel(playerModelNow)
+            galleryAdapter.addData(playerModelNow)
+            historyItemClicked(playerModelNow, false)
+        }
         viewModel.getAllM3U()
+
         fabAddM3U.setOnClickListener {
             createM3UDialog(false)
         }

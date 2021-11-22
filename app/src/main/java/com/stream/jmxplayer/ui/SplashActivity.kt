@@ -40,7 +40,6 @@ class SplashActivity : AppCompatActivity() {
         intentNow = intent
         playerModel = PlayerUtils.parseIntent(intentNow)
 
-        //todo-check cant gets past this why?
         alertDialogLoading = this.createAlertDialogueLoading()
         MobileAds.initialize(this) {
             toaster(this, "MobileAds $it")
@@ -57,6 +56,8 @@ class SplashActivity : AppCompatActivity() {
         } else {
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             logger("Splash PlayerModel", playerModel.toString())
+            PlayListAll.clear()
+            PlayListAll.add(playerModel)
             if (playerModel.link.endsWith("m3u")) {
                 //todo check code
                 playerModel.streamType = PlayerModel.STREAM_M3U
@@ -69,8 +70,6 @@ class SplashActivity : AppCompatActivity() {
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intentNext.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            PlayListAll.clear()
-            PlayListAll.add(playerModel)
             startActivity(intentNext)
         }
         finish()

@@ -8,6 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/history_delete"
         android:orientation="horizontal">
 
         <ImageView
@@ -21,18 +22,17 @@
 
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="2dp">
 
             <TextView
                 android:id="@+id/text_view_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:maxWidth="200dp"
-                android:maxEms="10"
+                android:ellipsize="end"
                 android:padding="4dp"
                 android:text="movie title which is greatmovie title which is great"
                 android:textSize="12sp"
@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:maxWidth="200dp"
+                android:ellipsize="end"
                 android:padding="3dp"
                 android:text="20:20"
                 android:textSize="11sp"
@@ -56,8 +56,8 @@
         android:id="@+id/history_delete"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
         android:layout_gravity="end|center"
         android:layout_margin="4dp"
         android:background="@color/TransparentWhite"
