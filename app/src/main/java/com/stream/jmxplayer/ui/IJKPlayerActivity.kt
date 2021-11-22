@@ -107,9 +107,15 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         initPlaylist()
         setUpPlayerViewControl()
         initPlayer()
-        ijkVideoView?.setOnPreparedListener { audioTrackSelector.visibility = View.VISIBLE }
+        ijkVideoView?.setOnPreparedListener {
+            audioTrackSelector.isEnabled = true
+            audioTrackSelector.isClickable = true
+            //audioTrackSelector.visibility = View.VISIBLE
+        }
         ijkVideoView?.setOnErrorListener { _, _, _ ->
-            audioTrackSelector.visibility = View.GONE
+            audioTrackSelector.isEnabled = false
+            audioTrackSelector.isClickable = false
+            //audioTrackSelector.visibility = View.GONE
             if (!fromError) {
                 fromError = true
                 yesSure(Settings.PV_PLAYER__AndroidMediaPlayer)
@@ -327,7 +333,9 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private fun updatePlayerModel() {
         ijkVideoView?.stopPlayback()
-        audioTrackSelector.visibility = View.GONE
+        //audioTrackSelector.visibility = View.GONE
+        audioTrackSelector.isEnabled = false
+        audioTrackSelector.isClickable = false
         playerModelNow = PlayListAll[idxNow]
         logger("updatePlayerModel", playerModelNow.toString())
         updateTexts()

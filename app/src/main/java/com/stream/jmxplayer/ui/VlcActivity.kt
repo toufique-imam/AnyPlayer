@@ -659,7 +659,8 @@ class VlcActivity : AppCompatActivity(),
 
     private fun preparePlayer() {
         addSource()
-        audioTrackSelector.visibility = View.GONE
+        audioTrackSelector.isEnabled = false
+        //audioTrackSelector.visibility = View.GONE
         scaleNow = MediaPlayer.ScaleType.SURFACE_BEST_FIT
         mVlcPlayer?.stop()
         mVlcPlayer?.play(mediaNow)
@@ -689,7 +690,8 @@ class VlcActivity : AppCompatActivity(),
                 }
                 MediaPlayer.Event.EncounteredError -> {
                     logger(tagNow, "Event Error")
-                    audioTrackSelector.visibility = View.GONE
+                    audioTrackSelector.isEnabled = false
+                    //audioTrackSelector.visibility = View.GONE
                     if (!fromError) {
                         fromError = true
                         yesSure(Settings.PV_PLAYER__IjkExoMediaPlayer)
@@ -703,7 +705,7 @@ class VlcActivity : AppCompatActivity(),
                 }
                 MediaPlayer.Event.Playing -> {
                     logger(tagNow, "event playing")
-                    audioTrackSelector.visibility = View.VISIBLE
+                    audioTrackSelector.isEnabled = true
                 }
             }
         }

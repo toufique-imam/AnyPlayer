@@ -83,7 +83,6 @@
             android:padding="10dp"
             android:scaleType="fitEnd"
             android:src="@drawable/ic_baseline_video_settings_24"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/vlc_custom_cast"
             app:layout_constraintTop_toTopOf="parent" />

@@ -150,7 +150,7 @@ class TracksDialogFragment : JMXBottomSDFragment() {
                     binding.subtitleTracks.trackList.adapter = trackAdapter
                 }
             }
-            if (playbackService.getSubTracksCount() <= 0 || playbackService.getTimeTracksCount() <= 0) binding.subtitleTracks.emptyView.setVisible()
+            if (playbackService.getSubTracksCount() <= 0 && playbackService.getTimeTracksCount() <= 0) binding.subtitleTracks.emptyView.setVisible()
 
         }
     }
