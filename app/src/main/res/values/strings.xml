@@ -237,4 +237,8 @@
     <string name="pro_unlock_message">ELIMINAR ANUNCIOS PARA SIEMPRE</string>
     <string name="pro_dialog_title">Eliminar Anuncios</string>
     <string name="buy_pro_description">Despídete de los anuncios para siempre y conviértete en usuario PRO</string>
+    <string name="download_valid">Descargue JMX Player de una fuente válida para un mejor rendimiento y libre de virus</string>
+    <string name="jmx_terms">jmxplayer_terms</string>
+    <string name="jmx_policy">jmxplayer_policy</string>
+    <string name="jmx_support">jmx_support</string>
 </resources>

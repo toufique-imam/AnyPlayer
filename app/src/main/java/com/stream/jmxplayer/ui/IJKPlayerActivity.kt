@@ -18,6 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.mediarouter.app.MediaRouteButton
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.javiersantos.piracychecker.PiracyChecker
 import com.google.android.material.navigation.NavigationView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
@@ -81,11 +82,14 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         const val FROM_ERROR = "FROM_ERROR"
     }
 
+    var piracyChecker: PiracyChecker? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mSettings = Settings(this)
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_ijkplayer)
+        piracyChecker = initPiracy()
 
         alertDialogLoading = createAlertDialogueLoading()
         getDataFromIntent()
@@ -156,6 +160,11 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     override fun onStop() {
         super.onStop()
         releasePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        piracyChecker?.destroy()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

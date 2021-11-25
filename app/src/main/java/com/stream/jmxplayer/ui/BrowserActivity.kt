@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import com.github.javiersantos.piracychecker.PiracyChecker
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stream.jmxplayer.R
@@ -19,11 +20,13 @@ class BrowserActivity : AppCompatActivity() {
     var adMobAdUtils: AdMobAdUtils? = null
     lateinit var alertDialog: AlertDialog
     lateinit var iAdListener: IAdListener
+    var piracyChecker: PiracyChecker? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(Settings(this).themeId)
         //setTheme(SharedPreferenceUtils.getTheme(this))
         setContentView(R.layout.activity_browser)
+        piracyChecker = initPiracy()
         alertDialog = createAlertDialogueLoading()
         adMobAdUtils = AdMobAdUtils(this)
         initAdListener()
@@ -91,6 +94,11 @@ class BrowserActivity : AppCompatActivity() {
             }
             true
         } else super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        piracyChecker?.destroy()
     }
 
 }

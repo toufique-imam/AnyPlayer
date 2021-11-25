@@ -4,18 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.github.javiersantos.piracychecker.PiracyChecker
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.cast.framework.CastContext
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
-import com.stream.jmxplayer.utils.AdMobAdUtils
-import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
-import com.stream.jmxplayer.utils.PlayerUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.createAlertDialogueLoading
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 class SplashActivity : AppCompatActivity() {
@@ -24,9 +21,14 @@ class SplashActivity : AppCompatActivity() {
     lateinit var iAdListener: IAdListener
     private lateinit var playerModel: PlayerModel
     private lateinit var alertDialogLoading: AlertDialog
-    private var mCastContext: CastContext? = null
+
 
     private lateinit var mSettings: Settings
+    var piracyChecker: PiracyChecker? = null
+    override fun onDestroy() {
+        super.onDestroy()
+        piracyChecker?.destroy()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,8 +36,9 @@ class SplashActivity : AppCompatActivity() {
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
+        piracyChecker = initPiracy()
+        getSignKey()//todo remove later
         logger("Splash", "came here")
-        mCastContext = CastContext.getSharedInstance(this)
 
         intentNow = intent
         playerModel = PlayerUtils.parseIntent(intentNow)

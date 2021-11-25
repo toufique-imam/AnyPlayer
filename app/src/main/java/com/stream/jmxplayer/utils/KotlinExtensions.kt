@@ -18,10 +18,18 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import com.github.javiersantos.piracychecker.PiracyChecker
+import com.github.javiersantos.piracychecker.callbacks.PiracyCheckerCallback
+import com.github.javiersantos.piracychecker.enums.Display
+import com.github.javiersantos.piracychecker.enums.PiracyCheckerError
+import com.github.javiersantos.piracychecker.enums.PirateApp
+import com.github.javiersantos.piracychecker.utils.apkSignatures
 import com.google.android.material.button.MaterialButton
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.TrackInfo
 import com.stream.jmxplayer.ui.view.IjkVideoView
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
+import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
 import java.util.*
@@ -236,5 +244,33 @@ fun Activity.isBatteryAbsent(): Boolean {
         batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) == 0
     } else {
         false
+    }
+}
+
+fun Activity.initPiracy(): PiracyChecker {
+    val piracyChecker = PiracyChecker(this)
+    piracyChecker.display(Display.DIALOG)
+    piracyChecker.enableUnauthorizedAppsCheck()
+    val valid: String = getString(R.string.download_valid)
+
+    val callback = object : PiracyCheckerCallback() {
+        override fun allow() {
+
+        }
+
+        override fun doNotAllow(error: PiracyCheckerError, app: PirateApp?) {
+            logger("PIRACY", error.toString())
+            toaster(this@initPiracy, valid)
+            finish()
+        }
+    }
+    piracyChecker.callback(callback)
+    piracyChecker.start()
+    return piracyChecker
+}
+
+fun Activity.getSignKey() {
+    apkSignatures.forEach {
+        logger("SIGNATURE", it)
     }
 }

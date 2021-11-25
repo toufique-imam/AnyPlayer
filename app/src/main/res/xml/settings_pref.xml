@@ -77,4 +77,18 @@
             app:key="@string/pref_key_enable_texture_view" />
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="Ayuda e información">
+        <Preference
+            android:key="@string/jmx_support"
+            android:summary="Envíanos un mensaje a nuestro correo para recibir asistencia e informar de errores"
+            android:title="Soporte" />
+        <Preference
+            android:key="@string/jmx_terms"
+            android:summary="Leer términos y condiciones"
+            android:title="Condiciones de Uso" />
+        <Preference
+            android:key="@string/jmx_policy"
+            android:summary="Leer política de privacidad"
+            android:title="Política de Privacidad" />
+    </PreferenceCategory>
 </PreferenceScreen>

@@ -20,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.mediarouter.app.MediaRouteButton
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.javiersantos.piracychecker.PiracyChecker
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.LoadEventInfo
@@ -113,15 +114,17 @@ class ExoPlayerActivity : AppCompatActivity(),
     var mediaMetaData: MediaMetadata? = null
 
     var idxNow = 0
+
     /*
     Life Cycle
      */
-
+    private var piracyChecker: PiracyChecker? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mSettings = Settings(this)
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_player)
+        piracyChecker = initPiracy()
         alertDialogLoading = createAlertDialogueLoading()
 
         //historyDB = HistoryDatabase.getInstance(this)
@@ -194,6 +197,11 @@ class ExoPlayerActivity : AppCompatActivity(),
             releasePlayer()
         }
         //stopCastServer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        piracyChecker?.destroy()
     }
 
     private fun setUpOrientation() {

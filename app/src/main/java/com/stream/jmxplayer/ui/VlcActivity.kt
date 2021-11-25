@@ -18,6 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.mediarouter.app.MediaRouteButton
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.javiersantos.piracychecker.PiracyChecker
 import com.google.android.material.navigation.NavigationView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
@@ -96,6 +97,7 @@ class VlcActivity : AppCompatActivity(),
         mSettings = Settings(this)
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_vlc)
+        piracyChecker?.destroy()
         alertDialogLoading = createAlertDialogueLoading()
 
         getDataFromIntent()
@@ -140,11 +142,15 @@ class VlcActivity : AppCompatActivity(),
         mediaController.setMediaPlayer(null)
     }
 
+    var piracyChecker: PiracyChecker? = null
+
     override fun onDestroy() {
         super.onDestroy()
         mVlcPlayer?.release()
         mLibVLC!!.release()
+        piracyChecker?.destroy()
     }
+
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -364,6 +370,7 @@ class VlcActivity : AppCompatActivity(),
         }
         tv.text = textNow
     }
+
 
     private fun setUpAppBarTexts(title: String, desc: String, lang: String) {
         setTitleText(title, playerTitle)

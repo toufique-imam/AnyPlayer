@@ -18,6 +18,15 @@ android {
         versionName "1.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+
+            annotationProcessorOptions {
+
+                arguments = ["room.incremental": "true"]
+
+            }
+        }
+
     }
     dataBinding {
         enabled = true
@@ -118,4 +127,6 @@ dependencies {
     implementation 'org.videolan.android:libvlc-all:3.4.4'
     //ijkPlayer
     implementation fileTree(include: ['*.aar'], dir: 'libs')
+    //piracyChecker
+    implementation 'com.github.javiersantos:PiracyChecker:1.2.7'
 }

@@ -1,5 +1,7 @@
 package com.stream.jmxplayer.ui.fragment
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -8,6 +10,7 @@ import androidx.preference.SwitchPreference
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.ijkplayer.Settings
+
 
 class SettingsFragment : PreferenceFragmentCompat() {
     lateinit var values: Array<String>
@@ -126,6 +129,31 @@ class SettingsFragment : PreferenceFragmentCompat() {
             playerSelect.summary = playerSelect.entries[Integer.parseInt(newValue.toString())]
             logger("OnPrefChangePlayer", "$newValue ${playerSelect.summary}")
             mSettings.setDefaultPlayer(newValue.toString())
+            true
+        }
+        val buttonTerms: Preference? = findPreference(getString(R.string.jmx_terms))
+        buttonTerms?.setOnPreferenceClickListener {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://jmxplayer.com/Terms.html"))
+            startActivity(browserIntent)
+            true
+        }
+        val buttonPolicy: Preference? = findPreference(getString(R.string.jmx_policy))
+        buttonPolicy?.setOnPreferenceClickListener {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://jmxplayer.com/Policy.html"))
+            startActivity(browserIntent)
+            true
+        }
+        val buttonMail: Preference? = findPreference(getString(R.string.jmx_support))
+        buttonMail?.setOnPreferenceClickListener {
+            val browserIntent = Intent(Intent.ACTION_SENDTO)
+            browserIntent.data = Uri.parse("mailto:") // only email apps should handle this
+            browserIntent.putExtra(Intent.EXTRA_EMAIL, "jmxcast@gmail.com")
+            if (browserIntent.resolveActivity(requireActivity().packageManager) != null) {
+                startActivity(browserIntent)
+            }
+            startActivity(browserIntent)
             true
         }
 
