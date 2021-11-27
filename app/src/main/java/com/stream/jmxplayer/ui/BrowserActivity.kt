@@ -80,9 +80,10 @@ class BrowserActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
-        menu?.clear()
+        menu.clear()
         //menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
     }

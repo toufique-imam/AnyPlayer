@@ -242,7 +242,7 @@ class M3UInputFragment : Fragment() {
     }
 
     fun m3uDataActionNew() {
-        toaster(requireActivity(), "m3uDataActionNew")
+        //toaster(requireActivity(), "m3uDataActionNew")
         findNavController()
             .navigate(R.id.action_streamFragment_to_m3uDisplayCategoryFragment)
     }

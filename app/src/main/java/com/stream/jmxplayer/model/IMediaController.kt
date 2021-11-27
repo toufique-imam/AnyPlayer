@@ -2,7 +2,9 @@ package com.stream.jmxplayer.model
 
 import android.view.View
 import android.widget.MediaController
+import androidx.annotation.Keep
 
+@Keep
 interface IMediaController {
 
     fun isEnabled(): Boolean

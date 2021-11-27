@@ -1,5 +1,6 @@
 package com.stream.jmxplayer.model
 
+import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -25,6 +26,7 @@ params
 1. header_source_req:String[] (HEADERS)
 ======================
  */
+@Keep
 @Entity(tableName = "playerModel")
 data class PlayerModel(
     @PrimaryKey var id: Long = 0L,

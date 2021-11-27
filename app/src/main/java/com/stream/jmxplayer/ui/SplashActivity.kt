@@ -45,7 +45,6 @@ class SplashActivity : AppCompatActivity() {
 
         alertDialogLoading = this.createAlertDialogueLoading()
         MobileAds.initialize(this) {
-            toaster(this, "MobileAds $it")
             adMobAdUtils = AdMobAdUtils(this)
             adActivity()
         }

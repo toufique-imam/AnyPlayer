@@ -4,10 +4,11 @@ import android.graphics.SurfaceTexture
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.View
+import androidx.annotation.Keep
 import androidx.annotation.Nullable
 import tv.danmaku.ijk.media.player.IMediaPlayer
 
-
+@Keep
 interface IRenderView {
     companion object {
         const val AR_ASPECT_FIT_PARENT = 0 // without clip

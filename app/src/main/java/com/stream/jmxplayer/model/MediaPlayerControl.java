@@ -1,5 +1,8 @@
 package com.stream.jmxplayer.model;
 
+import androidx.annotation.Keep;
+
+@Keep
 public interface MediaPlayerControl {
     void start();
 

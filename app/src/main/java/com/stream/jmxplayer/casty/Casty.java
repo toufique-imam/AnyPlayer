@@ -90,6 +90,7 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
                 return new CastyNoOp();
             }
         } catch (Exception e) {
+            Log.e(Casty.TAG, e.getMessage());
             return new CastyNoOp();
         }
     }

@@ -7,13 +7,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.stream.jmxplayer"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 14
         versionName "1.4"
 
@@ -48,8 +48,8 @@ android {
 
     buildTypes {
         release {
-            // minifyEnabled true
-            //shrinkResources true
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -63,14 +63,14 @@ android {
     buildFeatures {
         viewBinding true
     }
-//    splits {
-//        abi {
-//            enable true
-//            reset()
-//            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-//            universalApk false
-//        }
-//    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            universalApk false
+        }
+    }
 }
 
 
@@ -80,11 +80,11 @@ dependencies {
     implementation files('libs/extension-vp9-release.aar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation "androidx.activity:activity-ktx:1.3.1"
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation "androidx.activity:activity-ktx:1.4.0"
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
     //exoplayer
     implementation 'com.google.android.exoplayer:exoplayer:2.15.1'
 
@@ -104,14 +104,14 @@ dependencies {
     //animation
     implementation "com.airbnb.android:lottie:3.7.0"
     //admob
-    implementation 'com.google.android.gms:play-services-ads:20.4.0'
+    implementation 'com.google.android.gms:play-services-ads:20.5.0'
     implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     //gson
     implementation 'com.google.code.gson:gson:2.8.7'
     //cast
     implementation 'androidx.mediarouter:mediarouter:1.2.5'
-    implementation 'com.google.android.gms:play-services-cast-framework:20.0.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:20.1.0'
     //navigation component library
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
@@ -121,12 +121,12 @@ dependencies {
     kapt "androidx.room:room-compiler:2.3.0"
     //kotlin coroutine support
     implementation "androidx.room:room-ktx:2.3.0"
+    //piracyChecker
+    implementation 'com.github.javiersantos:PiracyChecker:1.2.7'
     //volley
     implementation 'com.android.volley:volley:1.2.1'
     //libVLC
     implementation 'org.videolan.android:libvlc-all:3.4.4'
     //ijkPlayer
     implementation fileTree(include: ['*.aar'], dir: 'libs')
-    //piracyChecker
-    implementation 'com.github.javiersantos:PiracyChecker:1.2.7'
 }

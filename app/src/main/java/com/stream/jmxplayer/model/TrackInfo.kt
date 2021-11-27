@@ -1,7 +1,9 @@
 package com.stream.jmxplayer.model
 
+import androidx.annotation.Keep
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
 
+@Keep
 class TrackInfo(var id: Int, var iTrackInfo: ITrackInfo) {
 
     override fun toString(): String {
