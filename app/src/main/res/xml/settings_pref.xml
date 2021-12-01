@@ -90,5 +90,9 @@
             android:key="@string/jmx_policy"
             android:summary="Leer política de privacidad"
             android:title="Política de Privacidad" />
+        <Preference
+            android:key="@string/jmx_version_key"
+            android:summary="@string/jmx_version"
+            android:title="Version de aplicacion" />
     </PreferenceCategory>
 </PreferenceScreen>

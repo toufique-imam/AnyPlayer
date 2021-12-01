@@ -137,6 +137,7 @@ class BrowseFragment : Fragment() {
         }
             .withImageChangeListener {
                 overlayView?.update(galleryAdapter.galleryData[it])
+                PlayerUtils.createMediaData(galleryAdapter.galleryData[it])
                 if (casty?.isConnected == true) {
                     casty?.player?.loadMediaAndPlayInBackground(
                         PlayerUtils.createMediaData(

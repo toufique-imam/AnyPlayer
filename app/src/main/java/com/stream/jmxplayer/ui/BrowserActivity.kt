@@ -50,7 +50,6 @@ class BrowserActivity : AppCompatActivity() {
             }
         }
         NavigationUI.setupWithNavController(bottomNavBar, navController)
-        //todo check code
         if (intent.getBooleanExtra(PlayerUtils.M3U_INTENT, false)) {
             navController.navigate(R.id.streamFragment)
         }

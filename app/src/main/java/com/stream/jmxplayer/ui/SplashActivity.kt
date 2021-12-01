@@ -37,7 +37,6 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
         piracyChecker = initPiracy()
-        getSignKey()//todo remove later
         logger("Splash", "came here")
 
         intentNow = intent
@@ -61,7 +60,6 @@ class SplashActivity : AppCompatActivity() {
             PlayListAll.clear()
             PlayListAll.add(playerModel)
             if (playerModel.link.endsWith("m3u")) {
-                //todo check code
                 playerModel.streamType = PlayerModel.STREAM_M3U
                 val intent = Intent(this, BrowserActivity::class.java)
                 intent.putExtra(PlayerUtils.M3U_INTENT, true)

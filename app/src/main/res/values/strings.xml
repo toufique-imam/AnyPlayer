@@ -241,4 +241,8 @@
     <string name="jmx_terms">jmxplayer_terms</string>
     <string name="jmx_policy">jmxplayer_policy</string>
     <string name="jmx_support">jmx_support</string>
+    <string name="jmx_version_key">jmx_version_key</string>
+    <string name="jmx_version">1.5</string>
+    <string name="app_sign">4+0PNTWiMW24AU8MiiNB+XbD1iM=</string>
+    <string name="app_lvl">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAojEsPkdOK1c8WXC9GIjdbIhXLV0vz0ZiKYnyEbuFC7inJQ6vzoxMBMQ/9qkYrzt4B9BQnNXFdBySUZbDPb/YEcN1PDiTolnjcAn+5wdqgNUiifk4T9LOxb5AeRVzuJJomVBtUvI/SaCrumBgZ+yU1IGoDU+orBryulHLe5ZO3ixR8hZl52nEV69PeZblklWRGkIx03wF4zy8voE2bajr/8gP+R0G4jZyak98L2771VFj1RFj1sCLBr92t40FMeP/nrW01h/+rWZ+zGlfLemna0MTtFdweyYXJ2Lfedgcod3zHKRk/3fXnQoYYptmDJ3jyWG8s7jI2uuevC9WG3WMBQIDAQAB</string>
 </resources>

@@ -92,7 +92,6 @@ class M3UInputFragment : Fragment() {
         })
 
         if (requireActivity().intent.getBooleanExtra(PlayerUtils.M3U_INTENT, false)) {
-//todo check code
             playerModelNow = PlayListAll[0]
             viewModel.insertModel(playerModelNow)
             galleryAdapter.addData(playerModelNow)

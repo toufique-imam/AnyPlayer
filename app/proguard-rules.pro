@@ -202,4 +202,3 @@ LineNumberTable, *Annotation*, EnclosingMethod
 -keepattributes *Annotation*
 
 -dontwarn org.apache.**
-

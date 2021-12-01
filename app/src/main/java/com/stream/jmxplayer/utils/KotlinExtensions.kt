@@ -23,7 +23,6 @@ import com.github.javiersantos.piracychecker.callbacks.PiracyCheckerCallback
 import com.github.javiersantos.piracychecker.enums.Display
 import com.github.javiersantos.piracychecker.enums.PiracyCheckerError
 import com.github.javiersantos.piracychecker.enums.PirateApp
-import com.github.javiersantos.piracychecker.utils.apkSignatures
 import com.google.android.material.button.MaterialButton
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.TrackInfo
@@ -251,6 +250,9 @@ fun Activity.initPiracy(): PiracyChecker {
     val piracyChecker = PiracyChecker(this)
     piracyChecker.display(Display.DIALOG)
     piracyChecker.enableUnauthorizedAppsCheck()
+    piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
+    piracyChecker.enableDebugCheck()
+    piracyChecker.enableSigningCertificates(getString(R.string.app_sign))
     val valid: String = getString(R.string.download_valid)
 
     val callback = object : PiracyCheckerCallback() {
@@ -267,10 +269,4 @@ fun Activity.initPiracy(): PiracyChecker {
     piracyChecker.callback(callback)
     piracyChecker.start()
     return piracyChecker
-}
-
-fun Activity.getSignKey() {
-    apkSignatures.forEach {
-        logger("SIGNATURE", it)
-    }
 }

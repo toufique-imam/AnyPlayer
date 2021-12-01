@@ -202,6 +202,7 @@ class VlcActivity : AppCompatActivity(),
             playerModelNow = PlayListAll[0]
             idxNow = 0
         }
+        PlayerUtils.createMediaData(playerModelNow)
     }
 
     private fun prevTrack() {

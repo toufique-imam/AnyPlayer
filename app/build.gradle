@@ -14,8 +14,8 @@ android {
         applicationId "com.stream.jmxplayer"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 14
-        versionName "1.4"
+        versionCode 17
+        versionName "1.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
@@ -68,7 +68,7 @@ android {
             enable true
             reset()
             include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-            universalApk false
+            universalApk true
         }
     }
 }
