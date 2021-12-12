@@ -5,21 +5,29 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.mediarouter.app.MediaRouteButton
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.github.javiersantos.piracychecker.PiracyChecker
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stream.jmxplayer.R
+import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.IAdListener
+import com.stream.jmxplayer.model.ICastController
+import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.ui.fragment.BrowseFragment
 import com.stream.jmxplayer.utils.*
+import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 
-class BrowserActivity : AppCompatActivity() {
+class BrowserActivity : AppCompatActivity(), ICastController {
     var adMobAdUtils: AdMobAdUtils? = null
     lateinit var alertDialog: AlertDialog
     lateinit var iAdListener: IAdListener
+    lateinit var bottomNavBar: BottomNavigationView
+    lateinit var navHostFragment: NavHostFragment
     var piracyChecker: PiracyChecker? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +41,9 @@ class BrowserActivity : AppCompatActivity() {
         adMobAdUtils?.setAdListener(iAdListener)
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        val bottomNavBar = findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
-        val navHostFragment =
+        initCast()
+        bottomNavBar = findViewById(R.id.bottom_navigation_view)
+        navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         navController.addOnDestinationChangedListener { controller, _, _ ->
@@ -79,6 +88,25 @@ class BrowserActivity : AppCompatActivity() {
         }
     }
 
+    var casty: Casty? = null
+
+    private fun initCast() {
+        casty = Casty.create(this)
+
+        casty?.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
+            override fun onConnected() {
+                toaster(this@BrowserActivity, "connected")
+                if (navHostFragment.navController.currentDestination?.id == R.id.browseFragment) {
+                    (navHostFragment.childFragmentManager.fragments[0] as BrowseFragment).showImageCast()
+                }
+            }
+
+            override fun onDisconnected() {
+                toaster(this@BrowserActivity, "disconnected")
+            }
+        })
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
@@ -101,4 +129,17 @@ class BrowserActivity : AppCompatActivity() {
         piracyChecker?.destroy()
     }
 
+    override fun castPlayerModel(playerModel: PlayerModel) {
+        if (casty?.isConnected == true) {
+            casty?.player?.loadMediaAndPlay(
+                PlayerUtils.createMediaData(
+                    playerModel
+                )
+            )
+        }
+    }
+
+    override fun updateCastButton(mediaRouteButton: MediaRouteButton) {
+        casty?.setUpMediaRouteButton(mediaRouteButton)
+    }
 }

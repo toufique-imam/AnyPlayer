@@ -93,8 +93,9 @@ class MediaFileUtils {
 
                     logger(TAG, "Found ${cursor.count} videos")
                     while (cursor.moveToNext()) {
+
                         val id = cursor.getLong(dbIds[0])
-                        val displayName = cursor.getString(dbIds[1])
+                        val displayName = cursor.getString(dbIds[1]) ?: "no name"
 //                        val dateModified =
 //                            Date(TimeUnit.SECONDS.toMillis(cursor.getLong(dbIds[2])))
                         val size = cursor.getLong(dbIds[3])
@@ -138,7 +139,7 @@ class MediaFileUtils {
 
             return try {
                 val idNow = cursor.getLong(ids[0])
-                val displayName = cursor.getString(ids[1])
+                val displayName = cursor.getString(ids[1])?:"no name"
 //                val dateModified =
 //                    Date(TimeUnit.SECONDS.toMillis(cursor.getLong(ids[2])))
                 val size = cursor.getLong(ids[3])

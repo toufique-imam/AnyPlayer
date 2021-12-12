@@ -23,14 +23,14 @@ import com.stfalcon.imageviewer.StfalconImageViewer
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
-import com.stream.jmxplayer.casty.Casty
+import com.stream.jmxplayer.model.ICastController
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.view.ImageOverlayView
 import com.stream.jmxplayer.ui.viewmodel.LocalVideoViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.getGridSpanCount
 import com.stream.jmxplayer.utils.GlobalFunctions.isProVersion
-import com.stream.jmxplayer.utils.PlayerUtils
+import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
@@ -53,8 +53,8 @@ class BrowseFragment : Fragment() {
     var typeNow = PlayerModel.STREAM_OFFLINE_VIDEO
     var overlayView: ImageOverlayView? = null
     var imageViewer: StfalconImageViewer<PlayerModel>? = null
-    var casty: Casty? = null
-
+    var iCastController: ICastController? = null
+    var playerModelNow = PlayerModel(-1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,30 +93,27 @@ class BrowseFragment : Fragment() {
         })
     }
 
-    private fun initCast() {
-        casty = Casty.create(requireActivity())
-        casty?.setUpMediaRouteButton(overlayView!!.castButton)
+    private fun initCastListener() {
+        try {
+            iCastController = context as ICastController
+        } catch (exception: ClassCastException) {
+            toaster(requireActivity(), "no implemented " + exception.message)
+        }
+    }
 
-        casty?.setOnConnectChangeListener(object : Casty.OnConnectChangeListener {
-            override fun onConnected() {
-                if (imageViewer != null) {
-                    val pos = imageViewer?.currentPosition()
-                    if (pos != null)
-                        casty?.player?.loadMediaAndPlayInBackground(
-                            PlayerUtils.createMediaData(
-                                galleryAdapter.galleryData[pos]
-                            )
-                        )
-                }
-            }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        initCastListener()
+    }
 
-            override fun onDisconnected() {
-            }
-        })
+
+    fun showImageCast() {
+        iCastController?.castPlayerModel(playerModelNow)
     }
 
     private fun setupOverlay(position: Int) {
         overlayView = ImageOverlayView(requireContext()).apply {
+            playerModelNow = galleryAdapter.galleryData[position]
             update(galleryAdapter.galleryData[position])
 
             onBackClick = {
@@ -124,7 +121,8 @@ class BrowseFragment : Fragment() {
                 imageViewer = null
             }
         }
-        if (casty == null) initCast()
+        if (iCastController == null) initCastListener()
+        iCastController?.updateCastButton(overlayView!!.castButton)
     }
 
     private fun showImages(position: Int) {
@@ -136,15 +134,9 @@ class BrowseFragment : Fragment() {
             Glide.with(view).load(imageNow.image).into(view)
         }
             .withImageChangeListener {
+                playerModelNow = galleryAdapter.galleryData[it]
                 overlayView?.update(galleryAdapter.galleryData[it])
-                PlayerUtils.createMediaData(galleryAdapter.galleryData[it])
-                if (casty?.isConnected == true) {
-                    casty?.player?.loadMediaAndPlayInBackground(
-                        PlayerUtils.createMediaData(
-                            galleryAdapter.galleryData[it]
-                        )
-                    )
-                }
+                showImageCast()
             }
             .withStartPosition(position)
             .withHiddenStatusBar(true)
@@ -162,7 +154,6 @@ class BrowseFragment : Fragment() {
         val mSettings = Settings(requireContext())
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { video, pos ->
             if (video.streamType != PlayerModel.STREAM_OFFLINE_IMAGE) {
-
                 val intent = GlobalFunctions.getDefaultPlayer(requireContext(), mSettings, video)
                 PlayListAll.clear()
                 PlayListAll.add(video)
@@ -228,7 +219,6 @@ class BrowseFragment : Fragment() {
             super.onOptionsItemSelected(item)
         }
     }
-
 
     private fun showVideos() {
         if (!haveStoragePermission()) {

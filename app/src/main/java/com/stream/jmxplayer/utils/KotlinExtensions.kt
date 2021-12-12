@@ -250,9 +250,9 @@ fun Activity.initPiracy(): PiracyChecker {
     val piracyChecker = PiracyChecker(this)
     piracyChecker.display(Display.DIALOG)
     piracyChecker.enableUnauthorizedAppsCheck()
-    piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
-    piracyChecker.enableDebugCheck()
-    piracyChecker.enableSigningCertificates(getString(R.string.app_sign))
+    //piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
+    //piracyChecker.enableDebugCheck()
+    //piracyChecker.enableSigningCertificates(getString(R.string.app_sign))
     val valid: String = getString(R.string.download_valid)
 
     val callback = object : PiracyCheckerCallback() {

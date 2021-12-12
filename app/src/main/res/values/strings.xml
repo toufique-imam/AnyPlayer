@@ -34,9 +34,9 @@
     <string name="cast_button">cast button</string>
     <string name="backward_button">backward button</string>
     <string name="play_button">play button</string>
-    <string name="ADMOB_ID">ca-app-pub-3940256099942544~3347511713</string>
-    <string name="Interstitial_AD_ID">ca-app-pub-3940256099942544/1033173712</string>
-    <string name="REWARD_AD_ID">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="ADMOB_ID">ca-app-pub-1098462410546667~3381440335</string>
+    <string name="Interstitial_AD_ID">ca-app-pub-1098462410546667/2563182685</string>
+    <string name="REWARD_AD_ID">ca-app-pub-1098462410546667/1581273501</string>
 
     <string name="coverimage">coverImage</string>
     <string name="optional">Opcional</string>
