@@ -23,6 +23,7 @@ import com.stfalcon.imageviewer.StfalconImageViewer
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
+import com.stream.jmxplayer.model.IAdLoadRequest
 import com.stream.jmxplayer.model.ICastController
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.view.ImageOverlayView
@@ -54,6 +55,7 @@ class BrowseFragment : Fragment() {
     var overlayView: ImageOverlayView? = null
     var imageViewer: StfalconImageViewer<PlayerModel>? = null
     var iCastController: ICastController? = null
+    var iAdLoadRequest: IAdLoadRequest? = null
     var playerModelNow = PlayerModel(-1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +83,8 @@ class BrowseFragment : Fragment() {
                     }
                     if (prevType != typeNow) {
                         openMediaStore()
+                        if (typeNow == PlayerModel.STREAM_OFFLINE_IMAGE)
+                            iAdLoadRequest?.loadFullScreenAd()
                     }
                 }
             }
@@ -96,6 +100,14 @@ class BrowseFragment : Fragment() {
     private fun initCastListener() {
         try {
             iCastController = context as ICastController
+        } catch (exception: ClassCastException) {
+            toaster(requireActivity(), "no implemented " + exception.message)
+        }
+    }
+
+    private fun initAdLoadRequest() {
+        try {
+            iAdLoadRequest = context as IAdLoadRequest
         } catch (exception: ClassCastException) {
             toaster(requireActivity(), "no implemented " + exception.message)
         }
@@ -152,6 +164,7 @@ class BrowseFragment : Fragment() {
         welcomeView = view.findViewById(R.id.welcome_view)
         permissionRationaleView = view.findViewById(R.id.permission_rationale_view)
         val mSettings = Settings(requireContext())
+        initAdLoadRequest()
         galleryAdapter = GalleryAdapter(GalleryItemViewHolder.GRID_NO_DELETE, { video, pos ->
             if (video.streamType != PlayerModel.STREAM_OFFLINE_IMAGE) {
                 val intent = GlobalFunctions.getDefaultPlayer(requireContext(), mSettings, video)
