@@ -27,7 +27,7 @@
 
     <PreferenceCategory
         app:key="@string/app_name"
-        app:title="@string/pref_title_exoplayer_video">
+        app:title="@string/pref_title_exoplayer">
 
         <ListPreference
             android:summary="@string/pref_summary_render"
@@ -39,7 +39,7 @@
 
     <PreferenceCategory
         app:key="@string/app_name"
-        app:title="@string/pref_title_ijkplayer_video">
+        app:title="@string/pref_title_ijkplayer">
 
         <SwitchPreference
             app:key="@string/pref_key_using_media_codec"
@@ -53,30 +53,18 @@
             android:summary="@string/pref_summary_media_codec_handle_resolution_change"
             app:key="@string/pref_key_media_codec_handle_resolution_change"
             app:title="@string/pref_title_media_codec_handle_resolution_change" />
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="@string/pref_key_using_opensl_es"
+            app:summary="@string/pref_summary_using_opensl_es"
+            app:title="@string/pref_title_using_opensl_es" />
         <ListPreference
             app:entries="@array/pref_entries_pixel_format"
             app:entryValues="@array/pref_entry_values_pixel_format"
             app:key="@string/pref_key_pixel_format"
             app:title="@string/pref_title_pixel_format" />
     </PreferenceCategory>
-    <PreferenceCategory
-        app:key="@string/app_name"
-        app:title="@string/pref_title_ijkplayer_audio">
 
-        <SwitchPreference
-            app:key="@string/pref_key_using_opensl_es"
-            app:summary="@string/pref_summary_using_opensl_es"
-            app:title="@string/pref_title_using_opensl_es" />
-        <SwitchPreference
-            android:summary="@string/pref_summary_enable_surface_view"
-            android:title="@string/pref_title_enable_surface_view"
-            app:key="@string/pref_key_enable_surface_view" />
-        <SwitchPreference
-            android:summary="@string/pref_summary_enable_texture_view"
-            android:title="@string/pref_title_enable_texture_view"
-            app:key="@string/pref_key_enable_texture_view" />
-
-    </PreferenceCategory>
     <PreferenceCategory android:title="Ayuda e información">
         <Preference
             android:key="@string/jmx_support"

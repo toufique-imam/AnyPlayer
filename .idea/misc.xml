@@ -53,7 +53,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/mini_controller.xml" value="0.13020833333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/player_control_view.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/player_overlay_track_item.xml" value="0.2" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/player_overlay_tracks.xml" value="0.2662037037037037" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/player_overlay_tracks.xml" value="0.9583333333333334" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/playlist_item.xml" value="0.264" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/table_media_info.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/layout/table_media_info_row1.xml" value="0.1" />
@@ -70,7 +70,7 @@
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/toolbar_browse_pro.xml" value="0.72" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/toolbar_history.xml" value="0.264" />
         <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/menu/toolbar_history_pro.xml" value="0.25416666666666665" />
-        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/xml/settings_pref.xml" value="1.2" />
+        <entry key="..\:/AndroidStudioProjects/JMX_Player/app/src/main/res/xml/settings_pref.xml" value="0.9583333333333334" />
       </map>
     </option>
   </component>

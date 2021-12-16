@@ -77,6 +77,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val mediaCodec =
             findPreference<SwitchPreference>(getString(R.string.pref_key_using_media_codec))
         mediaCodec?.setDefaultValue(mSettings.usingMediaCodec)
+
         mediaCodec?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
                 logger("OnPrefChangeMediaCodec", "$newValue")
@@ -86,30 +87,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val opensles =
             findPreference<SwitchPreference>(getString(R.string.pref_key_using_opensl_es))
         opensles?.setDefaultValue(mSettings.usingOpenSLES)
+        logger("usingOpenSLES", "${mSettings.usingOpenSLES}")
         opensles?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue ->
-                logger("OnPrefChangeOpen", "$newValue")
+                logger("usingOpenSLES", "$newValue")
                 mSettings.usingOpenSLES = newValue as Boolean
                 true
             }
-        val surfaceView =
-            findPreference<SwitchPreference>(getString(R.string.pref_key_enable_surface_view))
-        surfaceView?.setDefaultValue(mSettings.enableSurfaceView)
-        surfaceView?.onPreferenceChangeListener =
-            Preference.OnPreferenceChangeListener { _, newValue ->
-                logger("OnPrefChangeSurface", "$newValue")
-                mSettings.enableSurfaceView = newValue as Boolean
-                true
-            }
-        val textureView =
-            findPreference<SwitchPreference>(getString(R.string.pref_key_enable_texture_view))
-        textureView?.setDefaultValue(mSettings.enableSurfaceView)
-        textureView?.onPreferenceChangeListener =
-            Preference.OnPreferenceChangeListener { _, newValue ->
-                logger("OnPrefChangeTexture", "$newValue")
-                mSettings.enableTextureView = newValue as Boolean
-                true
-            }
+
         val renderMode = findPreference<ListPreference>(getString(R.string.pref_key_render))
         renderMode?.value = mSettings.renderExo.toString()
         renderMode?.summary = renderMode?.entries?.get(mSettings.renderExo)

@@ -120,38 +120,7 @@ class TracksDialogFragment : JMXBottomSDFragment() {
                 }
                 binding.audioTracks.trackList.adapter = trackAdapter
             }
-            playbackService.getSubTracks().let { trackList ->
-                val trackAdapter = TrackAdapter(
-                    trackList,
-                    if (playbackService.getSelectedTrack(ITrackInfo.MEDIA_TRACK_TYPE_SUBTITLE) == -1)
-                        null
-                    else trackList.firstOrNull { trackInfo ->
-                        trackInfo.id == playbackService.getSelectedTrack(ITrackInfo.MEDIA_TRACK_TYPE_SUBTITLE)
-                    }
-                )
-                trackAdapter.setOnTrackSelectedListener { track ->
-                    trackSelectionListener.invoke(track)
-                }
-                binding.subtitleTracks.trackList.adapter = trackAdapter
-            }
-            if (playbackService.getSubTracksCount() <= 0) {
-                playbackService.getTimeTracks().let { trackList ->
-                    val trackAdapter = TrackAdapter(
-                        trackList,
-                        if (playbackService.getSelectedTrack(ITrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT) == -1)
-                            null
-                        else trackList.firstOrNull { trackInfo ->
-                            trackInfo.id == playbackService.getSelectedTrack(ITrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT)
-                        }
-                    )
-                    trackAdapter.setOnTrackSelectedListener { track ->
-                        trackSelectionListener.invoke(track)
-                    }
-                    binding.subtitleTracks.trackList.adapter = trackAdapter
-                }
-            }
-            if (playbackService.getSubTracksCount() <= 0 && playbackService.getTimeTracksCount() <= 0) binding.subtitleTracks.emptyView.setVisible()
-
+            binding.subtitleTracks.emptyView.setVisible()
         }
     }
 

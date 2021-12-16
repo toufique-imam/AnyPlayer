@@ -149,8 +149,8 @@
 
 
     <!-- -->
-    <string name="pref_title_ijkplayer_video">Video: ijkplayer</string>
-    <string name="pref_title_exoplayer_video">Video: ExoPlayer</string>
+    <string name="pref_title_ijkplayer">ijkPlayer</string>
+    <string name="pref_title_exoplayer">ExoPlayer</string>
 
     <string name="pref_key_using_media_codec">pref.using_media_codec</string>
     <string name="pref_title_using_media_codec">Using MediaCodec</string>
