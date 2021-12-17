@@ -27,6 +27,7 @@ import com.stream.jmxplayer.model.IAdLoadRequest
 import com.stream.jmxplayer.model.ICastController
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.view.ImageOverlayView
+import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.ui.viewmodel.LocalVideoViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.getGridSpanCount
@@ -44,6 +45,7 @@ import com.stream.jmxplayer.utils.ijkplayer.Settings
 class BrowseFragment : Fragment() {
 
     private val viewModel: LocalVideoViewModel by viewModels()
+    private val historyViewModel: DatabaseViewModel by viewModels()
     private lateinit var gallery: RecyclerView
     lateinit var tabLayout: TabLayout
     private lateinit var openAlbum: MaterialButton
@@ -126,8 +128,8 @@ class BrowseFragment : Fragment() {
     private fun setupOverlay(position: Int) {
         overlayView = ImageOverlayView(requireContext()).apply {
             playerModelNow = galleryAdapter.galleryData[position]
-            update(galleryAdapter.galleryData[position])
-
+            update(playerModelNow)
+            historyViewModel.insertModel(playerModelNow)
             onBackClick = {
                 imageViewer?.close()
                 imageViewer = null
@@ -147,7 +149,8 @@ class BrowseFragment : Fragment() {
         }
             .withImageChangeListener {
                 playerModelNow = galleryAdapter.galleryData[it]
-                overlayView?.update(galleryAdapter.galleryData[it])
+                historyViewModel.insertModel(playerModelNow)
+                overlayView?.update(playerModelNow)
                 showImageCast()
             }
             .withStartPosition(position)

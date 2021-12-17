@@ -9,14 +9,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.stfalcon.imageviewer.StfalconImageViewer
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.ui.view.ImageOverlayView
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
+import com.stream.jmxplayer.utils.setGone
 
 class HistoryFragment : Fragment() {
 
@@ -35,6 +39,35 @@ class HistoryFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_list_view, container, false)
     }
 
+    var overlayView: ImageOverlayView? = null
+    var imageViewer: StfalconImageViewer<PlayerModel>? = null
+    var images: List<PlayerModel> = ArrayList()
+
+    private fun showImage(position: Int) {
+        if (images.size <= position) return
+        overlayView = ImageOverlayView(requireContext()).apply {
+            update(images[position])
+            onBackClick = {
+                imageViewer?.close()
+                imageViewer = null
+            }
+            castButton.setGone()
+        }
+        imageViewer = StfalconImageViewer.Builder(
+            context,
+            images
+        ) { view, imageNow ->
+            Glide.with(view).load(imageNow.image).into(view)
+        }
+            .withImageChangeListener {
+                if (images.size > it)
+                    overlayView?.update(images[it])
+            }
+            .withStartPosition(position)
+            .withHiddenStatusBar(true)
+            .withOverlayView(overlayView).show()
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,14 +77,21 @@ class HistoryFragment : Fragment() {
             GalleryItemViewHolder.SINGLE_DELETE,
             { video, _ ->
                 //val intent = Intent(context, PlayerActivity::class.java)
-                val intent =
-                    GlobalFunctions.getIntentPlayer(
-                        requireContext(),
-                        Settings.PV_PLAYER__IjkMediaPlayer
-                    )
-                PlayListAll.clear()
-                PlayListAll.add(video)
-                startActivity(intent)
+                if (video.streamType == PlayerModel.STREAM_OFFLINE_IMAGE) {
+                    images =
+                        galleryAdapter.galleryData.filter { playerModel -> playerModel.streamType == PlayerModel.STREAM_OFFLINE_IMAGE }
+                    val pos = images.indexOf(video)
+                    showImage(pos)
+                } else {
+                    val intent =
+                        GlobalFunctions.getIntentPlayer(
+                            requireContext(),
+                            Settings.PV_PLAYER__IjkMediaPlayer
+                        )
+                    PlayListAll.clear()
+                    PlayListAll.add(video)
+                    startActivity(intent)
+                }
             }, { video, pos ->
                 deleteHistory(video)
             }
