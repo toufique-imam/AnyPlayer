@@ -22,6 +22,7 @@
     <string name="bottom_sheet_header_none">Ninguna lista seleccionada</string>
     <string name="no_track">No track</string>
     <string name="trackName">%1$s, %2$s</string>
+    <string name="trackTitle">%1$s\n%2$s</string>
 
     <string name="loading">Cargando Contenido..</string>
     <string name="movie_name">Nombre de pelicula</string>
@@ -245,4 +246,11 @@
     <string name="jmx_version">1.5</string>
     <string name="app_sign">4+0PNTWiMW24AU8MiiNB+XbD1iM=</string>
     <string name="app_lvl">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAojEsPkdOK1c8WXC9GIjdbIhXLV0vz0ZiKYnyEbuFC7inJQ6vzoxMBMQ/9qkYrzt4B9BQnNXFdBySUZbDPb/YEcN1PDiTolnjcAn+5wdqgNUiifk4T9LOxb5AeRVzuJJomVBtUvI/SaCrumBgZ+yU1IGoDU+orBryulHLe5ZO3ixR8hZl52nEV69PeZblklWRGkIx03wF4zy8voE2bajr/8gP+R0G4jZyak98L2771VFj1RFj1sCLBr92t40FMeP/nrW01h/+rWZ+zGlfLemna0MTtFdweyYXJ2Lfedgcod3zHKRk/3fXnQoYYptmDJ3jyWG8s7jI2uuevC9WG3WMBQIDAQAB</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="google">www.google.com</string>
+    <string name="web_url_hint">Enter or Search</string>
+    <string name="browse_web">Browse Web</string>
+    <string name="no_video">No Video Found</string>
+    <string name="web_videos">Web Videos</string>
 </resources>

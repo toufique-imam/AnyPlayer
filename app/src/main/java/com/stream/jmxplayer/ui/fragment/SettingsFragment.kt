@@ -141,6 +141,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             startActivity(browserIntent)
             true
         }
+        val pInfo = requireContext().packageManager.getPackageInfo(requireContext().packageName, 0)
+        val offlineVersion = pInfo.versionName
+        val buttonVersion: Preference? = findPreference(getString(R.string.jmx_version_key))
+        buttonVersion?.summary = offlineVersion
 
     }
 }

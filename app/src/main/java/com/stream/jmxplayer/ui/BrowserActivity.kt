@@ -14,7 +14,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.casty.Casty
 import com.stream.jmxplayer.model.IAdListener
-import com.stream.jmxplayer.model.IAdLoadRequest
 import com.stream.jmxplayer.model.ICastController
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.fragment.BrowseFragment
@@ -23,7 +22,7 @@ import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 
-class BrowserActivity : AppCompatActivity(), ICastController , IAdLoadRequest{
+class BrowserActivity : AppCompatActivity(), ICastController {
     var adMobAdUtils: AdMobAdUtils? = null
     lateinit var alertDialog: AlertDialog
     lateinit var iAdListener: IAdListener
@@ -35,7 +34,7 @@ class BrowserActivity : AppCompatActivity(), ICastController , IAdLoadRequest{
         setTheme(Settings(this).themeId)
         //setTheme(SharedPreferenceUtils.getTheme(this))
         setContentView(R.layout.activity_browser)
-        piracyChecker = initPiracy()
+        piracyChecker = initPiracy{}
         alertDialog = createAlertDialogueLoading()
         adMobAdUtils = AdMobAdUtils(this)
         initAdListener()
@@ -49,9 +48,6 @@ class BrowserActivity : AppCompatActivity(), ICastController , IAdLoadRequest{
         val navController = navHostFragment.navController
         navController.addOnDestinationChangedListener { controller, _, _ ->
             toolbar.title = controller.currentDestination?.label ?: toolbar.title
-//            if (controller.currentDestination?.id == R.id.browseFragment) {
-//                adMobAdUtils?.loadFullScreenAd()
-//            }
             if (controller.currentDestination?.id == R.id.historyFragment) {
                 adMobAdUtils?.loadFullScreenAd()
             }
@@ -144,11 +140,4 @@ class BrowserActivity : AppCompatActivity(), ICastController , IAdLoadRequest{
         casty?.setUpMediaRouteButton(mediaRouteButton)
     }
 
-    override fun loadFullScreenAd() {
-        adMobAdUtils?.loadFullScreenAd()
-    }
-
-    override fun loadRewardAd() {
-        adMobAdUtils?.loadRewardAd()
-    }
 }

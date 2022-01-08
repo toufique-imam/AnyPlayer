@@ -1,7 +1,6 @@
 package com.stream.jmxplayer.ui.fragment
 
 import android.os.Bundle
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stream.jmxplayer.utils.checkUrl
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 class UserLinkFragment : Fragment() {
@@ -124,11 +124,7 @@ class UserLinkFragment : Fragment() {
     }
 
     private fun linkChecker(): Boolean {
-        if (linkTextView.text == null || linkTextView.text.toString()
-                .isEmpty() || !Patterns.WEB_URL.matcher(
-                linkTextView.text.toString()
-            ).matches()
-        ) {
+        if (!linkTextView.checkUrl()) {
             linkTextView.error = resources.getString(R.string.enter_stream_link)
             linkTextView.requestFocus()
             return false

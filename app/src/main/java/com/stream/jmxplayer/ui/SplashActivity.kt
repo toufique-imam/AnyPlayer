@@ -11,7 +11,7 @@ import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
-import com.stream.jmxplayer.utils.GlobalFunctions.toaster
+
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
@@ -36,17 +36,21 @@ class SplashActivity : AppCompatActivity() {
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
-        piracyChecker = initPiracy()
+
         logger("Splash", "came here")
 
         intentNow = intent
         playerModel = PlayerUtils.parseIntent(intentNow)
 
         alertDialogLoading = this.createAlertDialogueLoading()
-        MobileAds.initialize(this) {
-            adMobAdUtils = AdMobAdUtils(this)
-            adActivity()
+
+        piracyChecker = initPiracy {
+            MobileAds.initialize(this) {
+                adMobAdUtils = AdMobAdUtils(this)
+                adActivity()
+            }
         }
+
     }
 
 
@@ -56,7 +60,6 @@ class SplashActivity : AppCompatActivity() {
             startActivity(intent)
         } else {
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
-            logger("Splash PlayerModel", playerModel.toString())
             PlayListAll.clear()
             PlayListAll.add(playerModel)
             if (playerModel.link.endsWith("m3u")) {

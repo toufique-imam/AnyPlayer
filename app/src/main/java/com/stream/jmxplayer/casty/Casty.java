@@ -306,15 +306,25 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
 
             @Override
             public void onActivityResumed(Activity activity) {
-                if (Casty.this.activity == activity) {
-                    handleCurrentCastSession();
-                    registerSessionManagerListener();
+                try {
+                    if (Casty.this.activity == activity) {
+                        handleCurrentCastSession();
+                        registerSessionManagerListener();
+                    }
+                } catch (Exception ex) {
+
                 }
             }
 
             @Override
             public void onActivityPaused(Activity activity) {
-                if (Casty.this.activity == activity) unregisterSessionManagerListener();
+                if (Casty.this.activity == activity) {
+                    try{
+                        unregisterSessionManagerListener();
+                    }catch (Exception ex){
+
+                    }
+                }
             }
 
             @Override

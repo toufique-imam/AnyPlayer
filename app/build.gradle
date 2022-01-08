@@ -14,8 +14,8 @@ android {
         applicationId "com.stream.jmxplayer"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 16
-        versionName "1.6"
+        versionCode 17
+        versionName "1.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
@@ -105,22 +105,22 @@ dependencies {
     implementation "com.airbnb.android:lottie:3.7.0"
     //admob
     implementation 'com.google.android.gms:play-services-ads:20.5.0'
-    implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
-    implementation 'com.google.android.gms:play-services-location:18.0.0'
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.0'
+    implementation 'com.google.android.gms:play-services-location:19.0.0'
     //gson
     implementation 'com.google.code.gson:gson:2.8.7'
     //cast
     implementation 'androidx.mediarouter:mediarouter:1.2.5'
-    implementation 'com.google.android.gms:play-services-cast-framework:20.1.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:21.0.0'
     //navigation component library
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     //room
-    implementation "androidx.room:room-runtime:2.3.0"
-    kapt "androidx.room:room-compiler:2.3.0"
+    implementation "androidx.room:room-runtime:2.4.0"
+    kapt "androidx.room:room-compiler:2.4.0"
     //kotlin coroutine support
-    implementation "androidx.room:room-ktx:2.3.0"
+    implementation "androidx.room:room-ktx:2.4.0"
     //piracyChecker
     implementation 'com.github.javiersantos:PiracyChecker:1.2.7'
     //volley

@@ -55,4 +55,9 @@
         android:name="com.stream.jmxplayer.ui.fragment.M3uDisplayCategoryFragment"
         android:label="M3U Playlist"
         tools:layout="@layout/fragment_m3u_display_category" />
+    <fragment
+        android:id="@+id/webviewFragment"
+        android:name="com.stream.jmxplayer.ui.fragment.WebViewFragment"
+        android:label="Browse Web"
+        tools:layout="@layout/fragment_webview" />
 </navigation>

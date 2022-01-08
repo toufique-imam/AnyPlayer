@@ -11,6 +11,7 @@
             app:entryValues="@array/pref_entry_values_theme"
             app:key="@string/pref_key_theme"
             app:title="@string/pref_title_theme" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

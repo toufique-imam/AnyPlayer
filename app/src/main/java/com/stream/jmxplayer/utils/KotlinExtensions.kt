@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.BatteryManager
 import android.os.Build
+import android.util.Patterns
 import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -24,6 +25,7 @@ import com.github.javiersantos.piracychecker.enums.Display
 import com.github.javiersantos.piracychecker.enums.PiracyCheckerError
 import com.github.javiersantos.piracychecker.enums.PirateApp
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.TrackInfo
 import com.stream.jmxplayer.ui.view.IjkVideoView
@@ -246,18 +248,18 @@ fun Activity.isBatteryAbsent(): Boolean {
     }
 }
 
-fun Activity.initPiracy(): PiracyChecker {
+fun Activity.initPiracy(onAllow: () -> Unit): PiracyChecker {
     val piracyChecker = PiracyChecker(this)
     piracyChecker.display(Display.DIALOG)
     piracyChecker.enableUnauthorizedAppsCheck()
-    //piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
-    //piracyChecker.enableDebugCheck()
-    //piracyChecker.enableSigningCertificates(getString(R.string.app_sign))
+//    piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
+//    piracyChecker.enableDebugCheck()
+//    piracyChecker.enableSigningCertificates(getString(R.string.app_sign))
     val valid: String = getString(R.string.download_valid)
 
     val callback = object : PiracyCheckerCallback() {
         override fun allow() {
-
+            onAllow();
         }
 
         override fun doNotAllow(error: PiracyCheckerError, app: PirateApp?) {
@@ -269,4 +271,22 @@ fun Activity.initPiracy(): PiracyChecker {
     piracyChecker.callback(callback)
     piracyChecker.start()
     return piracyChecker
+}
+
+fun String.checkUrl(): Boolean {
+    return Patterns.WEB_URL.matcher(this).matches()
+}
+
+fun TextInputEditText.checkText(): Boolean {
+    if (text == null || text.toString().isEmpty()) {
+        return false
+    }
+    return true
+}
+
+fun TextInputEditText.checkUrl(): Boolean {
+    if (!checkText() || text.toString().checkUrl()) {
+        return false
+    }
+    return true
 }
