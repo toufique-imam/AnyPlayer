@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.stream.jmxplayer"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 31
         versionCode 17
         versionName "1.7"
@@ -129,4 +129,9 @@ dependencies {
     implementation 'org.videolan.android:libvlc-all:3.4.4'
     //ijkPlayer
     implementation fileTree(include: ['*.aar'], dir: 'libs')
+    //okkhttp
+    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+//    implementation 'org.adblockplus:adblock-android-webview:4.4.0'
+    implementation 'com.github.Edsuns.AdblockAndroid:ad-filter:v0.9.1'
+
 }

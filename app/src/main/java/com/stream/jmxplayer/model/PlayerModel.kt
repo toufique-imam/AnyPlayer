@@ -46,6 +46,9 @@ data class PlayerModel(
     @ColumnInfo(name = "headers")
     var headers: Map<String, String> = HashMap(),
 ) : Serializable {
+    fun addHeader(key: String, value: String) {
+        (headers as? HashMap<String, String>)?.put(key, value)
+    }
 
 //    override fun toString(): String {
 //        return "Movie{" +

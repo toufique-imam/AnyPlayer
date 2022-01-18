@@ -7,19 +7,30 @@
     android:orientation="vertical"
     tools:context=".ui.fragment.WebViewFragment">
 
+
     <WebView
-        android:id="@+id/webview"
+        android:id="@+id/main_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_loading"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/around_the_world" />
+
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_web_video_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/fab_web_video_list"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:backgroundTint="@color/Red"
         android:src="@drawable/ic_play"
         app:layout_anchorGravity="bottom|end" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

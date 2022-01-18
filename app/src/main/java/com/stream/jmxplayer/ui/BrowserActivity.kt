@@ -17,6 +17,7 @@ import com.stream.jmxplayer.model.IAdListener
 import com.stream.jmxplayer.model.ICastController
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.fragment.BrowseFragment
+import com.stream.jmxplayer.ui.fragment.WebViewFragment
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.ijkplayer.Settings
@@ -29,12 +30,13 @@ class BrowserActivity : AppCompatActivity(), ICastController {
     lateinit var bottomNavBar: BottomNavigationView
     lateinit var navHostFragment: NavHostFragment
     var piracyChecker: PiracyChecker? = null
+    var inWebView = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(Settings(this).themeId)
         //setTheme(SharedPreferenceUtils.getTheme(this))
         setContentView(R.layout.activity_browser)
-        piracyChecker = initPiracy{}
+        piracyChecker = initPiracy {}
         alertDialog = createAlertDialogueLoading()
         adMobAdUtils = AdMobAdUtils(this)
         initAdListener()
@@ -54,6 +56,7 @@ class BrowserActivity : AppCompatActivity(), ICastController {
             if (controller.currentDestination?.id == R.id.m3uDisplayCategoryFragment) {
                 adMobAdUtils?.loadFullScreenAd()
             }
+            inWebView = controller.currentDestination?.id == R.id.webviewFragment
         }
         NavigationUI.setupWithNavController(bottomNavBar, navController)
         if (intent.getBooleanExtra(PlayerUtils.M3U_INTENT, false)) {
@@ -134,6 +137,21 @@ class BrowserActivity : AppCompatActivity(), ICastController {
                 )
             )
         }
+    }
+
+    override fun onBackPressed() {
+        if (inWebView) {
+            var webFragment: WebViewFragment? = null
+            for (x in navHostFragment.childFragmentManager.fragments) {
+                if (x is WebViewFragment) {
+                    webFragment = x
+                    break
+                }
+            }
+            if (webFragment == null) super.onBackPressed()
+            if (webFragment?.goBack() == false) super.onBackPressed()
+        } else
+            super.onBackPressed()
     }
 
     override fun updateCastButton(mediaRouteButton: MediaRouteButton) {

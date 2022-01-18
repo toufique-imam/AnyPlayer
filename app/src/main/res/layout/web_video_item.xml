@@ -45,6 +45,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:ellipsize="end"
+            android:maxHeight="20dp"
             android:text="@{@string/trackTitle(model.title , model.link)}"
             android:textColor="@{selected ? @color/black : @color/black_transparent_60}"
             app:layout_constraintBottom_toBottomOf="@+id/imageView11"

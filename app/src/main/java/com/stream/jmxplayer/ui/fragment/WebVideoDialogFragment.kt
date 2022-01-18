@@ -34,7 +34,7 @@ class WebVideoDialogFragment(
     fun onWebVideoChanged() {
         binding.webList.adapter = webAdapter
         webVideoViewModel.videos.observe(viewLifecycleOwner, { videos ->
-            webAdapter.updateData(videos)
+            webAdapter.updateData(videos.toList())
             logger("onWebChanged", "${videos.size}")
             if (videos.isNullOrEmpty()) {
                 binding.emptyView.setVisible()

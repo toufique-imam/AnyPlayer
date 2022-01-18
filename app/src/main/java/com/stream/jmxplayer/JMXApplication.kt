@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.annotation.Keep
 import com.stream.jmxplayer.castconnect.CastServer
 import com.stream.jmxplayer.utils.GlobalFunctions
+import io.github.edsuns.adfilter.AdFilter
 import java.io.IOException
 
 @Keep
@@ -12,6 +13,7 @@ class JMXApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         startCastServer()
+        val filter = AdFilter.create(this)
     }
 
 
