@@ -19,6 +19,7 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.fragment.BrowseFragment
 import com.stream.jmxplayer.ui.fragment.WebViewFragment
 import com.stream.jmxplayer.utils.*
+import com.stream.jmxplayer.utils.GlobalFunctions.isProVersion
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 
@@ -116,7 +117,7 @@ class BrowserActivity : AppCompatActivity(), ICastController {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (!GlobalFunctions.isProVersion() && item.itemId == R.id.action_pro) {
+        return if (!isProVersion() && item.itemId == R.id.action_pro) {
             showProMode {
                 adMobAdUtils?.loadRewardAd()
             }

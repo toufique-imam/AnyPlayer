@@ -2,7 +2,6 @@ package com.stream.jmxplayer.ui.fragment
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,12 +23,9 @@ import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
-import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
-import com.stream.jmxplayer.utils.PlayerUtils
-import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.createAlertDialogueLoading
 import com.stream.jmxplayer.utils.m3u.OnScrappingCompleted
 import com.stream.jmxplayer.utils.m3u.Parser
 import com.stream.jmxplayer.utils.m3u.Scrapper
@@ -87,9 +83,9 @@ class M3UInputFragment : Fragment() {
             viewR.adapter = galleryAdapter
         }
 
-        viewModel.videos.observe(viewLifecycleOwner, { videos ->
+        viewModel.videos.observe(viewLifecycleOwner) { videos ->
             galleryAdapter.updateData(videos)
-        })
+        }
 
         if (requireActivity().intent.getBooleanExtra(PlayerUtils.M3U_INTENT, false)) {
             playerModelNow = PlayListAll[0]
@@ -268,11 +264,7 @@ class M3UInputFragment : Fragment() {
     }
 
     private fun linkChecker(): Boolean {
-        if (linkInput.text == null || linkInput.text.toString()
-                .isEmpty() || !Patterns.WEB_URL.matcher(
-                linkInput.text.toString()
-            ).matches()
-        ) {
+        if (linkInput.checkUrl()) {
             linkInput.error = resources.getString(R.string.enter_stream_link)
             linkInput.requestFocus()
             return false

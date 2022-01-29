@@ -1,13 +1,10 @@
 package com.stream.jmxplayer.utils
 
 import android.app.Activity
-import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration.*
 import android.media.AudioManager
-import android.os.BatteryManager
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
@@ -15,13 +12,13 @@ import android.view.View
 import android.view.WindowInsets
 import android.widget.Toast
 import androidx.core.content.getSystemService
+import com.stream.jmxplayer.BuildConfig
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.ExoPlayerActivity
 import com.stream.jmxplayer.ui.IJKPlayerActivity
 import com.stream.jmxplayer.ui.VlcActivity
 import com.stream.jmxplayer.utils.ijkplayer.Settings
-import me.drakeet.support.toast.BuildConfig
 import me.drakeet.support.toast.ToastCompat
 import java.net.*
 import java.util.*

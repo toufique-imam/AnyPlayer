@@ -22,12 +22,13 @@ import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.ijkplayer.Settings
-import io.github.edsuns.adfilter.AdFilter
+import org.adblockplus.libadblockplus.android.webview.AdblockWebView
+import java.io.ByteArrayInputStream
 import java.net.URL
 import java.net.URLConnection
 
 class WebViewFragment : Fragment() {
-    lateinit var webView: WebView
+    lateinit var webView: AdblockWebView
     var urlNow: String = ""
     val webVideoViewModel: WebVideoViewModel by viewModels()
     lateinit var fabWatch: FloatingActionButton
@@ -35,36 +36,6 @@ class WebViewFragment : Fragment() {
     private lateinit var webVideoDialogFragment: WebVideoDialogFragment
     val mSettings: Settings by lazy {
         Settings(requireContext())
-    }
-
-    fun initAdFilter() {
-        val filter = AdFilter.get()
-        val filterViewModel = filter.viewModel
-
-        // Setup AdblockAndroid for your WebView.
-        filter.setupWebView(webView)
-
-        // Add filter list subscriptions on first installation.
-        if (!filter.hasInstallation) {
-            val map = mapOf(
-                "AdGuard Base" to "https://filters.adtidy.org/extension/chromium/filters/2.txt",
-                "EasyPrivacy Lite" to "https://filters.adtidy.org/extension/chromium/filters/118_optimized.txt",
-                "AdGuard Tracking Protection" to "https://filters.adtidy.org/extension/chromium/filters/3.txt",
-                "AdGuard Annoyances" to "https://filters.adtidy.org/extension/chromium/filters/14.txt",
-                "AdGuard Chinese" to "https://filters.adtidy.org/extension/chromium/filters/224.txt",
-                "NoCoin Filter List" to "https://filters.adtidy.org/extension/chromium/filters/242.txt"
-            )
-            for ((key, value) in map) {
-                val subscription = filterViewModel.addFilter(key, value)
-                filterViewModel.download(subscription.id)
-            }
-        }
-
-        filterViewModel.onDirty.observe(viewLifecycleOwner) {
-            // Clear cache when there are changes to the filter.
-            // You need to refresh the page manually to make the changes take effect.
-            webView.clearCache(false)
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +49,7 @@ class WebViewFragment : Fragment() {
         webVideoDialogFragment.arguments = bundleOf()
         webVideoDialogFragment.show(
             childFragmentManager,
-            "fragment_video_track"
+            "fragment_video_track_web"
         )
         webVideoDialogFragment.onBindInitiated = {
             webVideoDialogFragment.onWebVideoChanged()
@@ -195,7 +166,6 @@ class WebViewFragment : Fragment() {
 
         lottieAnimationView = view.findViewById(R.id.lottie_loading)
         fabWatch = view.findViewById(R.id.fab_web_video_list)
-        initAdFilter()
         webVideoDialogFragment = WebVideoDialogFragment({ playerModel, _ ->
             val intent = GlobalFunctions.getDefaultPlayer(requireContext(), mSettings, playerModel)
             SharedPreferenceUtils.PlayListAll.clear()
@@ -226,35 +196,32 @@ class WebViewFragment : Fragment() {
     }
 
     inner class JMXWebClient : WebViewClient() {
-        val filter = AdFilter.get()
+//        private val emptyResponse = ByteArrayInputStream("".toByteArray())
         override fun shouldInterceptRequest(
             view: WebView?,
             request: WebResourceRequest?
         ): WebResourceResponse? {
-            val requestUrl = request?.url.toString()
-            if (view != null && request != null) {
-                val result = filter.shouldIntercept(view, request)
-                logger("res", result.resourceUrl + " " + result.shouldBlock)
-                if (result.shouldBlock) {
-                    return result.resourceResponse
-                }
-                if (processUrl(requestUrl) || !getMimeUrl(requestUrl).isNullOrEmpty()) {
-                    return result.resourceResponse
-                }
-                try {
-                    val urlNow = URL(requestUrl)
-                    val urlConnection: URLConnection = urlNow.openConnection()
-                    urlConnection.connectTimeout = 3000
-                    urlConnection.connect()
-                    val contentType = urlConnection.contentType
-                    logger("type", contentType)
-                    if (isVideo(contentType)) {
-                        addUrlToModel(requestUrl)
+            try {
+                val requestUrl = request?.url.toString()
+                if (view != null && request != null) {
+                    if (processUrl(requestUrl) || !getMimeUrl(requestUrl).isNullOrEmpty()) {
+                        return super.shouldInterceptRequest(view, request)
                     }
-                } catch (e: Exception) {
+                    try {
+                        val urlNow = URL(requestUrl)
+                        val urlConnection: URLConnection = urlNow.openConnection()
+                        urlConnection.connectTimeout = 3000
+                        urlConnection.connect()
+                        val contentType = urlConnection.contentType
+                        logger("type", contentType)
+                        if (isVideo(contentType)) {
+                            addUrlToModel(requestUrl)
+                        }
+                    } catch (e: Exception) {
+                    }
                 }
-                return result.resourceResponse
-            } else {
+                return super.shouldInterceptRequest(view, request)
+            } catch (e: Exception) {
                 return null
             }
         }
@@ -266,7 +233,11 @@ class WebViewFragment : Fragment() {
                 MimeTypes.APPLICATION_M3U8 -> return true
                 MimeTypes.APPLICATION_MPD -> return true
                 MimeTypes.APPLICATION_SS -> return true
-                else -> MimeTypes.isVideo(mimeType)
+                MimeTypes.APPLICATION_MATROSKA -> return true
+                MimeTypes.APPLICATION_MP4 -> return true
+                MimeTypes.APPLICATION_MP4VTT -> return true
+                MimeTypes.APPLICATION_WEBM -> return true
+                else -> MimeTypes.isVideo(mimeType) or MimeTypes.isAudio(mimeType)
             }
             return MimeTypes.isVideo(mimeType)
         }
@@ -291,7 +262,7 @@ class WebViewFragment : Fragment() {
             if (url == null) return true
             val extension = MimeTypeMap.getFileExtensionFromUrl(url)
             val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-            return if (isVideo(mimeType)) {
+            return if (isVideo(mimeType) || extension.contains("m3u8")) {
                 addUrlToModel(url)
                 true
             } else {
@@ -302,7 +273,6 @@ class WebViewFragment : Fragment() {
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            filter.performScript(view, url)
             webVideoViewModel.clearDownloadModel()
             if (url != null) {
                 urlNow = url

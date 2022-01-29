@@ -34,7 +34,6 @@ import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.ijkplayer.Settings
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
 import java.util.*
-import kotlin.collections.ArrayList
 
 fun View.isVisible() = visibility == View.VISIBLE
 fun View.isInvisible() = visibility == View.INVISIBLE
@@ -285,7 +284,7 @@ fun TextInputEditText.checkText(): Boolean {
 }
 
 fun TextInputEditText.checkUrl(): Boolean {
-    if (!checkText() || text.toString().checkUrl()) {
+    if (!checkText() || !text.toString().trim().checkUrl()) {
         return false
     }
     return true
