@@ -264,7 +264,7 @@ class M3UInputFragment : Fragment() {
     }
 
     private fun linkChecker(): Boolean {
-        if (linkInput.checkUrl()) {
+        if (!linkInput.checkUrl()) {
             linkInput.error = resources.getString(R.string.enter_stream_link)
             linkInput.requestFocus()
             return false
@@ -310,17 +310,18 @@ class M3UInputFragment : Fragment() {
         val loading = requireActivity().createAlertDialogueLoading()
         scrapper.onFinish(object : OnScrappingCompleted {
             override fun onComplete(response: String) {
-                loading.dismiss()
                 //logger("m3uParse", response)
                 val data = Parser.ParseM3UString(response, userAgent)
                 val dataNew = Parser.ParseM3UStringWithCategory(response, userAgent)
                 M3uDisplayCategoryFragment.categoryData = dataNew
                 PlayListAll.clear()
                 PlayListAll.addAll(data)
+                loading.dismiss()
                 if (data.isNotEmpty()) {
                     m3uDataActionNew()
-                } else
+                } else {
                     toaster(requireActivity(), "Empty List/Parsing Failed")
+                }
             }
 
             override fun onError() {

@@ -12,26 +12,33 @@ android {
 
     defaultConfig {
         applicationId "com.stream.jmxplayer"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 31
-        versionCode 18
-        versionName "1.8"
+        versionCode 19
+        versionName "1.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
-
             annotationProcessorOptions {
-
                 arguments = ["room.incremental": "true"]
-
             }
         }
-
+        def propertiesFile = rootProject.file('local.properties')
+        def properties = new Properties()
+        properties.load(new FileInputStream(propertiesFile))
+        resValue 'string', 'app_sign', properties['APP_SIGN']
+        resValue 'string', 'ADMOB_ID', properties['ADMOB_ID']
+        resValue 'string', 'Interstitial_AD_ID', properties['Interstitial_AD_ID']
+        resValue 'string', 'REWARD_AD_ID', properties['REWARD_AD_ID']
+        resValue 'string', 'app_lvl', properties['APP_LVL']
+        resValue 'string', 'app_lvl_paid', properties['APP_LVL_PAID']
     }
     dataBinding {
         enabled = true
     }
+
     flavorDimensions "version"
+
     productFlavors {
         free {
             dimension "version"
@@ -45,7 +52,6 @@ android {
         }
     }
 
-
     buildTypes {
         release {
             minifyEnabled true
@@ -53,16 +59,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
     buildFeatures {
         viewBinding true
     }
+
     splits {
         abi {
             enable true
@@ -130,7 +140,7 @@ dependencies {
     //ijkPlayer
     implementation fileTree(include: ['*.aar'], dir: 'libs')
     //okkhttp
-//    implementation "com.squareup.okhttp3:okhttp:4.9.0"
-    implementation 'org.adblockplus:adblock-android-webview:4.4.0'
+    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+//    implementation 'org.adblockplus:adblock-android-webview:4.4.0'
 
 }

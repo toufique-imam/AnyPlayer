@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.view.animation.AnimationUtils
 import android.webkit.*
 import android.widget.SearchView
 import androidx.core.os.bundleOf
@@ -22,20 +23,26 @@ import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.ijkplayer.Settings
-import org.adblockplus.libadblockplus.android.webview.AdblockWebView
-import java.io.ByteArrayInputStream
 import java.net.URL
 import java.net.URLConnection
 
+
 class WebViewFragment : Fragment() {
-    lateinit var webView: AdblockWebView
+    private lateinit var webView: WebView
     var urlNow: String = ""
     val webVideoViewModel: WebVideoViewModel by viewModels()
-    lateinit var fabWatch: FloatingActionButton
+    private lateinit var fabWatch: FloatingActionButton
     lateinit var lottieAnimationView: LottieAnimationView
     private lateinit var webVideoDialogFragment: WebVideoDialogFragment
     val mSettings: Settings by lazy {
         Settings(requireContext())
+    }
+    val adBlocker: AdBlocker by lazy {
+        AdBlocker.getInstance(requireActivity().applicationContext)
+    }
+
+    fun shakeFab() {
+        fabWatch.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.anim_shake))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +73,7 @@ class WebViewFragment : Fragment() {
         }
     }
 
-    fun goForward(): Boolean {
+    private fun goForward(): Boolean {
         return if (webView.canGoForward()) {
             webView.goForward()
             true
@@ -163,7 +170,6 @@ class WebViewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         //init views
         webView = view.findViewById(R.id.main_webview)
-
         lottieAnimationView = view.findViewById(R.id.lottie_loading)
         fabWatch = view.findViewById(R.id.fab_web_video_list)
         webVideoDialogFragment = WebVideoDialogFragment({ playerModel, _ ->
@@ -177,7 +183,7 @@ class WebViewFragment : Fragment() {
         }
         webView.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY
         webView.isScrollbarFadingEnabled = true
-        webView.settings.domStorageEnabled = true;
+        webView.settings.domStorageEnabled = true
 
         webView.isLongClickable = true
         //
@@ -186,23 +192,28 @@ class WebViewFragment : Fragment() {
         webView.settings.setSupportZoom(true)
         webView.settings.builtInZoomControls = true
         webView.settings.displayZoomControls = false
+        webView.settings.setSupportMultipleWindows(true)
         //
         webView.settings.loadsImagesAutomatically = true
         webView.settings.javaScriptEnabled = true
+        webView.settings.javaScriptCanOpenWindowsAutomatically = true
 
         webView.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
-        webView.loadUrl("https://adblock-tester.com/")
+        webView.loadUrl("https://www.google.com/")
     }
 
     inner class JMXWebClient : WebViewClient() {
-//        private val emptyResponse = ByteArrayInputStream("".toByteArray())
         override fun shouldInterceptRequest(
             view: WebView?,
             request: WebResourceRequest?
         ): WebResourceResponse? {
             try {
                 val requestUrl = request?.url.toString()
+                if (adBlocker.isAd(requestUrl)) {
+                    logger("isAd", requestUrl)
+                    return createEmptyResource()
+                }
                 if (view != null && request != null) {
                     if (processUrl(requestUrl) || !getMimeUrl(requestUrl).isNullOrEmpty()) {
                         return super.shouldInterceptRequest(view, request)
@@ -222,7 +233,7 @@ class WebViewFragment : Fragment() {
                 }
                 return super.shouldInterceptRequest(view, request)
             } catch (e: Exception) {
-                return null
+                return createEmptyResource()
             }
         }
 
@@ -250,6 +261,15 @@ class WebViewFragment : Fragment() {
             playerModel.addHeader("referer", urlNow)
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             webVideoViewModel.addDownloadModel(playerModel)
+            shakeFab()
+        }
+
+        private fun createEmptyResource(): WebResourceResponse {
+            return WebResourceResponse(
+                "text/plain",
+                "utf-8",
+                null
+            )
         }
 
         private fun getMimeUrl(url: String?): String? {
@@ -301,7 +321,7 @@ class WebViewFragment : Fragment() {
 
         override fun onLoadResource(view: WebView?, url: String?) {
             super.onLoadResource(view, url)
-            processUrl(url)
+            //processUrl(url)
         }
     }
 

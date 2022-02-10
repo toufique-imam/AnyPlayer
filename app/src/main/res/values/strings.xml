@@ -35,9 +35,6 @@
     <string name="cast_button">cast button</string>
     <string name="backward_button">backward button</string>
     <string name="play_button">play button</string>
-    <string name="ADMOB_ID">ca-app-pub-1641174060891954~7998765205</string>
-    <string name="Interstitial_AD_ID">ca-app-pub-1641174060891954/8482815080</string>
-    <string name="REWARD_AD_ID">ca-app-pub-1641174060891954/4543570078</string>
 
     <string name="coverimage">coverImage</string>
     <string name="optional">Opcional</string>
@@ -244,9 +241,7 @@
     <string name="jmx_support">jmx_support</string>
     <string name="jmx_version_key">jmx_version_key</string>
     <string name="jmx_version">1.5</string>
-    <string name="app_sign">4+0PNTWiMW24AU8MiiNB+XbD1iM=</string>
-    <string name="app_lvl">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAojEsPkdOK1c8WXC9GIjdbIhXLV0vz0ZiKYnyEbuFC7inJQ6vzoxMBMQ/9qkYrzt4B9BQnNXFdBySUZbDPb/YEcN1PDiTolnjcAn+5wdqgNUiifk4T9LOxb5AeRVzuJJomVBtUvI/SaCrumBgZ+yU1IGoDU+orBryulHLe5ZO3ixR8hZl52nEV69PeZblklWRGkIx03wF4zy8voE2bajr/8gP+R0G4jZyak98L2771VFj1RFj1sCLBr92t40FMeP/nrW01h/+rWZ+zGlfLemna0MTtFdweyYXJ2Lfedgcod3zHKRk/3fXnQoYYptmDJ3jyWG8s7jI2uuevC9WG3WMBQIDAQAB</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="google">www.google.com</string>
     <string name="web_url_hint">Enter or Search</string>
