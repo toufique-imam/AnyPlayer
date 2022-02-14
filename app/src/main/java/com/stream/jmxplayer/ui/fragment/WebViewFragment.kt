@@ -215,18 +215,31 @@ class WebViewFragment : Fragment() {
                     return createEmptyResource()
                 }
                 if (view != null && request != null) {
-                    if (processUrl(requestUrl) || !getMimeUrl(requestUrl).isNullOrEmpty()) {
+                    if (processUrl(request) || request.method.equals("POST")) {
                         return super.shouldInterceptRequest(view, request)
+                    }
+                    if (request.requestHeaders["Sec-Fetch-Dest"]?.equals("video") == true) {
+                        processUrl(request)
+                    }
+                    if (request.requestHeaders["Sec-Fetch-Dest"]?.equals("audio") == true) {
+                        processUrl(request)
                     }
                     try {
                         val urlNow = URL(requestUrl)
                         val urlConnection: URLConnection = urlNow.openConnection()
+                        for (key in request.requestHeaders) {
+                            logger("header", "${key.key}:${key.value}")
+                            urlConnection.setRequestProperty(key.key, key.value)
+                        }
                         urlConnection.connectTimeout = 3000
                         urlConnection.connect()
                         val contentType = urlConnection.contentType
-                        logger("type", contentType)
+                        logger(
+                            "second connect",
+                            "URL_CONNECTION: ${urlConnection.content} content-type: $contentType"
+                        )
                         if (isVideo(contentType)) {
-                            addUrlToModel(requestUrl)
+                            addUrlToModel(requestUrl, request.requestHeaders)
                         }
                     } catch (e: Exception) {
                     }
@@ -253,12 +266,17 @@ class WebViewFragment : Fragment() {
             return MimeTypes.isVideo(mimeType)
         }
 
-        private fun addUrlToModel(url: String) {
+        private fun addUrlToModel(url: String, headers: Map<String, String>?) {
             val playerModel = PlayerModel()
             playerModel.link = url
             playerModel.title = Uri.parse(url).lastPathSegment + ""
             playerModel.mainLink = urlNow
             playerModel.addHeader("referer", urlNow)
+            if (headers != null) {
+                for (key in headers) {
+                    playerModel.addHeader(key.key, key.value)
+                }
+            }
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
             webVideoViewModel.addDownloadModel(playerModel)
             shakeFab()
@@ -272,18 +290,25 @@ class WebViewFragment : Fragment() {
             )
         }
 
-        private fun getMimeUrl(url: String?): String? {
-            if (url == null) return null
-            val extension = MimeTypeMap.getFileExtensionFromUrl(url)
-            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-        }
-
         private fun processUrl(url: String?): Boolean {
             if (url == null) return true
             val extension = MimeTypeMap.getFileExtensionFromUrl(url)
             val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
             return if (isVideo(mimeType) || extension.contains("m3u8")) {
-                addUrlToModel(url)
+                addUrlToModel(url , null)
+                true
+            } else {
+                logger("process", "$url Extension: $extension Mime: $mimeType")
+                false
+            }
+        }
+
+        private fun processUrl(request: WebResourceRequest): Boolean {
+            val url = request.url ?: return true
+            val extension = MimeTypeMap.getFileExtensionFromUrl(url.toString())
+            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+            return if (isVideo(mimeType) || extension.contains("m3u8")) {
+                addUrlToModel(url.toString(), request.requestHeaders)
                 true
             } else {
                 logger("process", "$url Extension: $extension Mime: $mimeType")
@@ -320,8 +345,8 @@ class WebViewFragment : Fragment() {
         }
 
         override fun onLoadResource(view: WebView?, url: String?) {
+            processUrl(url)
             super.onLoadResource(view, url)
-            //processUrl(url)
         }
     }
 
