@@ -252,12 +252,12 @@ fun Activity.initPiracy(onAllow: () -> Unit): PiracyChecker {
     piracyChecker.display(Display.DIALOG)
     piracyChecker.enableUnauthorizedAppsCheck()
 //    todo must check
-    if (GlobalFunctions.isProVersion())
-        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl_paid))
-    else
-        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
+//    if (GlobalFunctions.isProVersion())
+//        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl_paid))
+//    else
+//        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
 
-    piracyChecker.enableDebugCheck()
+//    piracyChecker.enableDebugCheck()
 //    piracyChecker.enableSigningCertificates(getString(R.string.app_sign))
     val valid: String = getString(R.string.download_valid)
 
