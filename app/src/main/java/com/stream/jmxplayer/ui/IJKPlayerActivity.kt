@@ -8,7 +8,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.widget.*
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +25,10 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
-import com.stream.jmxplayer.model.*
+import com.stream.jmxplayer.model.IRenderView
+import com.stream.jmxplayer.model.IResultListener
+import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.model.TrackInfo
 import com.stream.jmxplayer.ui.fragment.TracksDialogFragment
 import com.stream.jmxplayer.ui.view.IjkVideoView
 import com.stream.jmxplayer.ui.view.MeasureHelper
@@ -33,11 +37,8 @@ import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
-
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
-import java.util.*
 
 class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     var ijkVideoView: IjkVideoView? = null

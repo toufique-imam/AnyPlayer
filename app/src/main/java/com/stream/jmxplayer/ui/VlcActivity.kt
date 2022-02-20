@@ -5,7 +5,8 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Color
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
 import android.view.*
 import android.widget.ImageButton
 import android.widget.TextView
@@ -24,7 +25,8 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
-import com.stream.jmxplayer.model.*
+import com.stream.jmxplayer.model.MediaPlayerControl
+import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.IJKPlayerActivity.Companion.FROM_ERROR
 import com.stream.jmxplayer.ui.fragment.TracksDialogFragment
 import com.stream.jmxplayer.ui.view.IjkVideoView
@@ -35,7 +37,6 @@ import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer

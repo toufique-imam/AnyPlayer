@@ -14,7 +14,7 @@ package com.stream.jmxplayer.ui.fragment
 //import com.stream.jmxplayer.model.PlayerModel
 //import com.stream.jmxplayer.utils.GlobalFunctions
 //import com.stream.jmxplayer.utils.SharedPreferenceUtils
-//import com.stream.jmxplayer.utils.ijkplayer.Settings
+//import com.stream.jmxplayer.utils.Settings
 //
 //class M3UDisplayFragment : Fragment() {
 //    private lateinit var recyclerView: RecyclerView

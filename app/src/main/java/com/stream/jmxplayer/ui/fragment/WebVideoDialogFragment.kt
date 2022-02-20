@@ -10,7 +10,6 @@ import com.stream.jmxplayer.adapter.WebVideoAdapter
 import com.stream.jmxplayer.databinding.WebOverlayVideoItemsBinding
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.viewmodel.WebVideoViewModel
-import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.setVisible
 
 class WebVideoDialogFragment(
@@ -28,18 +27,17 @@ class WebVideoDialogFragment(
 
     override fun initialFocusedView(): View = binding.emptyView
 
-    private val webAdapter = WebVideoAdapter(onClick, null)
+    private val webAdapter = WebVideoAdapter(onClick)
 
 
     fun onWebVideoChanged() {
         binding.webList.adapter = webAdapter
-        webVideoViewModel.videos.observe(viewLifecycleOwner, { videos ->
+        webVideoViewModel.videos.observe(viewLifecycleOwner) { videos ->
             webAdapter.updateData(videos.toList())
-            logger("onWebChanged", "${videos.size}")
             if (videos.isNullOrEmpty()) {
                 binding.emptyView.setVisible()
             }
-        })
+        }
         webVideoViewModel.getDownloadData()
     }
 

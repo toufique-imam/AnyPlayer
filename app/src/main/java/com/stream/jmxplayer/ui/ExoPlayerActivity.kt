@@ -8,10 +8,15 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.view.*
-import android.view.WindowInsetsController.*
-import android.view.WindowManager.*
-import android.widget.*
+import android.view.MenuItem
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+import android.view.WindowManager.LayoutParams
+import android.widget.ImageButton
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -38,7 +43,7 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.casty.Casty
-import com.stream.jmxplayer.model.*
+import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.model.PlayerModel.Companion.SELECTED_MODEL
 import com.stream.jmxplayer.ui.IJKPlayerActivity.Companion.FROM_ERROR
 import com.stream.jmxplayer.ui.view.IjkVideoView
@@ -48,7 +53,6 @@ import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 import kotlin.math.max
 
 @Suppress("Deprecation")

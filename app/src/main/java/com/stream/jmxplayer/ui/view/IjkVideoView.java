@@ -41,8 +41,8 @@ import com.stream.jmxplayer.model.IRenderView;
 import com.stream.jmxplayer.model.IResultListener;
 import com.stream.jmxplayer.model.MediaPlayerControl;
 import com.stream.jmxplayer.services.MediaPlayerService;
+import com.stream.jmxplayer.utils.Settings;
 import com.stream.jmxplayer.utils.ijkplayer.FileMediaDataSource;
-import com.stream.jmxplayer.utils.ijkplayer.Settings;
 
 import java.io.File;
 import java.util.ArrayList;

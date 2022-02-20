@@ -18,7 +18,6 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.ExoPlayerActivity
 import com.stream.jmxplayer.ui.IJKPlayerActivity
 import com.stream.jmxplayer.ui.VlcActivity
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 import me.drakeet.support.toast.ToastCompat
 import java.net.*
 import java.util.*

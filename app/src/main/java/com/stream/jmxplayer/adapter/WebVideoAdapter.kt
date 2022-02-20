@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.stream.jmxplayer.databinding.WebVideoItemBinding
 import com.stream.jmxplayer.model.PlayerModel
 
-class WebVideoAdapter(val onClick: (PlayerModel, Int) -> Unit, var selectedModel: PlayerModel?) :
+class WebVideoAdapter(val onClick: (PlayerModel, Int) -> Unit) :
     RecyclerView.Adapter<WebVideoAdapter.WebVideoViewHolder>() {
     private val webVideos = ArrayList<PlayerModel>()
 
@@ -29,7 +29,7 @@ class WebVideoAdapter(val onClick: (PlayerModel, Int) -> Unit, var selectedModel
     }
 
     override fun onBindViewHolder(holder: WebVideoViewHolder, position: Int) {
-        holder.bind(webVideos[position], webVideos[position] == selectedModel)
+        holder.bind(webVideos[position])
     }
 
     override fun getItemCount(): Int = webVideos.size
@@ -38,14 +38,16 @@ class WebVideoAdapter(val onClick: (PlayerModel, Int) -> Unit, var selectedModel
         RecyclerView.ViewHolder(binding.root) {
         init {
             itemView.setOnClickListener {
-                selectedModel = webVideos[layoutPosition]
-                onClick(webVideos[layoutPosition], layoutPosition)
+                var pos = layoutPosition
+                if (pos < 0 || pos >= webVideos.size) pos = absoluteAdapterPosition
+                if (pos < 0 || pos >= webVideos.size) pos = bindingAdapterPosition
+                if (pos > -1 && pos < webVideos.size) onClick(webVideos[pos], pos)
             }
         }
 
-        fun bind(playerModel: PlayerModel, selected: Boolean) {
+        fun bind(playerModel: PlayerModel) {
             binding.model = playerModel
-            binding.selected = selected
+            //binding.selected = selected
             binding.executePendingBindings()
         }
     }

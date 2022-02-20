@@ -21,7 +21,6 @@ import com.stream.jmxplayer.ui.fragment.WebViewFragment
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.isProVersion
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 
 class BrowserActivity : AppCompatActivity(), ICastController {

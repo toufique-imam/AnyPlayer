@@ -208,6 +208,10 @@
     <string name="pref_title_enable_texture_view">Enable TextureView</string>
     <string name="pref_summary_enable_texture_view" />
 
+
+    <string name="pref_key_enable_ad_blocker">pref.enable_ad_blocker</string>
+    <string name="pref_title_enable_ad_blocker">Block ads in Webview</string>
+
     <string name="pref_key_enable_detached_surface_texture">pref.enable_detached_surface_texture</string>
 
     <!-- -->

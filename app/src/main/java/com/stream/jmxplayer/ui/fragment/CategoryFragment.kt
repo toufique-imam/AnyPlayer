@@ -13,9 +13,8 @@ import com.stream.jmxplayer.adapter.GalleryAdapter
 import com.stream.jmxplayer.adapter.GalleryItemViewHolder
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.Settings
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.ijkplayer.Settings
-import com.stream.jmxplayer.utils.showProMode
 
 class CategoryFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView

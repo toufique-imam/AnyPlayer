@@ -54,9 +54,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            //shrinkResources true
+            //proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -99,7 +99,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:2.15.1'
 
     //preference library
-    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
     //for serving offline file for casting
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     //crash handler

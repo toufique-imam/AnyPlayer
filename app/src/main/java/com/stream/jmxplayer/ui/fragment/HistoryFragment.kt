@@ -18,8 +18,8 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.view.ImageOverlayView
 import com.stream.jmxplayer.ui.viewmodel.DatabaseViewModel
 import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.Settings
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 import com.stream.jmxplayer.utils.setGone
 
 class HistoryFragment : Fragment() {

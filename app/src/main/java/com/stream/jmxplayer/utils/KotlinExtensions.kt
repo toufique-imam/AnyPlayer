@@ -31,7 +31,6 @@ import com.stream.jmxplayer.model.TrackInfo
 import com.stream.jmxplayer.ui.view.IjkVideoView
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
 import java.util.*
 
@@ -250,15 +249,13 @@ fun Activity.isBatteryAbsent(): Boolean {
 fun Activity.initPiracy(onAllow: () -> Unit): PiracyChecker {
     val piracyChecker = PiracyChecker(this)
     piracyChecker.display(Display.DIALOG)
-    piracyChecker.enableUnauthorizedAppsCheck()
-//    todo must check
+//    piracyChecker.enableUnauthorizedAppsCheck()
 //    if (GlobalFunctions.isProVersion())
 //        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl_paid))
 //    else
 //        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
-
+//
 //    piracyChecker.enableDebugCheck()
-//    piracyChecker.enableSigningCertificates(getString(R.string.app_sign))
     val valid: String = getString(R.string.download_valid)
 
     val callback = object : PiracyCheckerCallback() {

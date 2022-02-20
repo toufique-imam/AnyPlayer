@@ -12,10 +12,10 @@ import com.google.android.material.textfield.TextInputLayout
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.utils.GlobalFunctions
+import com.stream.jmxplayer.utils.Settings
 import com.stream.jmxplayer.utils.SharedPreferenceUtils
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.stream.jmxplayer.utils.checkUrl
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 class UserLinkFragment : Fragment() {
     private lateinit var titleTextView: TextInputEditText

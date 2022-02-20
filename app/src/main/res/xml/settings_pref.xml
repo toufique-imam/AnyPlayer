@@ -28,6 +28,17 @@
 
     <PreferenceCategory
         app:key="@string/app_name"
+        app:title="WebView">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            app:key="@string/pref_key_enable_ad_blocker"
+            app:title="@string/pref_title_enable_ad_blocker" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="@string/app_name"
         app:title="@string/pref_title_exoplayer">
 
         <ListPreference

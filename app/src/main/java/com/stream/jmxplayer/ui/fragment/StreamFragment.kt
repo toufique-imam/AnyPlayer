@@ -9,7 +9,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.utils.GlobalFunctions
-import com.stream.jmxplayer.utils.showProMode
 
 class StreamFragment : Fragment() {
 

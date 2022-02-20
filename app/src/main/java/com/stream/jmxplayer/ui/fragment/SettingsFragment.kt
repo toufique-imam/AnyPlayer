@@ -9,7 +9,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
-import com.stream.jmxplayer.utils.ijkplayer.Settings
+import com.stream.jmxplayer.utils.Settings
 
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -92,6 +92,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
             Preference.OnPreferenceChangeListener { _, newValue ->
                 logger("usingOpenSLES", "$newValue")
                 mSettings.usingOpenSLES = newValue as Boolean
+                true
+            }
+        val ad_blocked =
+            findPreference<SwitchPreference>(getString(R.string.pref_key_enable_ad_blocker))
+        ad_blocked?.setDefaultValue(mSettings.adBlocked)
+        ad_blocked?.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _, newValue ->
+                mSettings.adBlocked = newValue as Boolean
                 true
             }
 

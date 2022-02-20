@@ -22,7 +22,6 @@ import com.stream.jmxplayer.ui.viewmodel.WebVideoViewModel
 import com.stream.jmxplayer.utils.*
 import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 import java.net.URL
 import java.net.URLConnection
 
@@ -51,8 +50,18 @@ class WebViewFragment : Fragment() {
     }
 
     private fun showVideoTrack() {
-        if (!isStarted()) return
-        if (webVideoDialogFragment.isAdded) return
+        if (!isStarted()) {
+            logger("showVideoTrack", "not started")
+            return
+        }
+        if (webVideoDialogFragment.isVisible) {
+            logger("showVideoTrack", "already visible")
+            return
+        }
+        if (webVideoDialogFragment.isAdded) {
+            logger("showVideoTrack", "already added")
+            childFragmentManager.beginTransaction().remove(webVideoDialogFragment).commit()
+        }
         webVideoDialogFragment.arguments = bundleOf()
         webVideoDialogFragment.show(
             childFragmentManager,
@@ -61,7 +70,6 @@ class WebViewFragment : Fragment() {
         webVideoDialogFragment.onBindInitiated = {
             webVideoDialogFragment.onWebVideoChanged()
         }
-
     }
 
     fun goBack(): Boolean {
@@ -179,6 +187,7 @@ class WebViewFragment : Fragment() {
             startActivity(intent)
         }, webVideoViewModel)
         fabWatch.setOnClickListener {
+            toaster(requireActivity(), "fab clicked")
             showVideoTrack()
         }
         webView.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY
@@ -210,7 +219,7 @@ class WebViewFragment : Fragment() {
         ): WebResourceResponse? {
             try {
                 val requestUrl = request?.url.toString()
-                if (adBlocker.isAd(requestUrl)) {
+                if (mSettings.adBlocked && adBlocker.isAd(requestUrl)) {
                     logger("isAd", requestUrl)
                     return createEmptyResource()
                 }
@@ -295,7 +304,7 @@ class WebViewFragment : Fragment() {
             val extension = MimeTypeMap.getFileExtensionFromUrl(url)
             val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
             return if (isVideo(mimeType) || extension.contains("m3u8")) {
-                addUrlToModel(url , null)
+                addUrlToModel(url, null)
                 true
             } else {
                 logger("process", "$url Extension: $extension Mime: $mimeType")

@@ -32,8 +32,8 @@ import com.stream.jmxplayer.utils.GlobalFunctions
 import com.stream.jmxplayer.utils.GlobalFunctions.getGridSpanCount
 import com.stream.jmxplayer.utils.GlobalFunctions.isProVersion
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
+import com.stream.jmxplayer.utils.Settings
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
-import com.stream.jmxplayer.utils.ijkplayer.Settings
 
 
 /**

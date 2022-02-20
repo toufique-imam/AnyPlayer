@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.stream.jmxplayer.utils.ijkplayer;
+package com.stream.jmxplayer.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -199,6 +199,17 @@ public class Settings {
 
     public void setEnableTextureView(boolean value) {
         String key = mAppContext.getString(R.string.pref_key_enable_texture_view);
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+
+    public boolean getAdBlocked() {
+        String key = mAppContext.getString(R.string.pref_key_enable_ad_blocker);
+        return mSharedPreferences.getBoolean(key, true);
+    }
+
+    public void setAdBlocked(boolean value) {
+        String key = mAppContext.getString(R.string.pref_key_enable_ad_blocker);
         editor.putBoolean(key, value);
         editor.apply();
     }
