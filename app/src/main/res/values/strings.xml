@@ -22,7 +22,8 @@
     <string name="bottom_sheet_header_none">Ninguna lista seleccionada</string>
     <string name="no_track">No track</string>
     <string name="trackName">%1$s, %2$s</string>
-    <string name="trackTitle">%1$s\n%2$s</string>
+    <string name="trackTitle">%1$s</string>
+    <string name="trackLink">%1$s</string>
 
     <string name="loading">Cargando Contenido..</string>
     <string name="movie_name">Nombre de pelicula</string>

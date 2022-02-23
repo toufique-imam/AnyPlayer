@@ -12,8 +12,7 @@ import android.webkit.*
 import android.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import com.airbnb.lottie.LottieAnimationView
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.stream.jmxplayer.R
@@ -24,15 +23,19 @@ import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import java.net.URL
 import java.net.URLConnection
+import java.util.*
 
 
 class WebViewFragment : Fragment() {
     private lateinit var webView: WebView
     var urlNow: String = ""
-    val webVideoViewModel: WebVideoViewModel by viewModels()
     private lateinit var fabWatch: FloatingActionButton
-    lateinit var lottieAnimationView: LottieAnimationView
     private lateinit var webVideoDialogFragment: WebVideoDialogFragment
+    private lateinit var searchView: SearchView
+
+    val webVideoViewModel: WebVideoViewModel by lazy {
+        ViewModelProvider(requireActivity()).get(WebVideoViewModel::class.java)
+    }
     val mSettings: Settings by lazy {
         Settings(requireContext())
     }
@@ -96,13 +99,14 @@ class WebViewFragment : Fragment() {
         inflater.inflate(R.menu.toolbar_web, menu)
         val searchManager =
             requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        val searchView = menu.findItem(R.id.action_search)?.actionView as SearchView
+        searchView = menu.findItem(R.id.action_search)?.actionView as SearchView
         searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
         searchView.maxWidth = Int.MAX_VALUE
         searchView.queryHint = "Browse or Search"
         searchView.setOnSearchClickListener {
             searchView.setQuery(webView.url, false)
         }
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 webAction(query)
@@ -173,23 +177,29 @@ class WebViewFragment : Fragment() {
         }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //init views
         webView = view.findViewById(R.id.main_webview)
-        lottieAnimationView = view.findViewById(R.id.lottie_loading)
         fabWatch = view.findViewById(R.id.fab_web_video_list)
-        webVideoDialogFragment = WebVideoDialogFragment({ playerModel, _ ->
+        webVideoDialogFragment = WebVideoDialogFragment { playerModel, _ ->
+            webVideoDialogFragment.dismiss()
             val intent = GlobalFunctions.getDefaultPlayer(requireContext(), mSettings, playerModel)
             SharedPreferenceUtils.PlayListAll.clear()
             SharedPreferenceUtils.PlayListAll.add(playerModel)
             startActivity(intent)
-        }, webVideoViewModel)
+        }
         fabWatch.setOnClickListener {
-            toaster(requireActivity(), "fab clicked")
+            //toaster(requireActivity(), "fab clicked")
             showVideoTrack()
         }
+        initWebViewSettings()
+
+        webView.loadUrl("https://google.com")
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    fun initWebViewSettings() {
         webView.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY
         webView.isScrollbarFadingEnabled = true
         webView.settings.domStorageEnabled = true
@@ -208,8 +218,7 @@ class WebViewFragment : Fragment() {
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
 
         webView.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-
-        webView.loadUrl("https://www.google.com/")
+        webView.clearCache(true)
     }
 
     inner class JMXWebClient : WebViewClient() {
@@ -224,33 +233,35 @@ class WebViewFragment : Fragment() {
                     return createEmptyResource()
                 }
                 if (view != null && request != null) {
-                    if (processUrl(request) || request.method.equals("POST")) {
+                    if (checkHeader(request)) {
+                        logger("isVideo", "fromRequestHeader $requestUrl")
                         return super.shouldInterceptRequest(view, request)
                     }
-                    if (request.requestHeaders["Sec-Fetch-Dest"]?.equals("video") == true) {
-                        processUrl(request)
+                    if (processUrl(request)) {
+                        logger("isVideo", "fromUrl $requestUrl")
+                        return super.shouldInterceptRequest(view, request)
                     }
-                    if (request.requestHeaders["Sec-Fetch-Dest"]?.equals("audio") == true) {
-                        processUrl(request)
-                    }
-                    try {
-                        val urlNow = URL(requestUrl)
-                        val urlConnection: URLConnection = urlNow.openConnection()
-                        for (key in request.requestHeaders) {
-                            logger("header", "${key.key}:${key.value}")
-                            urlConnection.setRequestProperty(key.key, key.value)
+                    if (!request.method.equals("POST")) {
+                        try {
+                            logger("check", "creating request")
+                            val urlNow = URL(requestUrl)
+                            val urlConnection: URLConnection = urlNow.openConnection()
+                            for (key in request.requestHeaders) {
+                                logger("header", "${key.key}:${key.value}")
+                                urlConnection.setRequestProperty(key.key, key.value)
+                            }
+                            urlConnection.connectTimeout = 3000
+                            urlConnection.connect()
+                            val contentType = urlConnection.contentType
+                            logger(
+                                "second connect",
+                                "URL_CONNECTION: ${urlConnection.url} content-type: $contentType"
+                            )
+                            if (isVideo(contentType)) {
+                                addUrlToModel(requestUrl, request.requestHeaders)
+                            }
+                        } catch (e: Exception) {
                         }
-                        urlConnection.connectTimeout = 3000
-                        urlConnection.connect()
-                        val contentType = urlConnection.contentType
-                        logger(
-                            "second connect",
-                            "URL_CONNECTION: ${urlConnection.content} content-type: $contentType"
-                        )
-                        if (isVideo(contentType)) {
-                            addUrlToModel(requestUrl, request.requestHeaders)
-                        }
-                    } catch (e: Exception) {
                     }
                 }
                 return super.shouldInterceptRequest(view, request)
@@ -287,8 +298,9 @@ class WebViewFragment : Fragment() {
                 }
             }
             playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
-            webVideoViewModel.addDownloadModel(playerModel)
-            shakeFab()
+            if (webVideoViewModel.addDownloadModel(playerModel)) {
+                shakeFab()
+            }
         }
 
         private fun createEmptyResource(): WebResourceResponse {
@@ -297,6 +309,35 @@ class WebViewFragment : Fragment() {
                 "utf-8",
                 null
             )
+        }
+
+        private fun checkHeader(request: WebResourceRequest): Boolean {
+            val requestUrl = request.url.toString()
+
+            for (key in request.requestHeaders) {
+                if ((key.value.lowercase(Locale.getDefault()) == "video") || (key.value.lowercase(
+                        Locale.getDefault()
+                    ) == "audio")
+                ) {
+                    addUrlToModel(requestUrl, request.requestHeaders)
+                    return true
+                }
+            }
+            if ((request.requestHeaders["Sec-Fetch-Dest"]?.equals("video") == true) || (request.requestHeaders["sec-fetch-dest"]?.equals(
+                    "video"
+                ) == true)
+            ) {
+                addUrlToModel(requestUrl, request.requestHeaders)
+                return true
+            }
+            if ((request.requestHeaders["Sec-Fetch-Dest"]?.equals("audio") == true) || (request.requestHeaders["sec-fetch-dest"]?.equals(
+                    "audio"
+                ) == true)
+            ) {
+                addUrlToModel(requestUrl, request.requestHeaders)
+                return true
+            }
+            return false
         }
 
         private fun processUrl(url: String?): Boolean {
@@ -319,6 +360,8 @@ class WebViewFragment : Fragment() {
             return if (isVideo(mimeType) || extension.contains("m3u8")) {
                 addUrlToModel(url.toString(), request.requestHeaders)
                 true
+            } else if (!extension.isNullOrEmpty() || !mimeType.isNullOrEmpty()) {
+                true
             } else {
                 logger("process", "$url Extension: $extension Mime: $mimeType")
                 false
@@ -331,31 +374,11 @@ class WebViewFragment : Fragment() {
             if (url != null) {
                 urlNow = url
             }
-            lottieAnimationView.setVisible()
-        }
-
-        override fun onPageFinished(view: WebView?, url: String?) {
-            super.onPageFinished(view, url)
-            lottieAnimationView.setGone()
-        }
-
-        override fun onPageCommitVisible(view: WebView?, url: String?) {
-            super.onPageCommitVisible(view, url)
-            lottieAnimationView.setGone()
-        }
-
-        override fun onReceivedError(
-            view: WebView?,
-            request: WebResourceRequest?,
-            error: WebResourceError?
-        ) {
-            super.onReceivedError(view, request, error)
-            lottieAnimationView.setGone()
         }
 
         override fun onLoadResource(view: WebView?, url: String?) {
-            processUrl(url)
             super.onLoadResource(view, url)
+            processUrl(url)
         }
     }
 

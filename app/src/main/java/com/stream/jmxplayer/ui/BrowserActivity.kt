@@ -107,7 +107,6 @@ class BrowserActivity : AppCompatActivity(), ICastController {
         })
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         menu.clear()

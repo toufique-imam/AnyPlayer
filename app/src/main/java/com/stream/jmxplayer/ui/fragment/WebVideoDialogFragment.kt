@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.stream.jmxplayer.adapter.WebVideoAdapter
@@ -13,12 +14,14 @@ import com.stream.jmxplayer.ui.viewmodel.WebVideoViewModel
 import com.stream.jmxplayer.utils.setVisible
 
 class WebVideoDialogFragment(
-    onClick: (PlayerModel, Int) -> Unit,
-    private val webVideoViewModel: WebVideoViewModel
-) :
-    JMXBottomSDFragment() {
+    onClick: (PlayerModel, Int) -> Unit
+) : JMXBottomSDFragment() {
     private lateinit var binding: WebOverlayVideoItemsBinding
     lateinit var onBindInitiated: (done: Boolean) -> Unit
+
+    private val webVideoViewModel: WebVideoViewModel by lazy {
+        ViewModelProvider(requireActivity()).get(WebVideoViewModel::class.java)
+    }
 
     override fun getDefaultState(): Int = BottomSheetBehavior.STATE_EXPANDED
 

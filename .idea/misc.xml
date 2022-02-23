@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/drawable/ic_delay_done.xml" value="0.125" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/fragment_webview.xml" value="0.25416666666666665" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/web_video_item.xml" value="0.24814814814814815" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/xml/settings_pref.xml" value="0.24814814814814815" />
       </map>
