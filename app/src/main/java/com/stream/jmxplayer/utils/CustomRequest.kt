@@ -24,7 +24,6 @@ class CustomRequest(
 
     override fun parseNetworkResponse(response: NetworkResponse?): Response<String> {
         return try {
-            logger("customReq", HttpHeaderParser.parseCharset(response?.headers))
             val json = String(
                 response?.data ?: ByteArray(0),
                 StandardCharsets.UTF_8

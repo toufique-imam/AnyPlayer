@@ -44,19 +44,22 @@ android {
             dimension "version"
             applicationIdSuffix ".free"
             versionNameSuffix "-free"
+            resValue "string", "app_name", "JMX Player"
         }
         paid {
             dimension "version"
             applicationIdSuffix ".paid"
             versionNameSuffix "-paid"
+
+            resValue "string", "app_name", "JMX Player Pro"
         }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            //shrinkResources true
-            //proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -99,7 +102,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:2.15.1'
 
     //preference library
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
     //for serving offline file for casting
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     //crash handler
@@ -114,7 +117,7 @@ dependencies {
     //animation
     implementation "com.airbnb.android:lottie:3.7.0"
     //admob
-    implementation 'com.google.android.gms:play-services-ads:20.5.0'
+    implementation 'com.google.android.gms:play-services-ads:20.6.0'
     implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     //gson
@@ -123,14 +126,14 @@ dependencies {
     implementation 'androidx.mediarouter:mediarouter:1.2.6'
     implementation 'com.google.android.gms:play-services-cast-framework:21.0.1'
     //navigation component library
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.4.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     //room
-    implementation "androidx.room:room-runtime:2.4.1"
-    kapt "androidx.room:room-compiler:2.4.1"
+    implementation "androidx.room:room-runtime:2.4.2"
+    kapt "androidx.room:room-compiler:2.4.2"
     //kotlin coroutine support
-    implementation "androidx.room:room-ktx:2.4.1"
+    implementation "androidx.room:room-ktx:2.4.2"
     //piracyChecker
     implementation 'com.github.javiersantos:PiracyChecker:1.2.7'
     //volley
@@ -141,6 +144,5 @@ dependencies {
     implementation fileTree(include: ['*.aar'], dir: 'libs')
     //okkhttp
     implementation "com.squareup.okhttp3:okhttp:4.9.0"
-//    implementation 'org.adblockplus:adblock-android-webview:4.4.0'
 
 }

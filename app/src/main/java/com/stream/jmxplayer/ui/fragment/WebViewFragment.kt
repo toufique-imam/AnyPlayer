@@ -11,10 +11,12 @@ import android.view.animation.AnimationUtils
 import android.webkit.*
 import android.widget.SearchView
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.viewmodel.WebVideoViewModel
@@ -30,8 +32,11 @@ class WebViewFragment : Fragment() {
     private lateinit var webView: WebView
     var urlNow: String = ""
     private lateinit var fabWatch: FloatingActionButton
+    private lateinit var fabDesktop: FloatingActionButton
     private lateinit var webVideoDialogFragment: WebVideoDialogFragment
     private lateinit var searchView: SearchView
+    private lateinit var linearProgressIndicator: LinearProgressIndicator
+    var isLoading: Boolean = false
 
     val webVideoViewModel: WebVideoViewModel by lazy {
         ViewModelProvider(requireActivity()).get(WebVideoViewModel::class.java)
@@ -54,15 +59,12 @@ class WebViewFragment : Fragment() {
 
     private fun showVideoTrack() {
         if (!isStarted()) {
-            logger("showVideoTrack", "not started")
             return
         }
         if (webVideoDialogFragment.isVisible) {
-            logger("showVideoTrack", "already visible")
             return
         }
         if (webVideoDialogFragment.isAdded) {
-            logger("showVideoTrack", "already added")
             childFragmentManager.beginTransaction().remove(webVideoDialogFragment).commit()
         }
         webVideoDialogFragment.arguments = bundleOf()
@@ -172,7 +174,11 @@ class WebViewFragment : Fragment() {
             } else {
                 urlNow = "https://www.google.com/search?q=$queryString"
             }
-            logger("URL", urlNow)
+            webView.stopLoading()
+            if (!isLoading) {
+                linearProgressIndicator.isIndeterminate = true
+                linearProgressIndicator.show()
+            }
             webView.loadUrl(urlNow)
         }
     }
@@ -182,6 +188,9 @@ class WebViewFragment : Fragment() {
         //init views
         webView = view.findViewById(R.id.main_webview)
         fabWatch = view.findViewById(R.id.fab_web_video_list)
+        fabDesktop = view.findViewById(R.id.fab_web_pc)
+        linearProgressIndicator = view.findViewById(R.id.progress_indicator)
+//        linearProgressIndicator.isIndeterminate = true
         webVideoDialogFragment = WebVideoDialogFragment { playerModel, _ ->
             webVideoDialogFragment.dismiss()
             val intent = GlobalFunctions.getDefaultPlayer(requireContext(), mSettings, playerModel)
@@ -193,14 +202,41 @@ class WebViewFragment : Fragment() {
             //toaster(requireActivity(), "fab clicked")
             showVideoTrack()
         }
+        fabDesktop.setOnClickListener {
+            val type = fabDesktop.contentDescription.toString()
+            if (type == getString(R.string.web_type_phone)) {
+                fabDesktop.contentDescription = getString(R.string.web_type_desktop)
+                fabDesktop.setImageResource(R.drawable.ic_baseline_desktop_windows_24)
+                updateWebViewSettings(true)
+            } else {
+                fabDesktop.contentDescription = getString(R.string.web_type_phone)
+                fabDesktop.setImageResource(R.drawable.ic_baseline_smartphone_24)
+                updateWebViewSettings(false)
+            }
+        }
         initWebViewSettings()
+        val testUrl = "https://mixdrop.co/e/mdwkjd39b43wx"
+        val landingUrl = "https://google.com"
+        webView.loadUrl(testUrl)
+    }
 
-        webView.loadUrl("https://google.com")
+    private fun updateWebViewSettings(isDesktop: Boolean) {
+        if (isDesktop) {
+            webView.settings.loadWithOverviewMode = true
+            webView.settings.useWideViewPort = true
+            webView.isScrollbarFadingEnabled = false
+            webView.settings.userAgentString = GlobalFunctions.USER_AGENT
+        } else {
+            webView.isScrollbarFadingEnabled = true
+            webView.settings.userAgentString = WebSettings.getDefaultUserAgent(context)
+        }
+        webView.reload()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     fun initWebViewSettings() {
         webView.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY
+
         webView.isScrollbarFadingEnabled = true
         webView.settings.domStorageEnabled = true
 
@@ -218,6 +254,26 @@ class WebViewFragment : Fragment() {
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
 
         webView.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                super.onProgressChanged(view, newProgress)
+                linearProgressIndicator.setProgressCompat(newProgress, true)
+                when (newProgress) {
+                    100 -> {
+                        isLoading = false
+                        linearProgressIndicator.hide()
+                    }
+                    else -> {
+                        isLoading = true
+                        linearProgressIndicator.show()
+                    }
+                }
+
+
+            }
+        }
+
         webView.clearCache(true)
     }
 
@@ -229,34 +285,25 @@ class WebViewFragment : Fragment() {
             try {
                 val requestUrl = request?.url.toString()
                 if (mSettings.adBlocked && adBlocker.isAd(requestUrl)) {
-                    logger("isAd", requestUrl)
                     return createEmptyResource()
                 }
                 if (view != null && request != null) {
                     if (checkHeader(request)) {
-                        logger("isVideo", "fromRequestHeader $requestUrl")
                         return super.shouldInterceptRequest(view, request)
                     }
                     if (processUrl(request)) {
-                        logger("isVideo", "fromUrl $requestUrl")
                         return super.shouldInterceptRequest(view, request)
                     }
                     if (!request.method.equals("POST")) {
                         try {
-                            logger("check", "creating request")
                             val urlNow = URL(requestUrl)
                             val urlConnection: URLConnection = urlNow.openConnection()
                             for (key in request.requestHeaders) {
-                                logger("header", "${key.key}:${key.value}")
                                 urlConnection.setRequestProperty(key.key, key.value)
                             }
                             urlConnection.connectTimeout = 3000
                             urlConnection.connect()
                             val contentType = urlConnection.contentType
-                            logger(
-                                "second connect",
-                                "URL_CONNECTION: ${urlConnection.url} content-type: $contentType"
-                            )
                             if (isVideo(contentType)) {
                                 addUrlToModel(requestUrl, request.requestHeaders)
                             }
@@ -348,7 +395,6 @@ class WebViewFragment : Fragment() {
                 addUrlToModel(url, null)
                 true
             } else {
-                logger("process", "$url Extension: $extension Mime: $mimeType")
                 false
             }
         }
@@ -360,17 +406,16 @@ class WebViewFragment : Fragment() {
             return if (isVideo(mimeType) || extension.contains("m3u8")) {
                 addUrlToModel(url.toString(), request.requestHeaders)
                 true
-            } else if (!extension.isNullOrEmpty() || !mimeType.isNullOrEmpty()) {
-                true
-            } else {
-                logger("process", "$url Extension: $extension Mime: $mimeType")
-                false
-            }
+            } else !extension.isNullOrEmpty() || !mimeType.isNullOrEmpty()
         }
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             webVideoViewModel.clearDownloadModel()
+            if (!isLoading) {
+                linearProgressIndicator.isIndeterminate = true
+                linearProgressIndicator.show()
+            }
             if (url != null) {
                 urlNow = url
             }
@@ -380,6 +425,7 @@ class WebViewFragment : Fragment() {
             super.onLoadResource(view, url)
             processUrl(url)
         }
+
     }
 
 }

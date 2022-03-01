@@ -77,9 +77,7 @@ object PlayerUtils {
                     }
                 val videoUrl = baseUrl.toString() + paramString + playerModel.id
                 linkNow = videoUrl
-                logger("baseUrl", baseUrl.toString())
-                logger("VideoUrl", videoUrl)
-            } catch (e: Exception) {
+                } catch (e: Exception) {
                 logger("createMediaData2", e.localizedMessage ?: "")
             }
         }
@@ -231,7 +229,6 @@ object PlayerUtils {
         }
         playerModel.headers = hashMap
         playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
-        logger("playerUtils", playerModel.toString())
         return playerModel
     }
 
@@ -279,7 +276,6 @@ object PlayerUtils {
         playerModel: PlayerModel,
         errorCount: Int
     ): MediaSourceFactory {
-        logger("createMediaSource", playerModel.toString())
         if (PlayerModel.isLocal(playerModel.streamType)) {
             return ProgressiveMediaSource.Factory(
                 DefaultDataSourceFactory(activity, "ua"),

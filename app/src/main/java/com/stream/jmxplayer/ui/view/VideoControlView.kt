@@ -356,7 +356,6 @@ class VideoControlView : FrameLayout {
 
     fun updatePausePlay() {
         if (mRoot == null || mPlayer == null) return
-        logger(TAG, "${mPauseButton?.contentDescription} ")
         if (mPlayer!!.isPlaying) {
             mPauseButton?.setImageResource(R.drawable.ic_pause)
             mPauseButton?.contentDescription = "play"

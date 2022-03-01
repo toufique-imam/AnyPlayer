@@ -226,7 +226,6 @@ object GlobalFunctions {
                 }
                 val keys = playerModel.headers.keys
                 for (key in keys) {
-                    logger("KEY", key)
                     if (key == "user-agent") continue
                     else if (key == "User-Agent") continue
                     else return getIntentPlayer(context, Settings.PV_PLAYER__IjkExoMediaPlayer)

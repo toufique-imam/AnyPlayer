@@ -264,7 +264,6 @@ fun Activity.initPiracy(onAllow: () -> Unit): PiracyChecker {
         }
 
         override fun doNotAllow(error: PiracyCheckerError, app: PirateApp?) {
-            logger("PIRACY", error.toString())
             toaster(this@initPiracy, valid)
             finish()
         }

@@ -16,7 +16,6 @@ class JMXApplication : Application() {
 
 
     private fun startCastServer() {
-        GlobalFunctions.logger("CAST_SERVER", "Here")
         if (castServer == null)
             castServer = CastServer(this)
         try {

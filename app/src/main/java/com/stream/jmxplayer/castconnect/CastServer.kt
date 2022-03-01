@@ -42,10 +42,9 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
                 if (rangeKey == key) {
                     range = headers[key]
                 }
-                logger(key, headers[key])
             }
         }
-       // logger("range", "" + range)
+        // logger("range", "" + range)
         //logger("uri", "" + uri.toString())
         val type = when (uri.toString()) {
             "/audio" -> PlayerModel.STREAM_OFFLINE_AUDIO

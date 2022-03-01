@@ -32,7 +32,6 @@ class MediaFileUtils {
                     PlayerModel.STREAM_OFFLINE_AUDIO -> arrayOf(MediaStore.Audio.Media.DATA)
                     else -> arrayOf(MediaStore.Images.Media.DATA)
                 }
-            logger("Querying", contentUri.toString())
             //toaster(context, "Querying $contentUri")
             return context.contentResolver.query(contentUri, projection, null, null, null)?.use {
                 val dataIndex = when (type) {
@@ -64,12 +63,10 @@ class MediaFileUtils {
             video.image =
                 if (type == PlayerModel.STREAM_OFFLINE_AUDIO) getAlbumArtUri(size).toString() else video.link
             video.cardImageUrl = video.image
-            logger("makePlayerModel", "$video")
             return video
         }
 
         suspend fun getAllMediaData(type: Int, context: Context): MutableList<PlayerModel> {
-            logger("getAllMediaData", "$type")
             val videoModels = mutableListOf<PlayerModel>()
             withContext(Dispatchers.IO) {
                 val collection = getCollection(type)

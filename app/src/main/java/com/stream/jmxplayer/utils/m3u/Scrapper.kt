@@ -22,18 +22,15 @@ class Scrapper(val context: Context, private var url: String) {
     }
 
     fun deletePrevious() {
-        logger("deletePrev", "called")
         textFileUtils.saveM3UFile(url, "")
     }
 
     fun startScrapping() {
         val savedData = textFileUtils.getSavedM3UFile(url)
-        logger("saved", savedData)
         if (savedData.isNotEmpty()) {
             onComplete.onComplete(savedData)
             return
         }
-        logger("startScrapping", "download")
         val headers = HashMap<String, String>()
         headers["user-agent"] = GlobalFunctions.USER_AGENT
         val localData = CustomRequest(

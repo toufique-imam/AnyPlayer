@@ -260,7 +260,6 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 if (currentTrack != null) {
                     ijkVideoView?.deselectTrack(currentTrack)
                 }
-                logger("IJK", "$currentTrack , $trackNow")
                 ijkVideoView?.selectTrack(trackNow.id)
             }
         }
@@ -306,7 +305,6 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private fun setUpMenuButton() {
         menuButton.setOnClickListener {
-            logger("IJKPlayer", "menuButton")
             hideSystemUi()
             drawerLayout.openDrawer(GravityCompat.END)
         }
@@ -347,7 +345,6 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         audioTrackSelector.isEnabled = false
         audioTrackSelector.isClickable = false
         playerModelNow = PlayListAll[idxNow]
-        logger("updatePlayerModel", playerModelNow.toString())
         updateTexts()
         if (cast.isConnected) {
             cast.player.loadMediaAndPlay(PlayerUtils.createMediaData(playerModelNow))
@@ -554,11 +551,9 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                     }
             }
             R.id.menu_resize -> {
-                logger("resize", "here")
                 item.title = toggleResize()
             }
             R.id.menu_playlist -> {
-                logger("playlist", "here")
                 if (recyclerViewPlayList.visibility == View.VISIBLE) {
                     recyclerViewPlayList.visibility = View.GONE
                 } else {

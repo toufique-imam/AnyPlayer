@@ -55,7 +55,6 @@ class AdMobAdUtils(var activity: Activity) {
             return
         }
         if (isRewarded()) {
-            logger("rewardAd", "rewarded")
             iAdListener.onAdActivityDone("reward")
             return
         }
@@ -124,7 +123,6 @@ class AdMobAdUtils(var activity: Activity) {
         val time: Long
         val timeNow = preference.getLong(STOP_AD, 0L)
         time = max(timeNow, System.currentTimeMillis()) + 3600000L
-        logger("RewardAd", "$time")
         editor.putLong(STOP_AD, time)
         editor.apply()
     }
@@ -132,7 +130,6 @@ class AdMobAdUtils(var activity: Activity) {
     private fun isRewarded(): Boolean {
         val timeNow = System.currentTimeMillis()
         val timeReward = preference.getLong(STOP_AD, 0L)
-        logger("rewardAdCheck", "$timeNow $timeReward")
         return timeNow < timeReward
     }
 

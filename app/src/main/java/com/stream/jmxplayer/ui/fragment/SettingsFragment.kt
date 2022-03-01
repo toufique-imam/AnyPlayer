@@ -118,7 +118,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         playerSelect?.value = mSettings.defaultPlayer.toString()
         playerSelect?.summary = playerSelect?.entries?.get(mSettings.defaultPlayer)
         playerSelect?.setOnPreferenceChangeListener { _, newValue ->
-            logger("OnPrefChangePlayer", "$newValue")
             playerSelect.summary = playerSelect.entries[Integer.parseInt(newValue.toString())]
             logger("OnPrefChangePlayer", "$newValue ${playerSelect.summary}")
             mSettings.setDefaultPlayer(newValue.toString())

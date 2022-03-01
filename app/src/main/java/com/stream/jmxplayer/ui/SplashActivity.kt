@@ -35,8 +35,6 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
 
-        logger("Splash", "came here")
-
         intentNow = intent
         playerModel = PlayerUtils.parseIntent(intentNow)
 

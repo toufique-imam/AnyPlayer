@@ -955,7 +955,6 @@ class ExoPlayerActivity : AppCompatActivity(),
 
     private fun nextTrack() {
         if (PlayListAll.isNotEmpty() && PlayListAll.size > 1) {
-            logger(TAG, "next track")
             fromError = false
             if (PlayListAll.isNotEmpty()) {
                 idxNow++

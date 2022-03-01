@@ -15,12 +15,7 @@ class AdBlocker(val context: Context) {
 //    val AD_HOSTS_FILE3 = "hosts2"
 
     init {
-
         readAdServers()
-        GlobalFunctions.logger("ADBLOCK", AD_HOSTS.size.toString())
-//            readAdServers2()
-//            readAdServers3()
-
     }
 
     companion object : SingletonHolder<AdBlocker, Context>({
