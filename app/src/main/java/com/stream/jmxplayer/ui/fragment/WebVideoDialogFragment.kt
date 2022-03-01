@@ -1,10 +1,11 @@
 package com.stream.jmxplayer.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.stream.jmxplayer.adapter.WebVideoAdapter
@@ -19,12 +20,9 @@ class WebVideoDialogFragment(
     private lateinit var binding: WebOverlayVideoItemsBinding
     lateinit var onBindInitiated: (done: Boolean) -> Unit
 
-    private val webVideoViewModel: WebVideoViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(WebVideoViewModel::class.java)
-    }
+    val webVideoViewModel: WebVideoViewModel by viewModels()
 
     override fun getDefaultState(): Int = BottomSheetBehavior.STATE_EXPANDED
-
 
     override fun needToManageOrientation(): Boolean = true
 
@@ -36,7 +34,8 @@ class WebVideoDialogFragment(
     fun onWebVideoChanged() {
         binding.webList.adapter = webAdapter
         webVideoViewModel.videos.observe(viewLifecycleOwner) { videos ->
-            webAdapter.updateData(videos.toList())
+            Log.e("onWebVideoChanged", "" + videos.size)
+            webAdapter.updateData(videos)
             if (videos.isNullOrEmpty()) {
                 binding.emptyView.setVisible()
             }

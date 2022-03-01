@@ -102,9 +102,9 @@ class HistoryFragment : Fragment() {
             viewR.layoutManager = GridLayoutManager(context, 1)
             viewR.adapter = galleryAdapter
         }
-        viewModel.videos.observe(viewLifecycleOwner, { videos ->
+        viewModel.videos.observe(viewLifecycleOwner) { videos ->
             galleryAdapter.updateData(videos)
-        })
+        }
         viewModel.getAll()
         //galleryAdapter.updateData(historyDatabase.playerModelDao().getAll())
     }

@@ -89,10 +89,11 @@ class UserLinkFragment : Fragment() {
             }
         val model =
             PlayerModel(
-                id = PlayerModel.getId(urlNow, titleNow),
+                id = PlayerModel.getId(urlNow, titleNow, PlayerModel.STREAM_ONLINE_GENERAL),
                 link = urlNow,
                 userAgent = userAgentNow,
-                title = titleNow
+                title = titleNow,
+                streamType = PlayerModel.STREAM_ONLINE_GENERAL
             )
         val headersPlayer = HashMap<String, String>()
         headersPlayer["User-Agent"] = userAgentNow

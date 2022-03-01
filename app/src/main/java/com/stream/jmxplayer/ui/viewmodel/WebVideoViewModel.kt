@@ -1,39 +1,39 @@
 package com.stream.jmxplayer.ui.viewmodel
 
+import android.app.Application
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.model.db.HistoryDatabase
 import kotlinx.coroutines.launch
 
-class WebVideoViewModel : ViewModel() {
-    private val _videos = MutableLiveData<ArrayList<PlayerModel>>()
-    val webVideo = ArrayList<PlayerModel>()
-    val videos: LiveData<ArrayList<PlayerModel>> get() = _videos
-    val ids = HashSet<Long>()
+class WebVideoViewModel(application: Application) : AndroidViewModel(application) {
+    val database = HistoryDatabase.getInstance(application)
+    private val _videos = MutableLiveData<List<PlayerModel>>()
+    val videos: LiveData<List<PlayerModel>> get() = _videos
 
     fun getDownloadData() {
         viewModelScope.launch {
-            _videos.postValue(webVideo)
+            _videos.postValue(database.playerModelDao().getAllWebVideo())
         }
     }
 
     fun addDownloadModel(playerModel: PlayerModel): Boolean {
-        if (ids.contains(playerModel.id)) return false
+        if (database.playerModelDao().contains(playerId = playerModel.id)) return false
         viewModelScope.launch {
-            ids.add(playerModel.id)
-            webVideo.add(playerModel)
-            _videos.postValue(webVideo)
+            database.playerModelDao().insertModel(playerModel)
         }
         return true
     }
 
     fun clearDownloadModel() {
+        Log.e("clearDownloadModel" ,"Called")
         viewModelScope.launch {
-            webVideo.clear()
-            ids.clear()
-            _videos.postValue(webVideo)
+            database.playerModelDao().deleteWebModels()
+            _videos.postValue(emptyList())
         }
     }
 

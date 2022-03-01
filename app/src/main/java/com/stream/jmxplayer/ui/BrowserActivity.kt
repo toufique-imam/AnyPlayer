@@ -23,10 +23,9 @@ import com.stream.jmxplayer.utils.GlobalFunctions.isProVersion
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 
 
-class BrowserActivity : AppCompatActivity(), ICastController {
+class BrowserActivity : AppCompatActivity(), ICastController, IAdListener {
     var adMobAdUtils: AdMobAdUtils? = null
     lateinit var alertDialog: AlertDialog
-    lateinit var iAdListener: IAdListener
     lateinit var bottomNavBar: BottomNavigationView
     lateinit var navHostFragment: NavHostFragment
     var piracyChecker: PiracyChecker? = null
@@ -39,8 +38,8 @@ class BrowserActivity : AppCompatActivity(), ICastController {
         piracyChecker = initPiracy {}
         alertDialog = createAlertDialogueLoading()
         adMobAdUtils = AdMobAdUtils(this)
-        initAdListener()
-        adMobAdUtils?.setAdListener(iAdListener)
+        //initAdListener()
+        adMobAdUtils?.setAdListener(this)
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         initCast()
@@ -51,10 +50,10 @@ class BrowserActivity : AppCompatActivity(), ICastController {
         navController.addOnDestinationChangedListener { controller, _, _ ->
             toolbar.title = controller.currentDestination?.label ?: toolbar.title
             if (controller.currentDestination?.id == R.id.historyFragment) {
-                adMobAdUtils?.loadFullScreenAd()
+                loadAd(0) {}
             }
             if (controller.currentDestination?.id == R.id.m3uDisplayCategoryFragment) {
-                adMobAdUtils?.loadFullScreenAd()
+                loadAd(0) {}
             }
             inWebView = controller.currentDestination?.id == R.id.webviewFragment
         }
@@ -64,29 +63,35 @@ class BrowserActivity : AppCompatActivity(), ICastController {
         }
     }
 
-    private fun initAdListener() {
-        iAdListener = object : IAdListener {
-            override fun onAdActivityDone(result: String) {
-                alertDialog.dismiss()
-            }
-
-            override fun onAdLoadingStarted() {
-                alertDialog.show()
-            }
-
-            override fun onAdLoaded(type: Int) {
-                alertDialog.dismiss()
-
-                if (type == 0) adMobAdUtils?.showFullScreenAd()
-                else adMobAdUtils?.showRewardAd()
-            }
-
-            override fun onAdError(error: String) {
-                alertDialog.dismiss()
-                GlobalFunctions.logger("Splash Ad", error)
-            }
-        }
+    var afterAd: (() -> Unit)? = null
+    fun loadAd(type: Int, afterAd: () -> Unit) {
+        this.afterAd = afterAd
+        if (type == 0) adMobAdUtils?.loadFullScreenAd()
+        else adMobAdUtils?.loadRewardAd()
     }
+
+    override fun onAdActivityDone(result: String) {
+        alertDialog.dismiss()
+        afterAd?.invoke()
+    }
+
+    override fun onAdLoadingStarted() {
+        alertDialog.show()
+    }
+
+    override fun onAdLoaded(type: Int) {
+        alertDialog.dismiss()
+
+        if (type == 0) adMobAdUtils?.showFullScreenAd()
+        else adMobAdUtils?.showRewardAd()
+    }
+
+    override fun onAdError(error: String) {
+        alertDialog.dismiss()
+        GlobalFunctions.logger("Splash Ad", error)
+        afterAd?.invoke()
+    }
+
 
     var casty: Casty? = null
 
@@ -117,7 +122,8 @@ class BrowserActivity : AppCompatActivity(), ICastController {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (!isProVersion() && item.itemId == R.id.action_pro) {
             showProMode {
-                adMobAdUtils?.loadRewardAd()
+                loadAd(1) {}
+                //adMobAdUtils?.loadRewardAd()
             }
             true
         } else super.onOptionsItemSelected(item)

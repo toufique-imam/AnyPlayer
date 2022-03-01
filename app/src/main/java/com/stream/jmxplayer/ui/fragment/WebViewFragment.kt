@@ -11,17 +11,16 @@ import android.view.animation.AnimationUtils
 import android.webkit.*
 import android.widget.SearchView
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
+import com.stream.jmxplayer.ui.BrowserActivity
 import com.stream.jmxplayer.ui.viewmodel.WebVideoViewModel
 import com.stream.jmxplayer.utils.*
-import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import java.net.URL
 import java.net.URLConnection
@@ -38,9 +37,7 @@ class WebViewFragment : Fragment() {
     private lateinit var linearProgressIndicator: LinearProgressIndicator
     var isLoading: Boolean = false
 
-    val webVideoViewModel: WebVideoViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(WebVideoViewModel::class.java)
-    }
+    val webVideoViewModel: WebVideoViewModel by viewModels()
     val mSettings: Settings by lazy {
         Settings(requireContext())
     }
@@ -48,9 +45,7 @@ class WebViewFragment : Fragment() {
         AdBlocker.getInstance(requireActivity().applicationContext)
     }
 
-    fun shakeFab() {
-        fabWatch.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.anim_shake))
-    }
+    fun shakeFab() = fabWatch.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.anim_shake))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +57,7 @@ class WebViewFragment : Fragment() {
             return
         }
         if (webVideoDialogFragment.isVisible) {
+            webVideoDialogFragment.webVideoViewModel.getDownloadData()
             return
         }
         if (webVideoDialogFragment.isAdded) {
@@ -165,6 +161,7 @@ class WebViewFragment : Fragment() {
 
     fun webAction(queryString: String?) {
         if (queryString == null) return
+        webVideoViewModel.clearDownloadModel()
         if (queryString.isNotEmpty()) {
             if (queryString.checkUrl()) {
                 urlNow = queryString
@@ -200,7 +197,11 @@ class WebViewFragment : Fragment() {
         }
         fabWatch.setOnClickListener {
             //toaster(requireActivity(), "fab clicked")
-            showVideoTrack()
+            if (requireActivity() is BrowserActivity) {
+                (requireActivity() as BrowserActivity).loadAd(0) {
+                    showVideoTrack()
+                }
+            }
         }
         fabDesktop.setOnClickListener {
             val type = fabDesktop.contentDescription.toString()
@@ -269,8 +270,6 @@ class WebViewFragment : Fragment() {
                         linearProgressIndicator.show()
                     }
                 }
-
-
             }
         }
 
@@ -339,12 +338,13 @@ class WebViewFragment : Fragment() {
             playerModel.title = Uri.parse(url).lastPathSegment + ""
             playerModel.mainLink = urlNow
             playerModel.addHeader("referer", urlNow)
+            playerModel.streamType = PlayerModel.WEB_VIDEO
             if (headers != null) {
                 for (key in headers) {
                     playerModel.addHeader(key.key, key.value)
                 }
             }
-            playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
+            playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title , playerModel.streamType)
             if (webVideoViewModel.addDownloadModel(playerModel)) {
                 shakeFab()
             }
@@ -411,7 +411,6 @@ class WebViewFragment : Fragment() {
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            webVideoViewModel.clearDownloadModel()
             if (!isLoading) {
                 linearProgressIndicator.isIndeterminate = true
                 linearProgressIndicator.show()

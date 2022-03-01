@@ -55,7 +55,7 @@ class SplashActivity : AppCompatActivity() {
             val intent = Intent(this, BrowserActivity::class.java)
             startActivity(intent)
         } else {
-            playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
+            playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title , playerModel.streamType)
             PlayListAll.clear()
             PlayListAll.add(playerModel)
             if (playerModel.link.endsWith("m3u")) {

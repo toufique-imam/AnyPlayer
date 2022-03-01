@@ -177,9 +177,9 @@ class BrowseFragment : Fragment() {
             viewR.layoutManager = GridLayoutManager(context, spanCount)
             viewR.adapter = galleryAdapter
         }
-        viewModel.videos.observe(viewLifecycleOwner, { videos ->
+        viewModel.videos.observe(viewLifecycleOwner) { videos ->
             galleryAdapter.updateData(videos)
-        })
+        }
         openAlbum.setOnClickListener {
             openMediaStore()
         }

@@ -77,7 +77,7 @@ object PlayerUtils {
                     }
                 val videoUrl = baseUrl.toString() + paramString + playerModel.id
                 linkNow = videoUrl
-                } catch (e: Exception) {
+            } catch (e: Exception) {
                 logger("createMediaData2", e.localizedMessage ?: "")
             }
         }
@@ -112,7 +112,7 @@ object PlayerUtils {
         if (playerModel.streamType == PlayerModel.STREAM_ONLINE_LIVE) {
             builder.setStreamType(MediaData.STREAM_TYPE_LIVE)
             builder.setMediaType(MediaData.MEDIA_TYPE_GENERIC)
-        } else if (playerModel.streamType == PlayerModel.STREAM_ONLINE_GENERAL) {
+        } else if (playerModel.streamType == PlayerModel.STREAM_ONLINE_GENERAL || playerModel.streamType == PlayerModel.WEB_VIDEO) {
             builder.setStreamType(MediaData.STREAM_TYPE_BUFFERED)
             builder.setMediaType(MediaData.MEDIA_TYPE_MOVIE)
         } else if (PlayerModel.isLocal(playerModel.streamType)) {
@@ -228,7 +228,8 @@ object PlayerUtils {
             hashMap["Referrer"] = hashMap["referer"] ?: ""
         }
         playerModel.headers = hashMap
-        playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title)
+        playerModel.id =
+            PlayerModel.getId(playerModel.link, playerModel.title, playerModel.streamType)
         return playerModel
     }
 

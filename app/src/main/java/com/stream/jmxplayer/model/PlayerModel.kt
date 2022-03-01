@@ -87,8 +87,8 @@ data class PlayerModel(
         const val playerLatinoDomain = "app.playerlatino.live"
         const val DIRECT_PUT = "MODEL"
         const val SELECTED_MODEL = "SELECTED_MODEL"
-        fun getId(link: String, title: String): Long {
-            return (link.hashCode() + title.hashCode()).toLong()
+        fun getId(link: String, title: String, type: Int): Long {
+            return (link.hashCode() + title.hashCode() + type).toLong()
         }
 
         fun isLocal(type: Int): Boolean {
@@ -102,5 +102,7 @@ data class PlayerModel(
 
         const val STREAM_OFFLINE_AUDIO = 4
         const val STREAM_OFFLINE_IMAGE = 5
+
+        const val WEB_VIDEO = 6
     }
 }

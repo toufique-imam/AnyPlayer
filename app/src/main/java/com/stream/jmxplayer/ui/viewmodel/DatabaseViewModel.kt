@@ -40,6 +40,8 @@ class DatabaseViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun insertModel(playerModel: PlayerModel) {
+        if (playerModel.streamType == PlayerModel.WEB_VIDEO) playerModel.streamType =
+            PlayerModel.STREAM_ONLINE_GENERAL
         viewModelScope.launch {
             database.playerModelDao().insertModel(playerModel)
         }

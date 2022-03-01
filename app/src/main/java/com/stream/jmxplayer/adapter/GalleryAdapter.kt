@@ -119,7 +119,8 @@ class GalleryAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return PlayerModel.getId(galleryData[position].link, galleryData[position].title)
+        val model = galleryData[position]
+        return PlayerModel.getId(model.link , model.title , model.streamType)
     }
 
     override fun getFilter(): Filter {
