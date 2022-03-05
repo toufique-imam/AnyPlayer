@@ -5,22 +5,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.stream.jmxplayer.adapter.WebVideoAdapter
 import com.stream.jmxplayer.databinding.WebOverlayVideoItemsBinding
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.viewmodel.WebVideoViewModel
+import com.stream.jmxplayer.utils.setGone
 import com.stream.jmxplayer.utils.setVisible
 
 class WebVideoDialogFragment(
-    onClick: (PlayerModel, Int) -> Unit
+    val webVideoViewModel: WebVideoViewModel, onClick: (PlayerModel, Int) -> Unit,
 ) : JMXBottomSDFragment() {
     private lateinit var binding: WebOverlayVideoItemsBinding
     lateinit var onBindInitiated: (done: Boolean) -> Unit
 
-    val webVideoViewModel: WebVideoViewModel by viewModels()
+//    val webVideoViewModel: WebVideoViewModel by viewModels()
 
     override fun getDefaultState(): Int = BottomSheetBehavior.STATE_EXPANDED
 
@@ -38,6 +38,8 @@ class WebVideoDialogFragment(
             webAdapter.updateData(videos)
             if (videos.isNullOrEmpty()) {
                 binding.emptyView.setVisible()
+            } else {
+                binding.emptyView.setGone()
             }
         }
         webVideoViewModel.getDownloadData()

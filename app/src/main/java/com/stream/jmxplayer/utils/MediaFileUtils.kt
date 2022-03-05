@@ -136,7 +136,7 @@ class MediaFileUtils {
 
             return try {
                 val idNow = cursor.getLong(ids[0])
-                val displayName = cursor.getString(ids[1])?:"no name"
+                val displayName = cursor.getString(ids[1]) ?: "no name"
 //                val dateModified =
 //                    Date(TimeUnit.SECONDS.toMillis(cursor.getLong(ids[2])))
                 val size = cursor.getLong(ids[3])

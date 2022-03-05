@@ -58,6 +58,7 @@
             android:layout_margin="5dp"
             android:layout_marginStart="16dp"
             android:ellipsize="end"
+            android:maxLines="2"
             android:text="@{@string/trackLink(model.link)}"
             android:textColor="@color/black_transparent_60"
             app:layout_constraintEnd_toEndOf="parent"

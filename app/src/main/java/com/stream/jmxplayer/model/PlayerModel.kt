@@ -88,7 +88,7 @@ data class PlayerModel(
         const val DIRECT_PUT = "MODEL"
         const val SELECTED_MODEL = "SELECTED_MODEL"
         fun getId(link: String, title: String, type: Int): Long {
-            return (link.hashCode() + title.hashCode() + type).toLong()
+            return (link.hashCode().toLong() + title.hashCode().toLong() + type.toLong())
         }
 
         fun isLocal(type: Int): Boolean {

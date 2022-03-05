@@ -5,7 +5,13 @@
       <map>
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/drawable/ic_delay_done.xml" value="0.125" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/fragment_settings.xml" value="0.11302083333333333" />
-        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/fragment_webview.xml" value="0.176" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/fragment_user_input_m3u.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/fragment_webview.xml" value="0.264" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/gallery_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/history_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/image_overlay.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/playlist_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/web_overlay_video_items.xml" value="0.2388888888888889" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/web_video_item.xml" value="0.24814814814814815" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/xml/settings_pref.xml" value="0.24814814814814815" />
       </map>

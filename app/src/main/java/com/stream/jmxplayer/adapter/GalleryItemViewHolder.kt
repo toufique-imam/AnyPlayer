@@ -18,7 +18,7 @@ class GalleryItemViewHolder(
     //lateinit var playListImageView: ImageView
 
     fun initHistory(type: Int) {
-        if (type == GRID_NO_DELETE || type== SINGLE_NO_DELETE) return
+        if (type == GRID_NO_DELETE || type == SINGLE_NO_DELETE) return
         deleteButton = itemView.findViewById(R.id.history_delete)
         if (type == M3U_LIST) {
             deleteButton.setImageResource(R.drawable.ic_outline_more_vert_24)

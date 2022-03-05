@@ -16,9 +16,10 @@ class ImageOverlayView @JvmOverloads constructor(
     attributeSet: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attributeSet, defStyleAttr) {
-//    var onShareClick: (PlayerModel) -> Unit = {}
+    //    var onShareClick: (PlayerModel) -> Unit = {}
     var onBackClick: () -> Unit = {}
-//    var shareButton: ImageView
+
+    //    var shareButton: ImageView
     var backButton: ImageView
     var castButton: MediaRouteButton
     var title: TextView

@@ -6,7 +6,6 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.HttpHeaderParser
-import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import java.nio.charset.StandardCharsets
 
 class CustomRequest(

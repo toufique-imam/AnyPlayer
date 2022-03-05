@@ -14,13 +14,8 @@ import com.stream.jmxplayer.utils.GlobalFunctions;
 import org.json.JSONObject;
 
 public class CastyPlayer {
-    interface OnMediaLoadedListener {
-        void onMediaLoaded();
-    }
-
     private RemoteMediaClient remoteMediaClient;
     private OnMediaLoadedListener onMediaLoadedListener;
-
     //Needed for NoOp instance
     CastyPlayer() {
         //no-op
@@ -190,11 +185,11 @@ public class CastyPlayer {
             MediaError mediaError = mediaChannelResult.getMediaError();
             String log = "";
             if (mediaError != null) {
-                log = log + mediaError.toJson().toString();
+                log = log + mediaError.toJson();
             }
             JSONObject cd = mediaChannelResult.getCustomData();
             if (cd != null) {
-                log = log + cd.toString();
+                log = log + cd;
             }
             GlobalFunctions.INSTANCE.logger("MediaLoadCallback", log);
         });
@@ -234,6 +229,10 @@ public class CastyPlayer {
                 //no-op
             }
         };
+    }
+
+    interface OnMediaLoadedListener {
+        void onMediaLoaded();
     }
 
 }

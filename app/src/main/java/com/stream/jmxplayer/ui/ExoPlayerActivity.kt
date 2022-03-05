@@ -128,7 +128,7 @@ class ExoPlayerActivity : AppCompatActivity(),
         mSettings = Settings(this)
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_player)
-        piracyChecker = initPiracy{}
+        piracyChecker = initPiracy {}
         alertDialogLoading = createAlertDialogueLoading()
 
         //historyDB = HistoryDatabase.getInstance(this)

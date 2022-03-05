@@ -11,7 +11,6 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
-import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import kotlin.math.max
 
 class AdMobAdUtils(var activity: Activity) {

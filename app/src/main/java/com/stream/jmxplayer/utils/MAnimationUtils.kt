@@ -7,12 +7,12 @@ import android.widget.ImageView
 import com.stream.jmxplayer.R
 
 class MAnimationUtils(private var context: Context) {
-     lateinit var animationInLeft: Animation
-     lateinit var animationOutLeft: Animation
-     lateinit var animationInRight: Animation
-     lateinit var animationOutRight: Animation
-     lateinit var animationInMid: Animation
-     lateinit var animationOutMid: Animation
+    lateinit var animationInLeft: Animation
+    lateinit var animationOutLeft: Animation
+    lateinit var animationInRight: Animation
+    lateinit var animationOutRight: Animation
+    lateinit var animationInMid: Animation
+    lateinit var animationOutMid: Animation
 
     init {
         initAnimation()
@@ -55,10 +55,10 @@ class MAnimationUtils(private var context: Context) {
 
 
     fun setMidFocusExoControl(
-        view: ImageView ,
-        imageInID: Int , imageOutID: Int
-    ){
-        setFocusOnExoControl(view , animationInMid , animationInMid , imageInID, imageOutID)
+        view: ImageView,
+        imageInID: Int, imageOutID: Int
+    ) {
+        setFocusOnExoControl(view, animationInMid, animationInMid, imageInID, imageOutID)
     }
 
 }

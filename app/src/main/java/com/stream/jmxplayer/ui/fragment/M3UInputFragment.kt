@@ -285,9 +285,7 @@ class M3UInputFragment : Fragment() {
                 uri.lastPathSegment ?: "User M3U"
             }, "UTF-8"
         )
-        val userAgentNow = if (userAgentInput.text.toString()
-                .isNotEmpty()
-        ) userAgentInput.text.toString() else GlobalFunctions.USER_AGENT
+        val userAgentNow = userAgentInput.text.toString().ifEmpty { GlobalFunctions.USER_AGENT }
         SharedPreferenceUtils.setUserM3U(requireContext(), urlNow, token)
         val playerModel =
             PlayerModel(
@@ -296,7 +294,8 @@ class M3UInputFragment : Fragment() {
                 title = token,
                 userAgent = userAgentNow
             )
-        playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title , playerModel.streamType)
+        playerModel.id =
+            PlayerModel.getId(playerModel.link, playerModel.title, playerModel.streamType)
         if (!newInsert) {
             deleteModel(playerModelNow)
         }

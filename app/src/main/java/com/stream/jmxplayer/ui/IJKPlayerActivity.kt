@@ -90,7 +90,7 @@ class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         mSettings = Settings(this)
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_ijkplayer)
-        piracyChecker = initPiracy{}
+        piracyChecker = initPiracy {}
 
         alertDialogLoading = createAlertDialogueLoading()
         getDataFromIntent()

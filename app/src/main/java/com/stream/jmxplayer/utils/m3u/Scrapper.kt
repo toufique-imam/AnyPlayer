@@ -7,7 +7,6 @@ import com.android.volley.toolbox.HurlStack
 import com.android.volley.toolbox.Volley
 import com.stream.jmxplayer.utils.CustomRequest
 import com.stream.jmxplayer.utils.GlobalFunctions
-import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.TextFileUtils
 import java.net.HttpURLConnection
 import java.net.URL

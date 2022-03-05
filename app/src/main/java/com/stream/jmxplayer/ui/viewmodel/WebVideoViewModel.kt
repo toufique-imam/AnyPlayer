@@ -11,7 +11,7 @@ import com.stream.jmxplayer.model.db.HistoryDatabase
 import kotlinx.coroutines.launch
 
 class WebVideoViewModel(application: Application) : AndroidViewModel(application) {
-    val database = HistoryDatabase.getInstance(application)
+    private val database = HistoryDatabase.getInstance(application)
     private val _videos = MutableLiveData<List<PlayerModel>>()
     val videos: LiveData<List<PlayerModel>> get() = _videos
 
@@ -24,13 +24,14 @@ class WebVideoViewModel(application: Application) : AndroidViewModel(application
     fun addDownloadModel(playerModel: PlayerModel): Boolean {
         if (database.playerModelDao().contains(playerId = playerModel.id)) return false
         viewModelScope.launch {
-            database.playerModelDao().insertModel(playerModel)
+            val id = database.playerModelDao().insertModel(playerModel)
+            Log.e("downloadModel", id.toString())
         }
         return true
     }
 
     fun clearDownloadModel() {
-        Log.e("clearDownloadModel" ,"Called")
+        Log.e("clearDownloadModel", "Called")
         viewModelScope.launch {
             database.playerModelDao().deleteWebModels()
             _videos.postValue(emptyList())

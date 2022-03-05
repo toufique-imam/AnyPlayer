@@ -45,7 +45,8 @@ class WebViewFragment : Fragment() {
         AdBlocker.getInstance(requireActivity().applicationContext)
     }
 
-    fun shakeFab() = fabWatch.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.anim_shake))
+    fun shakeFab() =
+        fabWatch.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.anim_shake))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -188,7 +189,7 @@ class WebViewFragment : Fragment() {
         fabDesktop = view.findViewById(R.id.fab_web_pc)
         linearProgressIndicator = view.findViewById(R.id.progress_indicator)
 //        linearProgressIndicator.isIndeterminate = true
-        webVideoDialogFragment = WebVideoDialogFragment { playerModel, _ ->
+        webVideoDialogFragment = WebVideoDialogFragment(webVideoViewModel) { playerModel, _ ->
             webVideoDialogFragment.dismiss()
             val intent = GlobalFunctions.getDefaultPlayer(requireContext(), mSettings, playerModel)
             SharedPreferenceUtils.PlayListAll.clear()
@@ -344,7 +345,8 @@ class WebViewFragment : Fragment() {
                     playerModel.addHeader(key.key, key.value)
                 }
             }
-            playerModel.id = PlayerModel.getId(playerModel.link, playerModel.title , playerModel.streamType)
+            playerModel.id =
+                PlayerModel.getId(playerModel.link, playerModel.title, playerModel.streamType)
             if (webVideoViewModel.addDownloadModel(playerModel)) {
                 shakeFab()
             }

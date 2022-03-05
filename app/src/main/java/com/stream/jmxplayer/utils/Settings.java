@@ -26,14 +26,13 @@ import com.stream.jmxplayer.R;
 
 
 public class Settings {
-    private final Context mAppContext;
-    private final SharedPreferences mSharedPreferences;
-    private final SharedPreferences.Editor editor;
-
     public static final int PV_PLAYER__Auto = 0;
     public static final int PV_PLAYER__AndroidMediaPlayer = 1;
     public static final int PV_PLAYER__IjkMediaPlayer = 2;
     public static final int PV_PLAYER__IjkExoMediaPlayer = 3;
+    private final Context mAppContext;
+    private final SharedPreferences mSharedPreferences;
+    private final SharedPreferences.Editor editor;
 
     public Settings(Context context) {
         mAppContext = context.getApplicationContext();
@@ -73,17 +72,17 @@ public class Settings {
         }
     }
 
+    public void setTheme(String val) {
+        String key = mAppContext.getString(R.string.pref_key_theme);
+        editor.putString(key, val);
+        editor.apply();
+    }
+
     public int getThemeId() {
         int themeNow = getTheme();
         if (themeNow == 0) return R.style.Theme_JMXPlayer_NoActionBar;
         else if (themeNow == 1) return R.style.Theme_JMXPlayer_Day;
         else return R.style.Theme_JMXPlayer_Night;
-    }
-
-    public void setTheme(String val) {
-        String key = mAppContext.getString(R.string.pref_key_theme);
-        editor.putString(key, val);
-        editor.apply();
     }
 
     public int getDefaultPlayer() {
@@ -186,15 +185,15 @@ public class Settings {
         return mSharedPreferences.getBoolean(key, false);
     }
 
-    public boolean getEnableTextureView() {
-        String key = mAppContext.getString(R.string.pref_key_enable_texture_view);
-        return mSharedPreferences.getBoolean(key, false);
-    }
-
     public void setEnableSurfaceView(boolean value) {
         String key = mAppContext.getString(R.string.pref_key_enable_surface_view);
         editor.putBoolean(key, value);
         editor.apply();
+    }
+
+    public boolean getEnableTextureView() {
+        String key = mAppContext.getString(R.string.pref_key_enable_texture_view);
+        return mSharedPreferences.getBoolean(key, false);
     }
 
     public void setEnableTextureView(boolean value) {

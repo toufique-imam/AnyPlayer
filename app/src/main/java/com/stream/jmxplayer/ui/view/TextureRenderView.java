@@ -47,6 +47,7 @@ import tv.danmaku.ijk.media.player.ISurfaceTextureHost;
 public class TextureRenderView extends TextureView implements IRenderView {
     private static final String TAG = "TextureRenderView";
     private MeasureHelper mMeasureHelper;
+    private SurfaceCallback mSurfaceCallback;
 
     public TextureRenderView(Context context) {
         super(context);
@@ -123,24 +124,54 @@ public class TextureRenderView extends TextureView implements IRenderView {
         requestLayout();
     }
 
+    //--------------------
+    // TextureViewHolder
+    //--------------------
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mMeasureHelper.doMeasure(widthMeasureSpec, heightMeasureSpec);
         setMeasuredDimension(mMeasureHelper.getMeasuredWidth(), mMeasureHelper.getMeasuredHeight());
     }
 
-    //--------------------
-    // TextureViewHolder
-    //--------------------
-
     public IRenderView.ISurfaceHolder getSurfaceHolder() {
         return new InternalSurfaceHolder(this, mSurfaceCallback.mSurfaceTexture, mSurfaceCallback);
     }
 
+    //-------------------------
+    // SurfaceHolder.Callback
+    //-------------------------
+
+    @Override
+    public void addRenderCallback(IRenderCallback callback) {
+        mSurfaceCallback.addRenderCallback(callback);
+    }
+
+    @Override
+    public void removeRenderCallback(IRenderCallback callback) {
+        mSurfaceCallback.removeRenderCallback(callback);
+    }
+
+    @Override
+    public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
+        super.onInitializeAccessibilityEvent(event);
+        event.setClassName(TextureRenderView.class.getName());
+    }
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+        info.setClassName(TextureRenderView.class.getName());
+    }
+
+    //--------------------
+    // Accessibility
+    //--------------------
+
     private static final class InternalSurfaceHolder implements IRenderView.ISurfaceHolder {
-        private TextureRenderView mTextureView;
-        private SurfaceTexture mSurfaceTexture;
-        private ISurfaceTextureHost mSurfaceTextureHost;
+        private final TextureRenderView mTextureView;
+        private final SurfaceTexture mSurfaceTexture;
+        private final ISurfaceTextureHost mSurfaceTextureHost;
 
         public InternalSurfaceHolder(@NonNull TextureRenderView textureView,
                                      @Nullable SurfaceTexture surfaceTexture,
@@ -199,22 +230,6 @@ public class TextureRenderView extends TextureView implements IRenderView {
         }
     }
 
-    //-------------------------
-    // SurfaceHolder.Callback
-    //-------------------------
-
-    @Override
-    public void addRenderCallback(IRenderCallback callback) {
-        mSurfaceCallback.addRenderCallback(callback);
-    }
-
-    @Override
-    public void removeRenderCallback(IRenderCallback callback) {
-        mSurfaceCallback.removeRenderCallback(callback);
-    }
-
-    private SurfaceCallback mSurfaceCallback;
-
     private static final class SurfaceCallback implements SurfaceTextureListener, ISurfaceTextureHost {
         private SurfaceTexture mSurfaceTexture;
         private boolean mIsFormatChanged;
@@ -225,8 +240,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
         private boolean mWillDetachFromWindow = false;
         private boolean mDidDetachFromWindow = false;
 
-        private WeakReference<TextureRenderView> mWeakRenderView;
-        private Map<IRenderCallback, Object> mRenderCallbackMap = new ConcurrentHashMap<IRenderCallback, Object>();
+        private final WeakReference<TextureRenderView> mWeakRenderView;
+        private final Map<IRenderCallback, Object> mRenderCallbackMap = new ConcurrentHashMap<IRenderCallback, Object>();
 
         public SurfaceCallback(@NonNull TextureRenderView renderView) {
             mWeakRenderView = new WeakReference<TextureRenderView>(renderView);
@@ -353,21 +368,5 @@ public class TextureRenderView extends TextureView implements IRenderView {
             Log.d(TAG, "didDetachFromWindow()");
             mDidDetachFromWindow = true;
         }
-    }
-
-    //--------------------
-    // Accessibility
-    //--------------------
-
-    @Override
-    public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
-        super.onInitializeAccessibilityEvent(event);
-        event.setClassName(TextureRenderView.class.getName());
-    }
-
-    @Override
-    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
-        super.onInitializeAccessibilityNodeInfo(info);
-        info.setClassName(TextureRenderView.class.getName());
     }
 }

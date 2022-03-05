@@ -19,45 +19,28 @@ import java.util.List;
 
 @Keep
 public class MediaData {
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({STREAM_TYPE_NONE, STREAM_TYPE_BUFFERED, STREAM_TYPE_LIVE})
-    public @interface StreamType {
-    }
-
     public static final int STREAM_TYPE_NONE = 0;
     public static final int STREAM_TYPE_BUFFERED = 1;
     public static final int STREAM_TYPE_LIVE = 2;
     public static final int STREAM_TYPE_INVALID = -1;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MEDIA_TYPE_GENERIC, MEDIA_TYPE_MOVIE, MEDIA_TYPE_TV_SHOW, MEDIA_TYPE_MUSIC_TRACK, MEDIA_TYPE_PHOTO, MEDIA_TYPE_USER})
-    public @interface MediaType {
-    }
-
     public static final int MEDIA_TYPE_GENERIC = 0;
     public static final int MEDIA_TYPE_MOVIE = 1;
     public static final int MEDIA_TYPE_TV_SHOW = 2;
     public static final int MEDIA_TYPE_MUSIC_TRACK = 3;
     public static final int MEDIA_TYPE_PHOTO = 4;
     public static final int MEDIA_TYPE_USER = 100;
-
     public static final long UNKNOWN_DURATION = -1L;
-
     private final String url;
+    private final List<String> imageUrls;
+    public boolean autoPlay = true;
+    public long position;
     JSONObject exoPlayerConfig;
     private int streamType = STREAM_TYPE_NONE;
     private String contentType;
     private long streamDuration = UNKNOWN_DURATION;
-
     private int mediaType = MEDIA_TYPE_GENERIC;
     private String title;
     private String subtitle;
-
-    public boolean autoPlay = true;
-    public long position;
-
-    private final List<String> imageUrls;
-
     private MediaData(String url) {
         this.url = url;
         imageUrls = new ArrayList<>();
@@ -121,6 +104,16 @@ public class MediaData {
 //        if (mediaInfo.getCustomData() != null)
 //            GlobalFunctions.Companion.logger("MediaInfo Custom", mediaInfo.getCustomData().toString());
         return builder.build();
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({STREAM_TYPE_NONE, STREAM_TYPE_BUFFERED, STREAM_TYPE_LIVE})
+    public @interface StreamType {
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({MEDIA_TYPE_GENERIC, MEDIA_TYPE_MOVIE, MEDIA_TYPE_TV_SHOW, MEDIA_TYPE_MUSIC_TRACK, MEDIA_TYPE_PHOTO, MEDIA_TYPE_USER})
+    public @interface MediaType {
     }
 
     public static class Builder {

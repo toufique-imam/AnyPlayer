@@ -29,7 +29,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.TrackInfo
 import com.stream.jmxplayer.ui.view.IjkVideoView
-import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
 import java.util.*

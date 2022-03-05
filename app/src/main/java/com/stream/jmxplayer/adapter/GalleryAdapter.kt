@@ -82,7 +82,7 @@ class GalleryAdapter(
                     R.drawable.logo_playlist2
                 }
             )
-            .thumbnail(0.33f)
+            .sizeMultiplier(0.25f)
             .placeholder(
                 if (playerModel.streamType == PlayerModel.STREAM_OFFLINE_AUDIO) R.drawable.ic_empty_music2
                 else R.drawable.main_logo
@@ -120,7 +120,7 @@ class GalleryAdapter(
 
     override fun getItemId(position: Int): Long {
         val model = galleryData[position]
-        return PlayerModel.getId(model.link , model.title , model.streamType)
+        return PlayerModel.getId(model.link, model.title, model.streamType)
     }
 
     override fun getFilter(): Filter {

@@ -30,9 +30,9 @@ import androidx.appcompat.app.AlertDialog;
 import com.stream.jmxplayer.R;
 
 public class TableLayoutBinder {
-    private Context mContext;
     public ViewGroup mTableView;
     public TableLayout mTableLayout;
+    private final Context mContext;
 
     public TableLayoutBinder(Context context) {
         this(context, R.layout.table_media_info);
@@ -41,7 +41,7 @@ public class TableLayoutBinder {
     public TableLayoutBinder(Context context, int layoutResourceId) {
         mContext = context;
         mTableView = (ViewGroup) LayoutInflater.from(mContext).inflate(layoutResourceId, null);
-        mTableLayout = (TableLayout) mTableView.findViewById(R.id.table);
+        mTableLayout = mTableView.findViewById(R.id.table);
     }
 
     public TableLayoutBinder(Context context, TableLayout tableLayout) {

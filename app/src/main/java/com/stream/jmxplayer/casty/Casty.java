@@ -38,17 +38,29 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
     static String receiverId = "8639B975";
 
     static CastOptions customCastOptions;
-
+    CastContext castContext;
     private SessionManagerListener<CastSession> sessionManagerListener;
     private OnConnectChangeListener onConnectChangeListener;
     private OnCastSessionUpdatedListener onCastSessionUpdatedListener;
-
     private CastSession castSession;
     private CastyPlayer castyPlayer;
-    CastContext castContext;
     private Activity activity;
     private IntroductoryOverlay introductionOverlay;
 
+
+    //Needed for NoOp instance
+    Casty() {
+        //no-op
+    }
+
+    private Casty(@NonNull Activity activity) throws RuntimeException {
+        this.activity = activity;
+        sessionManagerListener = createSessionManagerListener();
+        castyPlayer = new CastyPlayer(this);
+        activity.getApplication().registerActivityLifecycleCallbacks(createActivityCallbacks());
+        castContext = CastContext.getSharedInstance(activity);
+        castContext.addCastStateListener(createCastStateListener());
+    }
 
     /**
      * Sets the custom receiver ID. Should be used in the {@link Application} class.
@@ -67,11 +79,6 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
     public static void configure(@NonNull CastOptions castOptions) {
         Casty.customCastOptions = castOptions;
     }
-
-    public CastContext getCastContext() {
-        return castContext;
-    }
-
 
     /**
      * Creates the Casty object.
@@ -95,18 +102,8 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
         }
     }
 
-    //Needed for NoOp instance
-    Casty() {
-        //no-op
-    }
-
-    private Casty(@NonNull Activity activity) throws RuntimeException {
-        this.activity = activity;
-        sessionManagerListener = createSessionManagerListener();
-        castyPlayer = new CastyPlayer(this);
-        activity.getApplication().registerActivityLifecycleCallbacks(createActivityCallbacks());
-        castContext = CastContext.getSharedInstance(activity);
-        castContext.addCastStateListener(createCastStateListener());
+    public CastContext getCastContext() {
+        return castContext;
     }
 
     /**
@@ -319,9 +316,9 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
             @Override
             public void onActivityPaused(Activity activity) {
                 if (Casty.this.activity == activity) {
-                    try{
+                    try {
                         unregisterSessionManagerListener();
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
 
                     }
                 }

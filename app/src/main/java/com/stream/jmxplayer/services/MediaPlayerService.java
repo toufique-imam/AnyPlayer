@@ -42,10 +42,8 @@ public class MediaPlayerService extends Service {
         context.stopService(newIntent(context));
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public static IMediaPlayer getMediaPlayer() {
+        return sMediaPlayer;
     }
 
     public static void setMediaPlayer(IMediaPlayer mp) {
@@ -58,7 +56,9 @@ public class MediaPlayerService extends Service {
         sMediaPlayer = mp;
     }
 
-    public static IMediaPlayer getMediaPlayer() {
-        return sMediaPlayer;
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 }

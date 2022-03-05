@@ -97,7 +97,7 @@ public class Parser {
             channelModel = new PlayerModel(
                     0, channelLink, logo, channelLink, userAgent
                     , "", "", 0, channelName, channelName + " " + language, language, logo, PlayerModel.STREAM_ONLINE_LIVE, mp);
-            channelModel.setId(PlayerModel.Companion.getId(channelLink, channelName , channelModel.getStreamType()));
+            channelModel.setId(PlayerModel.Companion.getId(channelLink, channelName, channelModel.getStreamType()));
             channelModels.add(channelModel);
             i++;
         }
@@ -141,7 +141,7 @@ public class Parser {
             channelModel = new PlayerModel(
                     0, channelLink, logo, channelLink, userAgent
                     , "", "", 0, channelName, channelName + " " + language, language, logo, PlayerModel.STREAM_ONLINE_LIVE, mp);
-            channelModel.setId(PlayerModel.Companion.getId(channelLink, channelName , channelModel.getStreamType()));
+            channelModel.setId(PlayerModel.Companion.getId(channelLink, channelName, channelModel.getStreamType()));
 //            channelModels.add(channelModel);
             if (!channelModels.containsKey(category)) {
                 channelModels.put(category, new ArrayList<>());

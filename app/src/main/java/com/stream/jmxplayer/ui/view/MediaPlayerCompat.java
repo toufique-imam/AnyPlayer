@@ -45,7 +45,8 @@ public class MediaPlayerCompat {
         IjkMediaPlayer ijkMediaPlayer = null;
         if (mp == null) {
             return null;
-        } if (mp instanceof IjkMediaPlayer) {
+        }
+        if (mp instanceof IjkMediaPlayer) {
             ijkMediaPlayer = (IjkMediaPlayer) mp;
         } else if (mp instanceof MediaPlayerProxy && ((MediaPlayerProxy) mp).getInternalMediaPlayer() instanceof IjkMediaPlayer) {
             ijkMediaPlayer = (IjkMediaPlayer) ((MediaPlayerProxy) mp).getInternalMediaPlayer();

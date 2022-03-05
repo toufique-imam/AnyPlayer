@@ -69,9 +69,9 @@ object GlobalFunctions {
             if (!isIPv4) {
                 val endIndex = hostAddress.indexOf('%') // drop ip6 zone suffix
                 return if (endIndex < 0) {
-                    hostAddress.toUpperCase()
+                    hostAddress.uppercase(Locale.getDefault())
                 } else {
-                    hostAddress.substring(0, endIndex).toUpperCase()
+                    hostAddress.substring(0, endIndex).uppercase(Locale.getDefault())
                 }
             }
         }
