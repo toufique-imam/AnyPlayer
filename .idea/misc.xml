@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/drawable/ic_delay_done.xml" value="0.125" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/bottom_sheet_m3u.xml" value="0.11302083333333333" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/content_exo.xml" value="0.11302083333333333" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/fragment_settings.xml" value="0.11302083333333333" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/fragment_user_input_m3u.xml" value="0.25416666666666665" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/fragment_webview.xml" value="0.264" />
@@ -13,6 +15,8 @@
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/playlist_item.xml" value="0.25416666666666665" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/web_overlay_video_items.xml" value="0.2388888888888889" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/web_video_item.xml" value="0.24814814814814815" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/menu/bottom_navbar_menu.xml" value="0.2388888888888889" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/menu/toolbar_web.xml" value="0.264" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/xml/settings_pref.xml" value="0.24814814814814815" />
       </map>
     </option>

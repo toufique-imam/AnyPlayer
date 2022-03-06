@@ -9,7 +9,7 @@
     <string name="resize">Ajuste Pantalla</string>
     Open Album
     <string name="download_video">Guardar en el dispositivo</string>
-    <string name="open_with">Abrir con...</string>
+    <string name="open_with">Abrir con…</string>
     <string name="enter_ua">User-Agent</string>
     <string name="enter_header">Encabezados adicionales</string>
     <string name="how_to_header_whint">separe la clave y los valores con una coma, vea la sugerencia como ejemplo , ex : Origin,jmxplayer.com,Referer,www.jmxplayer.com</string>
@@ -250,7 +250,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="google">www.google.com</string>
     <string name="web_url_hint">Enter or Search</string>
-    <string name="browse_web">Browse Web</string>
+    <string name="browse_web">Bucador Web</string>
     <string name="no_video">No Video Found</string>
     <string name="web_videos">Web Videos</string>
     <string name="web_type_phone">phone</string>

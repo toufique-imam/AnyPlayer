@@ -58,6 +58,6 @@
     <fragment
         android:id="@+id/webviewFragment"
         android:name="com.stream.jmxplayer.ui.fragment.WebViewFragment"
-        android:label="Bucador Web"
+        android:label="@string/browse_web"
         tools:layout="@layout/fragment_webview" />
 </navigation>

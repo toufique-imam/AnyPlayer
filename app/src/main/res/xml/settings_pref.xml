@@ -28,7 +28,7 @@
 
     <PreferenceCategory
         app:key="@string/app_name"
-        app:title="Bucador Web">
+        app:title="@string/browse_web">
 
         <SwitchPreference
             android:defaultValue="true"

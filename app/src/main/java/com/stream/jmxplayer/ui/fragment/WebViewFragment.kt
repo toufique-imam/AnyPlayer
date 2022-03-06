@@ -21,6 +21,7 @@ import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.BrowserActivity
 import com.stream.jmxplayer.ui.viewmodel.WebVideoViewModel
 import com.stream.jmxplayer.utils.*
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import java.net.URL
 import java.net.URLConnection
@@ -217,7 +218,8 @@ class WebViewFragment : Fragment() {
             }
         }
         initWebViewSettings()
-        val testUrl = "https://mixdrop.co/e/mdwkjd39b43wx"
+//        val testUrl = "https://mixdrop.co/e/mdwkjd39b43wx"
+        val testUrl = "https://ustv247.tv/cartoon-network"
         val landingUrl = "https://google.com"
         webView.loadUrl(testUrl)
     }
@@ -285,6 +287,7 @@ class WebViewFragment : Fragment() {
             try {
                 val requestUrl = request?.url.toString()
                 if (mSettings.adBlocked && adBlocker.isAd(requestUrl)) {
+                    logger("isAd" , requestUrl)
                     return createEmptyResource()
                 }
                 if (view != null && request != null) {

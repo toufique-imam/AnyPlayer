@@ -18,7 +18,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     fun getPixelValue(string: String): String {
         for ((idx, i) in values.withIndex()) {
-            if (i.equals(string)) {
+            if (i == string) {
                 return formats[idx]
             }
         }
@@ -115,12 +115,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val playerSelect =
             findPreference<ListPreference>(getString(R.string.pref_key_player_select))
-        playerSelect?.value = mSettings.defaultPlayer.toString()
-        playerSelect?.summary = playerSelect?.entries?.get(mSettings.defaultPlayer)
+        playerSelect?.value = mSettings.player.toString()
+        playerSelect?.summary = playerSelect?.entries?.get(mSettings.player)
         playerSelect?.setOnPreferenceChangeListener { _, newValue ->
             playerSelect.summary = playerSelect.entries[Integer.parseInt(newValue.toString())]
             logger("OnPrefChangePlayer", "$newValue ${playerSelect.summary}")
-            mSettings.setDefaultPlayer(newValue.toString())
+            mSettings.setPlayer(newValue.toString())
             true
         }
         val buttonTerms: Preference? = findPreference(getString(R.string.jmx_terms))

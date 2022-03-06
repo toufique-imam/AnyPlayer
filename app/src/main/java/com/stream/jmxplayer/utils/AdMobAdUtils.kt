@@ -16,7 +16,7 @@ import kotlin.math.max
 class AdMobAdUtils(var activity: Activity) {
     var mInterstitialAd: InterstitialAd? = null
     var mRewardedAd: RewardedAd? = null
-    var adRequest: AdRequest = AdRequest.Builder().build()
+    private var adRequest: AdRequest = AdRequest.Builder().build()
     lateinit var iAdListener: IAdListener
     private val preference =
         activity.getSharedPreferences(SharedPreferenceUtils.SHARED_PREF, Activity.MODE_PRIVATE)

@@ -8,7 +8,7 @@ import okio.source
 
 
 class AdBlocker(val context: Context) {
-    val AD_HOSTS = HashSet<String>()
+    private val AD_HOSTS = HashSet<String>()
 
     //    val AD_HOSTS_FILE1 = "pgl.yoyo.org.txt"
     val AD_HOSTS_FILE1 = "hosts"

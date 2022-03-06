@@ -215,8 +215,8 @@ object GlobalFunctions {
         mSettings: Settings,
         playerModel: PlayerModel
     ): Intent {
-        logger("KEY", mSettings.defaultPlayer.toString())
-        when (mSettings.defaultPlayer) {
+        logger("KEY", mSettings.player.toString())
+        when (mSettings.player) {
             1 -> return getIntentPlayer(context, Settings.PV_PLAYER__AndroidMediaPlayer)
             2 -> return getIntentPlayer(context, Settings.PV_PLAYER__IjkExoMediaPlayer)
             3 -> return getIntentPlayer(context, Settings.PV_PLAYER__IjkMediaPlayer)
