@@ -24,7 +24,7 @@ import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 
 
 class BrowserActivity : AppCompatActivity(), ICastController, IAdListener {
-    var adMobAdUtils: AdMobAdUtils? = null
+    var adMobUtils: AdMobUtils? = null
     lateinit var alertDialog: AlertDialog
     lateinit var bottomNavBar: BottomNavigationView
     lateinit var navHostFragment: NavHostFragment
@@ -37,9 +37,9 @@ class BrowserActivity : AppCompatActivity(), ICastController, IAdListener {
         setContentView(R.layout.activity_browser)
         piracyChecker = initPiracy {}
         alertDialog = createAlertDialogueLoading()
-        adMobAdUtils = AdMobAdUtils(this)
+        adMobUtils = AdMobUtils(this)
         //initAdListener()
-        adMobAdUtils?.setAdListener(this)
+        adMobUtils?.setAdListener(this)
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         initCast()
@@ -66,8 +66,8 @@ class BrowserActivity : AppCompatActivity(), ICastController, IAdListener {
     var afterAd: (() -> Unit)? = null
     fun loadAd(type: Int, afterAd: () -> Unit) {
         this.afterAd = afterAd
-        if (type == 0) adMobAdUtils?.loadFullScreenAd()
-        else adMobAdUtils?.loadRewardAd()
+        if (type == 0) adMobUtils?.loadFullScreenAd()
+        else adMobUtils?.loadRewardAd()
     }
 
     override fun onAdActivityDone(result: String) {
@@ -82,8 +82,8 @@ class BrowserActivity : AppCompatActivity(), ICastController, IAdListener {
     override fun onAdLoaded(type: Int) {
         alertDialog.dismiss()
 
-        if (type == 0) adMobAdUtils?.showFullScreenAd()
-        else adMobAdUtils?.showRewardAd()
+        if (type == 0) adMobUtils?.showFullScreenAd()
+        else adMobUtils?.showRewardAd()
     }
 
     override fun onAdError(error: String) {

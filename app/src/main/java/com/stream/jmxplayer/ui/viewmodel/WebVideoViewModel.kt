@@ -31,7 +31,6 @@ class WebVideoViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun clearDownloadModel() {
-        Log.e("clearDownloadModel", "Called")
         viewModelScope.launch {
             database.playerModelDao().deleteWebModels()
             _videos.postValue(emptyList())

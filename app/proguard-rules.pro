@@ -90,6 +90,8 @@
     public static final ** CREATOR;
 }
 # Gson specific classes
+-keep class com.google.gson.** { *; }
+-keep class com.google.gson.internal.LinkedTreeMap { *; }
 -keep class com.google.gson.stream.** { *; }
 -keep class com.android.volley.** { *; }
 -keep class org.apache.commons.logging.**

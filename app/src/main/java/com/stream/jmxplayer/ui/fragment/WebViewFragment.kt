@@ -78,6 +78,7 @@ class WebViewFragment : Fragment() {
     fun goBack(): Boolean {
         return if (webView.canGoBack()) {
             webView.goBack()
+            webVideoViewModel.clearDownloadModel()
             true
         } else {
             false
@@ -124,13 +125,16 @@ class WebViewFragment : Fragment() {
         return when (item.itemId) {
             R.id.action_refresh -> {
                 toaster(requireActivity(), webView.url.toString())
+                webVideoViewModel.clearDownloadModel()
                 webView.reload()
                 true
             }
             R.id.action_back -> {
+                webVideoViewModel.clearDownloadModel()
                 goBack()
             }
             R.id.action_forward -> {
+                webVideoViewModel.clearDownloadModel()
                 goForward()
             }
             else -> {
@@ -219,9 +223,9 @@ class WebViewFragment : Fragment() {
         }
         initWebViewSettings()
 //        val testUrl = "https://mixdrop.co/e/mdwkjd39b43wx"
-        val testUrl = "https://ustv247.tv/cartoon-network"
+        //val testUrl = "https://ustv247.tv/cartoon-network"
         val landingUrl = "https://google.com"
-        webView.loadUrl(testUrl)
+        webView.loadUrl(landingUrl)
     }
 
     private fun updateWebViewSettings(isDesktop: Boolean) {
@@ -287,7 +291,7 @@ class WebViewFragment : Fragment() {
             try {
                 val requestUrl = request?.url.toString()
                 if (mSettings.adBlocked && adBlocker.isAd(requestUrl)) {
-                    logger("isAd" , requestUrl)
+                    //logger("isAd", requestUrl)
                     return createEmptyResource()
                 }
                 if (view != null && request != null) {
@@ -420,8 +424,11 @@ class WebViewFragment : Fragment() {
                 linearProgressIndicator.isIndeterminate = true
                 linearProgressIndicator.show()
             }
-            if (url != null) {
+            if (url != null && urlNow != url) {
                 urlNow = url
+                //logger("clear", urlNow)
+                webVideoViewModel.clearDownloadModel()
+
             }
         }
 

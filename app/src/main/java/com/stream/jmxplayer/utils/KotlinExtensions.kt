@@ -178,18 +178,20 @@ fun AppCompatActivity.showProMode(rewardAdAction: () -> Unit) {
     }
     proButton.setOnClickListener {
         dialogNow.dismiss()
+
+        val packageName = "com.stream.jmxplayer.paid"
         try {
             startActivity(
                 Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=$packageName.paid")
+                    Uri.parse("market://details?id=$packageName")
                 )
             )
         } catch (e2: ActivityNotFoundException) {
             startActivity(
                 Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=$packageName.paid")
+                    Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
                 )
             )
         }
@@ -248,13 +250,13 @@ fun Activity.isBatteryAbsent(): Boolean {
 fun Activity.initPiracy(onAllow: () -> Unit): PiracyChecker {
     val piracyChecker = PiracyChecker(this)
     piracyChecker.display(Display.DIALOG)
-//    piracyChecker.enableUnauthorizedAppsCheck()
-//    if (GlobalFunctions.isProVersion())
-//        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl_paid))
-//    else
-//        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
-//
-//    piracyChecker.enableDebugCheck()
+    piracyChecker.enableUnauthorizedAppsCheck()
+    if (GlobalFunctions.isProVersion())
+        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl_paid))
+    else
+        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
+
+    piracyChecker.enableDebugCheck()
     val valid: String = getString(R.string.download_valid)
 
     val callback = object : PiracyCheckerCallback() {

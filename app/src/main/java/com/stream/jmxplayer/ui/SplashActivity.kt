@@ -15,7 +15,7 @@ import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var intentNow: Intent
-    var adMobAdUtils: AdMobAdUtils? = null
+    var adMobUtils: AdMobUtils? = null
     lateinit var iAdListener: IAdListener
     private lateinit var playerModel: PlayerModel
     private lateinit var alertDialogLoading: AlertDialog
@@ -42,9 +42,9 @@ class SplashActivity : AppCompatActivity() {
 
         piracyChecker = initPiracy {
             MobileAds.initialize(this) {
-                adMobAdUtils = AdMobAdUtils(this)
-                adActivity()
             }
+            adMobUtils = AdMobUtils(this)
+            adActivity()
         }
 
     }
@@ -77,7 +77,7 @@ class SplashActivity : AppCompatActivity() {
 
 
     private fun adActivity() {
-        if (adMobAdUtils == null) {
+        if (adMobUtils == null) {
             workAfterAdActivity()
         }
         iAdListener = object : IAdListener {
@@ -93,7 +93,7 @@ class SplashActivity : AppCompatActivity() {
 
             override fun onAdLoaded(type: Int) {
                 alertDialogLoading.dismiss()
-                adMobAdUtils?.showFullScreenAd()
+                adMobUtils?.showFullScreenAd()
             }
 
             override fun onAdError(error: String) {
@@ -103,9 +103,9 @@ class SplashActivity : AppCompatActivity() {
             }
         }
 
-        if (adMobAdUtils != null) {
-            adMobAdUtils!!.setAdListener(iAdListener)
-            adMobAdUtils!!.loadFullScreenAd()
+        if (adMobUtils != null) {
+            adMobUtils!!.setAdListener(iAdListener)
+            adMobUtils!!.loadFullScreenAd()
         } else {
             workAfterAdActivity()
         }

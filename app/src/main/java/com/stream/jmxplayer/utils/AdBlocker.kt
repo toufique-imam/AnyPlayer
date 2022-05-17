@@ -9,6 +9,7 @@ import okio.source
 
 class AdBlocker(val context: Context) {
     private val AD_HOSTS = HashSet<String>()
+    private val detectedAdUrls = HashSet<String>()
 
     //    val AD_HOSTS_FILE1 = "pgl.yoyo.org.txt"
     val AD_HOSTS_FILE1 = "hosts"
@@ -46,8 +47,12 @@ class AdBlocker(val context: Context) {
 
     fun isAd(url: String?): Boolean {
         if (url == null) return false
+        if (detectedAdUrls.contains(url)) return true
         val httpUrl = url.toHttpUrlOrNull() ?: return false
-        return isAdHost(httpUrl.host)
+        return if (isAdHost(httpUrl.host)) {
+            detectedAdUrls.add(url)
+            true
+        } else false
     }
     /*
         private fun readAdServers2() {

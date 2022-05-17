@@ -13,7 +13,7 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
 import kotlin.math.max
 
-class AdMobAdUtils(var activity: Activity) {
+class AdMobUtils(var activity: Activity) {
     var mInterstitialAd: InterstitialAd? = null
     var mRewardedAd: RewardedAd? = null
     private var adRequest: AdRequest = AdRequest.Builder().build()
