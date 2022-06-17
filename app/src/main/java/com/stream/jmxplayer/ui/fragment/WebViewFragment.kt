@@ -203,11 +203,7 @@ class WebViewFragment : Fragment() {
         }
         fabWatch.setOnClickListener {
             //toaster(requireActivity(), "fab clicked")
-            if (requireActivity() is BrowserActivity) {
-                (requireActivity() as BrowserActivity).loadAd(0) {
-                    showVideoTrack()
-                }
-            }
+            showVideoTrack()
         }
         fabDesktop.setOnClickListener {
             val type = fabDesktop.contentDescription.toString()

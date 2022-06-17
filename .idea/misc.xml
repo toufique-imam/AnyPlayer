@@ -3,6 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/layout/activity_browser.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/layout/activity_player.xml" value="0.2428174235403151" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/layout/content_browser.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/layout/content_exo.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/layout/content_ijk.xml" value="0.23148148148148148" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/layout/content_media.xml" value="0.253125" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/layout/content_vlc.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/layout/exo_player_view_style.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/menu/non_pro.xml" value="0.11302083333333333" />
+        <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMXPlayer/app/src/main/res/menu/toolbar_browse.xml" value="0.11302083333333333" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/drawable/ic_delay_done.xml" value="0.125" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/bottom_sheet_m3u.xml" value="0.11302083333333333" />
         <entry key="..\:/AndroidStudioProjects/work-jmxplayer/JMX_Player/app/src/main/res/layout/content_exo.xml" value="0.11302083333333333" />

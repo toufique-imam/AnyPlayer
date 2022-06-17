@@ -7,15 +7,15 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    compileSdk 32
+    buildToolsVersion '32.1.0 rc1'
 
     defaultConfig {
         applicationId "com.stream.jmxplayer"
         minSdkVersion 21
-        targetSdkVersion 31
-        versionCode 21
-        versionName "2.1"
+        targetSdk 32
+        versionCode 22
+        versionName "2.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
@@ -50,7 +50,6 @@ android {
             dimension "version"
             applicationIdSuffix ".paid"
             versionNameSuffix "-paid"
-
             resValue "string", "app_name", "JMX Player Pro"
         }
     }
@@ -64,8 +63,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     kotlinOptions {
@@ -91,15 +90,17 @@ dependencies {
     implementation files('libs/extension-ffmpeg-release.aar')
     implementation files('libs/extension-av1-release.aar')
     implementation files('libs/extension-vp9-release.aar')
+    implementation files('libs/extension-flac-release.aar')
+    implementation files('libs/extension-opus-release.aar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation "androidx.activity:activity-ktx:1.4.0"
-    implementation 'com.google.android.material:material:1.6.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     //exoplayer
-    implementation 'com.google.android.exoplayer:exoplayer:2.15.1'
+    implementation 'com.google.android.exoplayer:exoplayer:2.17.1'
 
     //preference library
     implementation 'androidx.preference:preference-ktx:1.2.0'
@@ -117,9 +118,9 @@ dependencies {
     //animation
     implementation "com.airbnb.android:lottie:3.7.0"
     //admob
-    implementation 'com.google.android.gms:play-services-ads:20.6.0'
+    implementation 'com.google.android.gms:play-services-ads:21.0.0'
     implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
-    implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
     //gson
     implementation 'com.google.code.gson:gson:2.8.9'
     //cast
@@ -144,5 +145,4 @@ dependencies {
     implementation fileTree(include: ['*.aar'], dir: 'libs')
     //okkhttp
     implementation "com.squareup.okhttp3:okhttp:4.9.0"
-
 }

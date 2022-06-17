@@ -49,11 +49,16 @@ class BrowserActivity : AppCompatActivity(), ICastController, IAdListener {
         val navController = navHostFragment.navController
         navController.addOnDestinationChangedListener { controller, _, _ ->
             toolbar.title = controller.currentDestination?.label ?: toolbar.title
-            if (controller.currentDestination?.id == R.id.historyFragment) {
-                loadAd(0) {}
-            }
-            if (controller.currentDestination?.id == R.id.m3uDisplayCategoryFragment) {
-                loadAd(0) {}
+            when (controller.currentDestination?.id) {
+                R.id.historyFragment -> {
+                    loadAd(0) {}
+                }
+                R.id.m3uDisplayCategoryFragment -> {
+                    loadAd(0) {}
+                }
+                R.id.webviewFragment -> {
+                    loadAd(0) {}
+                }
             }
             inWebView = controller.currentDestination?.id == R.id.webviewFragment
         }
@@ -64,7 +69,7 @@ class BrowserActivity : AppCompatActivity(), ICastController, IAdListener {
     }
 
     var afterAd: (() -> Unit)? = null
-    fun loadAd(type: Int, afterAd: () -> Unit) {
+    private fun loadAd(type: Int, afterAd: () -> Unit) {
         this.afterAd = afterAd
         if (type == 0) adMobUtils?.loadFullScreenAd()
         else adMobUtils?.loadRewardAd()

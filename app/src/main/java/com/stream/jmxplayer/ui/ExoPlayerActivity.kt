@@ -21,6 +21,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.mediarouter.app.MediaRouteButton
 import androidx.recyclerview.widget.GridLayoutManager
@@ -34,7 +35,7 @@ import com.google.android.exoplayer2.source.TrackGroup
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.button.MaterialButton
@@ -55,7 +56,6 @@ import com.stream.jmxplayer.utils.GlobalFunctions.toaster
 import com.stream.jmxplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import kotlin.math.max
 
-@Suppress("Deprecation")
 class ExoPlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
     Player.Listener,
@@ -72,11 +72,11 @@ class ExoPlayerActivity : AppCompatActivity(),
     private var inErrorState = false
     private var errorCount = 0
 
-    private var mPlayer: SimpleExoPlayer? = null
+    private var mPlayer: ExoPlayer? = null
 
     private lateinit var casty: Casty
 
-    private var currentWindow = 0
+    private var currentMediaItemIndex = 0
     private var playbackPosition = 0L
 
     private lateinit var animationUtils: MAnimationUtils
@@ -84,7 +84,7 @@ class ExoPlayerActivity : AppCompatActivity(),
     private lateinit var playerDesc: TextView
     private lateinit var playerLang: TextView
 
-    private lateinit var mPlayerView: PlayerView
+    private lateinit var mPlayerView: StyledPlayerView
     private lateinit var backButton: ImageButton
     private lateinit var menuButton: ImageButton
     private lateinit var drawerLayout: DrawerLayout
@@ -115,7 +115,7 @@ class ExoPlayerActivity : AppCompatActivity(),
     private val viewModel: DatabaseViewModel by viewModels()
     lateinit var mSettings: Settings
 
-    var mediaMetaData: MediaMetadata? = null
+    private var mediaMetaData: MediaMetadata? = null
 
     var idxNow = 0
 
@@ -148,7 +148,7 @@ class ExoPlayerActivity : AppCompatActivity(),
 
         if (savedInstanceState != null) {
             playbackPosition = savedInstanceState.getLong(_playbackPosition, 0)
-            currentWindow = savedInstanceState.getInt(_currentWindowIndex)
+            currentMediaItemIndex = savedInstanceState.getInt(_currentWindowIndex)
             autoPlay = savedInstanceState.getBoolean(_autoPlay)
         }
     }
@@ -521,6 +521,28 @@ class ExoPlayerActivity : AppCompatActivity(),
                 initTrackSelector()
             trackDialog?.show()
         }
+        playButton.setOnClickListener {
+            logger(TAG, "play clicked")
+            mPlayer?.play()
+            toggleButton()
+        }
+
+        pauseButton.setOnClickListener {
+            logger(TAG, "pause clicked")
+            mPlayer?.pause()
+            toggleButton()
+        }
+
+    }
+
+    private fun toggleButton() {
+        if (playButton.isVisible) {
+            playButton.visibility = View.GONE
+            pauseButton.visibility = View.VISIBLE
+        } else {
+            playButton.visibility = View.VISIBLE
+            pauseButton.visibility = View.GONE
+        }
     }
 
     private fun isAudioRenderer(
@@ -783,8 +805,8 @@ class ExoPlayerActivity : AppCompatActivity(),
         audioTrackSelector.visibility = View.GONE
         addToHistory(playerModelNow)
         val mediaSource = PlayerUtils.createMediaSource(this, playerModelNow, errorCount)
-        if (mPlayer is SimpleExoPlayer)
-            (mPlayer as SimpleExoPlayer).setMediaSource(mediaSource)
+        if (mPlayer is ExoPlayer)
+            (mPlayer as ExoPlayer).setMediaSource(mediaSource)
         else mPlayer?.setMediaItem(mediaSource.mediaItem)
     }
 
@@ -795,7 +817,7 @@ class ExoPlayerActivity : AppCompatActivity(),
                 .setPreferredTextLanguage("es")
                 .setPreferredAudioLanguage("es")
         )
-        @DefaultRenderersFactory.ExtensionRendererMode val extensionRendererMode =
+        val extensionRendererMode =
             when (mSettings.renderExo) {
                 1 -> DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
                 2 -> DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
@@ -811,13 +833,13 @@ class ExoPlayerActivity : AppCompatActivity(),
 
         val renderer = DefaultRenderersFactory(this)
             .setExtensionRendererMode(extensionRendererMode)
-        mPlayer = SimpleExoPlayer.Builder(this, renderer)
+
+        mPlayer = ExoPlayer.Builder(this, renderer)
             .setLoadControl(loadControl)
             .setTrackSelector(trackSelector)
             .setSeekBackIncrementMs(15000)
             .setSeekForwardIncrementMs(15000)
             .build()
-
 
     }
 
@@ -836,8 +858,8 @@ class ExoPlayerActivity : AppCompatActivity(),
             createPlayer()
             mPlayer?.playWhenReady = autoPlay
             mPlayer?.addListener(this)
-            if (mPlayer is SimpleExoPlayer) {
-                (mPlayer as SimpleExoPlayer).addAnalyticsListener(this)
+            if (mPlayer is ExoPlayer) {
+                (mPlayer as ExoPlayer).addAnalyticsListener(this)
             }
             mPlayerView.player = mPlayer
         }
@@ -854,7 +876,7 @@ class ExoPlayerActivity : AppCompatActivity(),
             trackSelectorDialog.clear()
             // save the player state before releasing its resources
             playbackPosition = mPlayer?.currentPosition ?: 0L
-            currentWindow = mPlayer?.currentWindowIndex ?: 0
+            currentMediaItemIndex = mPlayer?.currentMediaItemIndex ?: 0
             autoPlay = mPlayer?.playWhenReady ?: true
             mPlayer?.release()
             mPlayer = null
@@ -862,12 +884,12 @@ class ExoPlayerActivity : AppCompatActivity(),
     }
 
     private fun clearResumePosition() {
-        currentWindow = C.INDEX_UNSET
+        currentMediaItemIndex = C.INDEX_UNSET
         playbackPosition = C.TIME_UNSET
     }
 
     private fun updateResumePosition() {
-        currentWindow = mPlayer?.currentWindowIndex ?: 0
+        currentMediaItemIndex = mPlayer?.currentMediaItemIndex ?: 0
         playbackPosition = max(0, mPlayer?.contentPosition ?: 0)
     }
 
@@ -884,12 +906,7 @@ class ExoPlayerActivity : AppCompatActivity(),
         }
     }
 
-
-    override fun onPlayerStateChanged(
-        eventTime: AnalyticsListener.EventTime,
-        playWhenReady: Boolean,
-        playbackState: Int
-    ) {
+    override fun onPlaybackStateChanged(playbackState: Int) {
         val stateString: String
         when (playbackState) {
             ExoPlayer.STATE_IDLE -> {
@@ -903,15 +920,19 @@ class ExoPlayerActivity : AppCompatActivity(),
                 errorCount = 0
                 inErrorState = false
                 audioTrackSelector.visibility = View.VISIBLE
+                if(autoPlay){
+                    toggleButton()
+                }
             }
             ExoPlayer.STATE_ENDED -> {
                 stateString = "STATE_ENDED"
-                mPlayer?.next()
+                mPlayer?.seekToNextMediaItem()
             }
             else -> {
                 stateString = "UNKNOWN"
             }
         }
+        logger(TAG, "Player state changed: $stateString")
     }
 
     override fun onPlayerError(eventTime: AnalyticsListener.EventTime, error: PlaybackException) {
@@ -966,7 +987,11 @@ class ExoPlayerActivity : AppCompatActivity(),
 
     var fromError = false
 
-    override fun onPositionDiscontinuity(reason: Int) {
+    override fun onPositionDiscontinuity(
+        oldPosition: Player.PositionInfo,
+        newPosition: Player.PositionInfo,
+        reason: Int
+    ) {
         if (inErrorState) updateResumePosition()
     }
 

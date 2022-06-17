@@ -250,13 +250,13 @@ fun Activity.isBatteryAbsent(): Boolean {
 fun Activity.initPiracy(onAllow: () -> Unit): PiracyChecker {
     val piracyChecker = PiracyChecker(this)
     piracyChecker.display(Display.DIALOG)
-    piracyChecker.enableUnauthorizedAppsCheck()
-    if (GlobalFunctions.isProVersion())
-        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl_paid))
-    else
-        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
-
-    piracyChecker.enableDebugCheck()
+//    piracyChecker.enableUnauthorizedAppsCheck()
+//    if (GlobalFunctions.isProVersion())
+//        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl_paid))
+//    else
+//        piracyChecker.enableGooglePlayLicensing(getString(R.string.app_lvl))
+//
+//    piracyChecker.enableDebugCheck()
     val valid: String = getString(R.string.download_valid)
 
     val callback = object : PiracyCheckerCallback() {

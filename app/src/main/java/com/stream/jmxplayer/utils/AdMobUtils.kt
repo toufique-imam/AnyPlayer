@@ -11,9 +11,11 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.IAdListener
+import com.stream.jmxplayer.utils.GlobalFunctions.logger
 import kotlin.math.max
 
 class AdMobUtils(var activity: Activity) {
+    val TAG = "AdMobUtils"
     var mInterstitialAd: InterstitialAd? = null
     var mRewardedAd: RewardedAd? = null
     private var adRequest: AdRequest = AdRequest.Builder().build()
@@ -43,6 +45,7 @@ class AdMobUtils(var activity: Activity) {
 
                 override fun onAdFailedToLoad(p0: LoadAdError) {
                     mRewardedAd = null
+                    logger(TAG , p0.message)
                     iAdListener.onAdError(p0.message)
                 }
             })
@@ -68,6 +71,7 @@ class AdMobUtils(var activity: Activity) {
 
                 override fun onAdFailedToLoad(p0: LoadAdError) {
                     mInterstitialAd = null
+                    logger(TAG , p0.message)
                     iAdListener.onAdError(p0.message)
                 }
             })

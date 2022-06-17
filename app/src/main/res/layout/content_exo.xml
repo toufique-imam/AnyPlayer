@@ -9,11 +9,12 @@
     android:orientation="horizontal">
 
 
-    <com.google.android.exoplayer2.ui.PlayerView
+    <com.google.android.exoplayer2.ui.StyledPlayerView
         android:id="@+id/media_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:focusable="true"
+        app:show_buffering="when_playing"
         app:controller_layout_id="@layout/exo_player_view_style"
         app:use_artwork="true" />
 
