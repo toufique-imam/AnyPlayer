@@ -66,7 +66,7 @@ class VideoControlView : FrameLayout {
     var mFormatBuilder = StringBuilder()
     var mFormatter = Formatter(mFormatBuilder, Locale.getDefault())
     var mPauseButton: ImageButton? = null
-    var mPlayButton: ImageButton? = null
+//    var mPlayButton: ImageButton? = null
     var mFfwdButton: ImageButton? = null
     var mRewButton: ImageButton? = null
 
@@ -127,10 +127,10 @@ class VideoControlView : FrameLayout {
         mPauseButton = view.findViewById(R.id.vlc_pause)
         mPauseButton?.contentDescription = "play"
         mPauseButton?.setOnClickListener(mPauseListener)
-        mPlayButton = view.findViewById(R.id.vlc_play)
-        mPlayButton?.visibility = View.GONE
+//        mPlayButton = view.findViewById(R.id.vlc_play)
+//        mPlayButton?.visibility = View.GONE
         mPauseButton?.visibility = View.VISIBLE
-        mPlayButton?.isEnabled = false
+//        mPlayButton?.isEnabled = false
 //        mPlayButton?.setOnClickListener(mPauseListener)
 
         mFfwdButton = view.findViewById(R.id.vlc_forward)
@@ -191,7 +191,7 @@ class VideoControlView : FrameLayout {
             val tlp = LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT,
-                Gravity.BOTTOM
+                Gravity.TOP
             )
             mAnchor?.addView(this, tlp)
             mShowing = true

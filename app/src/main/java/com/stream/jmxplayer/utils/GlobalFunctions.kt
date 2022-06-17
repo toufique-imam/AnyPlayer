@@ -17,6 +17,7 @@ import com.stream.jmxplayer.R
 import com.stream.jmxplayer.model.PlayerModel
 import com.stream.jmxplayer.ui.ExoPlayerActivity
 import com.stream.jmxplayer.ui.IJKPlayerActivity
+import com.stream.jmxplayer.ui.PlayerActivity
 import com.stream.jmxplayer.ui.VlcActivity
 import me.drakeet.support.toast.ToastCompat
 import java.net.*
@@ -238,11 +239,12 @@ object GlobalFunctions {
     fun getIntentPlayer(context: Context, state: Int): Intent {
         val intent = Intent(
             context,
-            when (state) {
-                Settings.PV_PLAYER__IjkExoMediaPlayer -> ExoPlayerActivity::class.java
-                Settings.PV_PLAYER__IjkMediaPlayer -> IJKPlayerActivity::class.java
-                else -> VlcActivity::class.java
-            }
+//            when (state) {
+//                Settings.PV_PLAYER__IjkExoMediaPlayer -> ExoPlayerActivity::class.java
+//                Settings.PV_PLAYER__IjkMediaPlayer -> IJKPlayerActivity::class.java
+//                else -> VlcActivity::class.java
+//            }
+            PlayerActivity::class.java
         )
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         return intent

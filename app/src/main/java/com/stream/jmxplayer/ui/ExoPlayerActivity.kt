@@ -35,6 +35,7 @@ import com.google.android.exoplayer2.source.TrackGroup
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector
+import com.google.android.exoplayer2.trackselection.TrackSelectionOverride
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.util.Util
@@ -65,7 +66,6 @@ class ExoPlayerActivity : AppCompatActivity(),
     private val _currentWindowIndex = "current_window_index"
     private val _playbackPosition = "playback_position"
 
-    private lateinit var alertDialogLoading: AlertDialog
     private lateinit var playerModelNow: PlayerModel
 
     private var autoPlay = true
@@ -129,7 +129,6 @@ class ExoPlayerActivity : AppCompatActivity(),
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_player)
         piracyChecker = initPiracy {}
-        alertDialogLoading = createAlertDialogueLoading()
 
         //historyDB = HistoryDatabase.getInstance(this)
         getDataFromIntent()
@@ -239,22 +238,22 @@ class ExoPlayerActivity : AppCompatActivity(),
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         mPlayerView = findViewById(R.id.media_view)
-        forwardButton = mPlayerView.findViewById(R.id.exo_ffwd)
-        rewindButton = mPlayerView.findViewById(R.id.exo_rew)
-        playButton = mPlayerView.findViewById(R.id.exo_play)
-        pauseButton = mPlayerView.findViewById(R.id.exo_pause)
-        backButton = findViewById(R.id.exo_back)
+        forwardButton = mPlayerView.findViewById(R.id.player_ffwd)
+        rewindButton = mPlayerView.findViewById(R.id.player_rew)
+        playButton = mPlayerView.findViewById(R.id.player_play)
+        pauseButton = mPlayerView.findViewById(R.id.player_pause)
+        backButton = findViewById(R.id.player_back)
 
         playerTitle = findViewById(R.id.textView_title_exo)
         playerDesc = findViewById(R.id.textView_desc_exo)
         playerLang = findViewById(R.id.textView_language_exo)
 
-        menuButton = findViewById(R.id.exo_menu)
-        castButton = findViewById(R.id.exo_custom_cast)
+        menuButton = findViewById(R.id.player_menu)
+        castButton = findViewById(R.id.player_custom_cast)
 
         nextButton = findViewById(R.id.playlistNext)
         previousButton = findViewById(R.id.playlistPrev)
-        audioTrackSelector = mPlayerView.findViewById(R.id.exo_track_selector)
+        audioTrackSelector = mPlayerView.findViewById(R.id.player_track_selector)
 
         recyclerViewAutoHide()
 
@@ -426,7 +425,7 @@ class ExoPlayerActivity : AppCompatActivity(),
                     TrackSelectionDialogBuilder(
                         this,
                         "Select audio track",
-                        trackSelector,
+                        mPlayer!!,
                         i
                     ).build()
                 )
@@ -920,7 +919,7 @@ class ExoPlayerActivity : AppCompatActivity(),
                 errorCount = 0
                 inErrorState = false
                 audioTrackSelector.visibility = View.VISIBLE
-                if(autoPlay){
+                if (autoPlay) {
                     toggleButton()
                 }
             }

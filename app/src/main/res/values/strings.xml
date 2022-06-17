@@ -4,7 +4,7 @@
 
     <string name="permission_not_granted">La aplicación requiere acceso al almacenamiento para acceder a los elementos almacenados en MediaStore.</string>
     <string name="receiver_id">8639B975</string>
-<!--    <string name="app_name">JMX Player</string>-->
+    <!--    <string name="app_name">JMX Player</string>-->
     <string name="rotate">Orientacion de pantalla</string>
     <string name="resize">Ajuste Pantalla</string>
     Open Album
