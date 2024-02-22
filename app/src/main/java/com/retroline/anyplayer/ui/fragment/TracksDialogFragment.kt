@@ -6,12 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.retroline.anyplayer.R
 import com.retroline.anyplayer.adapter.TrackAdapter
 import com.retroline.anyplayer.adapter.TrackAdapterVLC
 import com.retroline.anyplayer.databinding.PlayerOverlayTracksBinding
 import com.retroline.anyplayer.model.TrackInfo
 import com.retroline.anyplayer.ui.view.IjkVideoView
-import com.retroline.anyplayer.utils.*
+import com.retroline.anyplayer.utils.getAudioTracks
+import com.retroline.anyplayer.utils.getAudioTracksCount
+import com.retroline.anyplayer.utils.getVideoTracks
+import com.retroline.anyplayer.utils.getVideoTracksCount
+import com.retroline.anyplayer.utils.setGone
+import com.retroline.anyplayer.utils.setVisible
 import org.videolan.libvlc.MediaPlayer
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
 
@@ -134,9 +140,9 @@ class TracksDialogFragment : AnyBottomSDFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.audioTracks.trackTitle.text = "Audio"
-        binding.videoTracks.trackTitle.text = "Video"
-        binding.subtitleTracks.trackTitle.text = "Subtitle"
+        binding.audioTracks.trackTitle.text = resources.getString(R.string.audio)
+        binding.videoTracks.trackTitle.text = resources.getString(R.string.video)
+        binding.subtitleTracks.trackTitle.text = resources.getString(R.string.subtitles)
 
         binding.audioTracks.trackList.layoutManager = LinearLayoutManager(requireActivity())
         binding.videoTracks.trackList.layoutManager = LinearLayoutManager(requireActivity())

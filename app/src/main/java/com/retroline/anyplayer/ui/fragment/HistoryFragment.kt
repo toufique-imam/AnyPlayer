@@ -3,14 +3,18 @@ package com.retroline.anyplayer.ui.fragment
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.stfalcon.imageviewer.StfalconImageViewer
 import com.retroline.anyplayer.R
 import com.retroline.anyplayer.adapter.GalleryAdapter
 import com.retroline.anyplayer.adapter.GalleryItemViewHolder
@@ -21,6 +25,7 @@ import com.retroline.anyplayer.utils.GlobalFunctions
 import com.retroline.anyplayer.utils.Settings
 import com.retroline.anyplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import com.retroline.anyplayer.utils.setGone
+import com.stfalcon.imageviewer.StfalconImageViewer
 
 class HistoryFragment : Fragment() {
 
@@ -118,7 +123,7 @@ class HistoryFragment : Fragment() {
         val searchView = menu.findItem(R.id.action_search_history)?.actionView as SearchView
         searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
         searchView.maxWidth = Int.MAX_VALUE
-        searchView.queryHint = "Buscar canal"
+        searchView.queryHint = resources.getString(R.string.search)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 galleryAdapter.filter.filter(query)

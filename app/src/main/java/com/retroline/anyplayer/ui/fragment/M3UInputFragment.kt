@@ -23,9 +23,13 @@ import com.retroline.anyplayer.adapter.GalleryAdapter
 import com.retroline.anyplayer.adapter.GalleryItemViewHolder
 import com.retroline.anyplayer.model.PlayerModel
 import com.retroline.anyplayer.ui.viewmodel.DatabaseViewModel
-import com.retroline.anyplayer.utils.*
+import com.retroline.anyplayer.utils.GlobalFunctions
 import com.retroline.anyplayer.utils.GlobalFunctions.toaster
+import com.retroline.anyplayer.utils.PlayerUtils
+import com.retroline.anyplayer.utils.SharedPreferenceUtils
 import com.retroline.anyplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.retroline.anyplayer.utils.checkUrl
+import com.retroline.anyplayer.utils.createAlertDialogueLoading
 import com.retroline.anyplayer.utils.m3u.OnScrappingCompleted
 import com.retroline.anyplayer.utils.m3u.Parser
 import com.retroline.anyplayer.utils.m3u.Scrapper
@@ -114,7 +118,7 @@ class M3UInputFragment : Fragment() {
         )
         val builder = AlertDialog.Builder(requireContext())
             .setView(dialogView)
-        builder.setTitle("Stream Personal")
+        builder.setTitle("Personal Stream")
         alertDialog = builder.create()
         titleInput = dialogView.findViewById(R.id.text_view_custom_stream_name)
         linkInput = dialogView.findViewById(R.id.text_view_custom_stream_url)
