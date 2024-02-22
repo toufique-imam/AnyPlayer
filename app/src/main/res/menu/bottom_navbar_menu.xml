@@ -11,10 +11,6 @@
         android:icon="@drawable/ic_baseline_ondemand_video_24"
         android:title="@string/stream" />
 
-    <item
-        android:id="@+id/webviewFragment"
-        android:icon="@drawable/ic_baseline_web_24"
-        android:title="@string/browse_web" />
 
     <item
         android:id="@+id/historyFragment"

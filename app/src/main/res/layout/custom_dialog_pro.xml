@@ -23,24 +23,4 @@
         android:textSize="14sp"
         android:textStyle="italic" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/material_button_buy_pro"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="10dp"
-        android:padding="5dp"
-        android:text="@string/pro_unlock_message" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="@string/buy_pro_description"
-        android:textAlignment="center"
-        android:textSize="14sp"
-        android:textStyle="italic" />
-
-
 </LinearLayout>

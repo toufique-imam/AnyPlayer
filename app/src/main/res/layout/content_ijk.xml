@@ -8,7 +8,7 @@
     android:orientation="horizontal">
 
 
-    <com.stream.jmxplayer.ui.view.IjkVideoView
+    <com.retroline.anyplayer.ui.view.IjkVideoView
         android:id="@+id/ijk_media_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

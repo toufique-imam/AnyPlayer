@@ -8,7 +8,7 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.JMXPlayer.AppBarOverlay"
+        android:theme="@style/Theme.AnyPlayer.AppBarOverlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -19,7 +19,7 @@
             android:layout_height="60dp"
             android:background="@color/ic_launcher_background"
             android:padding="4dp"
-            app:popupTheme="@style/Theme.JMXPlayer.PopupOverlay"
+            app:popupTheme="@style/Theme.AnyPlayer.PopupOverlay"
             app:title="@string/app_name">
 
         </com.google.android.material.appbar.MaterialToolbar>

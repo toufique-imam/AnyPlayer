@@ -1,0 +1,133 @@
+package com.retroline.anyplayer.utils
+
+import android.app.Activity
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.retroline.anyplayer.R
+import com.retroline.anyplayer.model.IAdListener
+import com.retroline.anyplayer.utils.GlobalFunctions.logger
+import kotlin.math.max
+
+class AdMobUtils(var activity: Activity) {
+    val TAG = "AdMobUtils"
+    var mInterstitialAd: InterstitialAd? = null
+    var mRewardedAd: RewardedAd? = null
+    lateinit var iAdListener: IAdListener
+    private val preference =
+        activity.getSharedPreferences(SharedPreferenceUtils.SHARED_PREF, Activity.MODE_PRIVATE)
+    private val editor = preference.edit()
+    fun setAdListener(iAdListener: IAdListener) {
+        this.iAdListener = iAdListener
+    }
+
+    fun loadRewardAd() {
+        val adRequest: AdRequest = AdRequest.Builder().build()
+        iAdListener.onAdLoadingStarted()
+        RewardedAd.load(
+            activity,
+            activity.getString(R.string.REWARD_AD_ID),
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdLoaded(p0: RewardedAd) {
+                    mRewardedAd = p0
+                    iAdListener.onAdLoaded(1)
+                }
+
+                override fun onAdFailedToLoad(p0: LoadAdError) {
+                    mRewardedAd = null
+                    logger(TAG , p0.message)
+                    iAdListener.onAdError(p0.message)
+                }
+            })
+    }
+
+    fun loadFullScreenAd() {
+        if (isRewarded()) {
+            iAdListener.onAdActivityDone("reward")
+            return
+        }
+
+        val adRequest: AdRequest = AdRequest.Builder().build()
+        iAdListener.onAdLoadingStarted()
+        InterstitialAd.load(activity,
+            activity.getString(R.string.Interstitial_AD_ID),
+            adRequest, object : InterstitialAdLoadCallback() {
+                override fun onAdLoaded(p0: InterstitialAd) {
+                    mInterstitialAd = p0
+                    iAdListener.onAdLoaded(0)
+                }
+
+                override fun onAdFailedToLoad(p0: LoadAdError) {
+                    mInterstitialAd = null
+                    logger(TAG , p0.message)
+                    iAdListener.onAdError(p0.message)
+                }
+            })
+    }
+
+    fun showFullScreenAd() {
+        if (mInterstitialAd == null) {
+            iAdListener.onAdError("null")
+            return
+        }
+        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                iAdListener.onAdError(p0.message)
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                mInterstitialAd = null
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                iAdListener.onAdActivityDone("Done")
+            }
+        }
+        mInterstitialAd?.show(activity)
+    }
+
+    fun showRewardAd() {
+        if (mRewardedAd == null) {
+            iAdListener.onAdError("null")
+            return
+        }
+        mRewardedAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                iAdListener.onAdError(p0.message)
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                mInterstitialAd = null
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                iAdListener.onAdActivityDone("Done")
+            }
+        }
+        mRewardedAd!!.show(activity) {
+            saveReward()
+        }
+    }
+
+    private val STOP_AD = "JMX_REWARD_PRO"
+    private fun saveReward() {
+        val time: Long
+        val timeNow = preference.getLong(STOP_AD, 0L)
+        time = max(timeNow, System.currentTimeMillis()) + 3600000L
+        editor.putLong(STOP_AD, time)
+        editor.apply()
+    }
+
+    private fun isRewarded(): Boolean {
+        val timeNow = System.currentTimeMillis()
+        val timeReward = preference.getLong(STOP_AD, 0L)
+        return timeNow < timeReward
+    }
+
+}

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.JMXPlayer.NoActionBar">
+    <style name="Theme.AnyPlayer.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="Theme.JMXPlayer.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+    <style name="Theme.AnyPlayer.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
-    <style name="Theme.JMXPlayer.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+    <style name="Theme.AnyPlayer.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 </resources>

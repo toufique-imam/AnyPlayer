@@ -7,11 +7,11 @@
 
         <import type="android.view.View" />
 
-        <import type="com.stream.jmxplayer.model.TrackInfo" />
+        <import type="com.retroline.anyplayer.model.TrackInfo" />
 
         <variable
             name="track"
-            type="com.stream.jmxplayer.model.TrackInfo" />
+            type="com.retroline.anyplayer.model.TrackInfo" />
 
         <variable
             name="selected"

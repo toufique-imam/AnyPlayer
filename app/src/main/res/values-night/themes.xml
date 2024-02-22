@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.JMXPlayer" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.AnyPlayer" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/DodgerBlue</item>
         <item name="colorPrimaryVariant">@color/MidnightBlue</item>

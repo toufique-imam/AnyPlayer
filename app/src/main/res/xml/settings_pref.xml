@@ -2,8 +2,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
-        app:key="@string/app_name"
-        app:title="Interfaz">
+        app:key="@string/APP_NAME"
+        app:title="Interface">
 
         <ListPreference
             android:summary="@string/pref_summary_theme"
@@ -24,17 +24,6 @@
             app:entryValues="@array/pref_entry_values_player_select"
             app:key="@string/pref_key_player_select"
             app:title="@string/pref_title_player_select" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        app:key="@string/app_name"
-        app:title="@string/browse_web">
-
-        <SwitchPreference
-            android:defaultValue="true"
-            app:key="@string/pref_key_enable_ad_blocker"
-            app:title="@string/pref_title_enable_ad_blocker" />
-
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -77,22 +66,22 @@
             app:title="@string/pref_title_pixel_format" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Ayuda e información">
+    <PreferenceCategory android:title="Help and information">
         <Preference
-            android:key="@string/jmx_support"
-            android:summary="Envíanos un mensaje a nuestro correo para recibir asistencia e informar de errores"
-            android:title="Soporte" />
+            android:key="@string/any_support"
+            android:summary="Send us a message to our email to receive assistance and report errors"
+            android:title="Support" />
         <Preference
-            android:key="@string/jmx_terms"
-            android:summary="Leer términos y condiciones"
-            android:title="Condiciones de Uso" />
+            android:key="@string/any_terms"
+            android:summary="Read terms and conditions"
+            android:title="Terms of use" />
         <Preference
-            android:key="@string/jmx_policy"
-            android:summary="Leer política de privacidad"
-            android:title="Política de Privacidad" />
+            android:key="@string/any_policy"
+            android:summary="Read privacy policy"
+            android:title="Privacy Policy" />
         <Preference
-            android:key="@string/jmx_version_key"
-            android:summary="@string/jmx_version"
-            android:title="Version de aplicacion" />
+            android:key="@string/any_version_key"
+            android:summary="@string/any_version"
+            android:title="Version" />
     </PreferenceCategory>
 </PreferenceScreen>
