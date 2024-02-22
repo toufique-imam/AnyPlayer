@@ -246,4 +246,5 @@
     <string name="any_version">1.0</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_m3u">add_m3u</string>
 </resources>

@@ -13,9 +13,15 @@
     <color name="DodgerBlue">#1e90ff</color>
     <color name="MidnightBlue">#191970</color>
     <color name="Navy">#000080</color>
+    <color name="OrangeNavy">#852b01</color>
     <color name="RoyalBlue">#4169e1</color>
+    <color name="OrangeSecondary">#f26929</color>
+    <color name="OrangeThird">#f7814a</color>
+    <color name="OrangeMidNight">#db4804</color>
     <color name="CornflowerBlue">#6495ED</color>
+    <color name="CornflowerOrange">#ed9464</color>
     <color name="CadetBlue">#5F9EA0</color>
+    <color name="CadetOrange">#a09e5f</color>
 
     <!--
         Material color swatches

@@ -2,7 +2,7 @@ package com.retroline.anyplayer.ui
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.github.javiersantos.piracychecker.PiracyChecker
 import com.google.android.gms.ads.MobileAds
@@ -16,13 +16,13 @@ import com.retroline.anyplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 class SplashActivity : AppCompatActivity() {
     private lateinit var intentNow: Intent
     var adMobUtils: AdMobUtils? = null
-    lateinit var iAdListener: IAdListener
+    private lateinit var linearLayoutLoading: LinearLayout
+    private lateinit var iAdListener: IAdListener
     private lateinit var playerModel: PlayerModel
-    private lateinit var alertDialogLoading: AlertDialog
 
 
     private lateinit var mSettings: Settings
-    var piracyChecker: PiracyChecker? = null
+    private var piracyChecker: PiracyChecker? = null
     override fun onDestroy() {
         super.onDestroy()
         piracyChecker?.destroy()
@@ -34,11 +34,13 @@ class SplashActivity : AppCompatActivity() {
         setTheme(mSettings.themeId)
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
+        linearLayoutLoading = findViewById(R.id.linear_layout_loading)
+        linearLayoutLoading.setGone()
 
         intentNow = intent
         playerModel = PlayerUtils.parseIntent(intentNow)
 
-        alertDialogLoading = this.createAlertDialogueLoading()
+//        alertDialogLoading = this.createAlertDialogueLoading()
 
         piracyChecker = initPiracy {
             MobileAds.initialize(this) {
@@ -82,22 +84,22 @@ class SplashActivity : AppCompatActivity() {
         }
         iAdListener = object : IAdListener {
             override fun onAdActivityDone(result: String) {
-                alertDialogLoading.dismiss()
+//                alertDialogLoading.dismiss()
                 logger("Splash Ad", result)
                 workAfterAdActivity()
             }
 
             override fun onAdLoadingStarted() {
-                alertDialogLoading.show()
+                linearLayoutLoading.setVisible()
             }
 
             override fun onAdLoaded(type: Int) {
-                alertDialogLoading.dismiss()
+//                alertDialogLoading.dismiss()
                 adMobUtils?.showFullScreenAd()
             }
 
             override fun onAdError(error: String) {
-                alertDialogLoading.dismiss()
+//                alertDialogLoading.dismiss()
                 logger("Splash Ad", error)
                 workAfterAdActivity()
             }

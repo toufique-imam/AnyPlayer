@@ -37,12 +37,6 @@ import com.retroline.anyplayer.utils.Settings
 import com.retroline.anyplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-
-/**
- * A simple [Fragment] subclass.
- * Use the [BrowseFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class BrowseFragment : Fragment() {
     private val disposables = CompositeDisposable()
 
@@ -84,9 +78,9 @@ class BrowseFragment : Fragment() {
                 if (tab != null) {
                     val prevType = typeNow
                     when (tab.text) {
-                        "Video" -> typeNow = PlayerModel.STREAM_OFFLINE_VIDEO
-                        "Audio" -> typeNow = PlayerModel.STREAM_OFFLINE_AUDIO
-                        "Imagen" -> typeNow = PlayerModel.STREAM_OFFLINE_IMAGE
+                        resources.getString(R.string.video) -> typeNow = PlayerModel.STREAM_OFFLINE_VIDEO
+                        resources.getString(R.string.audio) -> typeNow = PlayerModel.STREAM_OFFLINE_AUDIO
+                        resources.getString(R.string.image) -> typeNow = PlayerModel.STREAM_OFFLINE_IMAGE
                     }
                     if (prevType != typeNow) {
                         openMediaStore()
@@ -210,7 +204,7 @@ class BrowseFragment : Fragment() {
         val searchView = menu.findItem(R.id.action_search)?.actionView as SearchView
         searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
         searchView.maxWidth = Int.MAX_VALUE
-        searchView.queryHint = "Buscar canal"
+        searchView.queryHint = SEARCH_VIEW_QUERY_HINT
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 galleryAdapter.filter.filter(query)
@@ -315,4 +309,10 @@ class BrowseFragment : Fragment() {
         }
     }
 
+    companion object {
+        const val TAB_LAYOUT_VIDEO = "Video"
+        const val TAB_LAYOUT_AUDIO = "Audio"
+        const val TAB_LAYOUT_IMAGE = "Image"
+        const val SEARCH_VIEW_QUERY_HINT = "Search channel"
+    }
 }
