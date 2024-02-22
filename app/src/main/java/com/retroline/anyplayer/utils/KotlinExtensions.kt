@@ -28,7 +28,7 @@ import com.retroline.anyplayer.model.TrackInfo
 import com.retroline.anyplayer.ui.view.IjkVideoView
 import com.retroline.anyplayer.utils.GlobalFunctions.toaster
 import tv.danmaku.ijk.media.player.misc.ITrackInfo
-import java.util.*
+import java.util.Locale
 
 fun View.isVisible() = visibility == View.VISIBLE
 fun View.isInvisible() = visibility == View.INVISIBLE

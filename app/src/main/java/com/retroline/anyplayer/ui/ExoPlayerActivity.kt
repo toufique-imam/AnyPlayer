@@ -27,7 +27,13 @@ import androidx.mediarouter.app.MediaRouteButton
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.javiersantos.piracychecker.PiracyChecker
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaMetadata
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
@@ -40,6 +46,7 @@ import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
+import com.retroline.anyplayer.R
 import com.retroline.anyplayer.adapter.GalleryAdapter
 import com.retroline.anyplayer.adapter.GalleryItemViewHolder
 import com.retroline.anyplayer.casty.Casty
@@ -49,12 +56,18 @@ import com.retroline.anyplayer.ui.IJKPlayerActivity.Companion.FROM_ERROR
 import com.retroline.anyplayer.ui.view.IjkVideoView
 import com.retroline.anyplayer.ui.view.TableLayoutBinder
 import com.retroline.anyplayer.ui.viewmodel.DatabaseViewModel
-import com.retroline.anyplayer.utils.*
+import com.retroline.anyplayer.utils.GlobalFunctions
 import com.retroline.anyplayer.utils.GlobalFunctions.logger
 import com.retroline.anyplayer.utils.GlobalFunctions.toaster
+import com.retroline.anyplayer.utils.MAnimationUtils
+import com.retroline.anyplayer.utils.PlayerUtils
+import com.retroline.anyplayer.utils.ResizeUtils
+import com.retroline.anyplayer.utils.Settings
 import com.retroline.anyplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.retroline.anyplayer.utils.createAlertDialogueLoading
+import com.retroline.anyplayer.utils.createPlayerDialogue
+import com.retroline.anyplayer.utils.initPiracy
 import kotlin.math.max
-import com.retroline.anyplayer.R
 
 class ExoPlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,

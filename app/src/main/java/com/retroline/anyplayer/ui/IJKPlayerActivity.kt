@@ -7,7 +7,12 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -34,10 +39,18 @@ import com.retroline.anyplayer.ui.view.IjkVideoView
 import com.retroline.anyplayer.ui.view.MeasureHelper
 import com.retroline.anyplayer.ui.view.VideoControlView
 import com.retroline.anyplayer.ui.viewmodel.DatabaseViewModel
-import com.retroline.anyplayer.utils.*
+import com.retroline.anyplayer.utils.GlobalFunctions
 import com.retroline.anyplayer.utils.GlobalFunctions.logger
 import com.retroline.anyplayer.utils.GlobalFunctions.toaster
+import com.retroline.anyplayer.utils.MAnimationUtils
+import com.retroline.anyplayer.utils.MediaFileUtils
+import com.retroline.anyplayer.utils.PlayerUtils
+import com.retroline.anyplayer.utils.Settings
 import com.retroline.anyplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.retroline.anyplayer.utils.createAlertDialogueLoading
+import com.retroline.anyplayer.utils.createPlayerDialogue
+import com.retroline.anyplayer.utils.initPiracy
+import com.retroline.anyplayer.utils.isStarted
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 class IJKPlayerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {

@@ -3,7 +3,14 @@ package com.retroline.anyplayer.utils
 import android.content.Context
 import android.util.Base64
 import com.retroline.anyplayer.utils.GlobalFunctions.logger
-import java.io.*
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.io.Reader
 import java.nio.charset.StandardCharsets
 
 class TextFileUtils(val context: Context) {

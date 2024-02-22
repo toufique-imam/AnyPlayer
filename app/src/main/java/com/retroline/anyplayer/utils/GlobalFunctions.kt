@@ -18,8 +18,13 @@ import com.retroline.anyplayer.ui.ExoPlayerActivity
 import com.retroline.anyplayer.ui.IJKPlayerActivity
 import com.retroline.anyplayer.ui.VlcActivity
 import me.drakeet.support.toast.ToastCompat
-import java.net.*
-import java.util.*
+import java.net.InetAddress
+import java.net.MalformedURLException
+import java.net.NetworkInterface
+import java.net.URL
+import java.net.URLDecoder
+import java.util.Collections
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min

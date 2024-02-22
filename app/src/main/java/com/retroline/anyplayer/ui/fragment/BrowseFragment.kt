@@ -7,7 +7,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -19,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
-import com.stfalcon.imageviewer.StfalconImageViewer
 import com.retroline.anyplayer.R
 import com.retroline.anyplayer.adapter.GalleryAdapter
 import com.retroline.anyplayer.adapter.GalleryItemViewHolder
@@ -35,6 +39,7 @@ import com.retroline.anyplayer.utils.GlobalFunctions.toaster
 import com.retroline.anyplayer.utils.NotificationCenter
 import com.retroline.anyplayer.utils.Settings
 import com.retroline.anyplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.stfalcon.imageviewer.StfalconImageViewer
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class BrowseFragment : Fragment() {

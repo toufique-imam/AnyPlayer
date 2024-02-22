@@ -9,9 +9,15 @@ import com.google.android.gms.ads.MobileAds
 import com.retroline.anyplayer.R
 import com.retroline.anyplayer.model.IAdListener
 import com.retroline.anyplayer.model.PlayerModel
-import com.retroline.anyplayer.utils.*
+import com.retroline.anyplayer.utils.AdMobUtils
+import com.retroline.anyplayer.utils.GlobalFunctions
 import com.retroline.anyplayer.utils.GlobalFunctions.logger
+import com.retroline.anyplayer.utils.PlayerUtils
+import com.retroline.anyplayer.utils.Settings
 import com.retroline.anyplayer.utils.SharedPreferenceUtils.Companion.PlayListAll
+import com.retroline.anyplayer.utils.initPiracy
+import com.retroline.anyplayer.utils.setGone
+import com.retroline.anyplayer.utils.setVisible
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var intentNow: Intent

@@ -5,17 +5,27 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.AttributeSet
-import android.view.*
+import android.view.Gravity
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
 import android.view.View.OnClickListener
+import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.ImageButton
+import android.widget.ProgressBar
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.core.view.isVisible
 import com.retroline.anyplayer.R
 import com.retroline.anyplayer.model.MediaPlayerControl
 import com.retroline.anyplayer.utils.GlobalFunctions.logger
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Formatter
+import java.util.Locale
 
 class VideoControlView : FrameLayout {
     companion object {
