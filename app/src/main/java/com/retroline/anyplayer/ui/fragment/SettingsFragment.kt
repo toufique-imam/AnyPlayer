@@ -118,14 +118,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val buttonTerms: Preference? = findPreference(getString(R.string.any_terms))
         buttonTerms?.setOnPreferenceClickListener {
             val browserIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://anyplayer.vercel.app/Terms.html"))
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://any-player.vercel.app/terms"))
             startActivity(browserIntent)
             true
         }
         val buttonPolicy: Preference? = findPreference(getString(R.string.any_policy))
         buttonPolicy?.setOnPreferenceClickListener {
             val browserIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://anyplayer.vercel.app/Policy.html"))
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://any-player.vercel.app/policy"))
             startActivity(browserIntent)
             true
         }
@@ -133,7 +133,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         buttonMail?.setOnPreferenceClickListener {
             val browserIntent = Intent(Intent.ACTION_SENDTO)
             browserIntent.data = Uri.parse("mailto:") // only email apps should handle this
-            browserIntent.putExtra(Intent.EXTRA_EMAIL, "2013nuhash@gmail.com")
+            browserIntent.putExtra(Intent.EXTRA_EMAIL, "retroline.apps@gmail.com")
             if (browserIntent.resolveActivity(requireActivity().packageManager) != null) {
                 startActivity(browserIntent)
             }

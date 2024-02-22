@@ -5,6 +5,7 @@ import com.retroline.anyplayer.castconnect.CastServer
 import com.retroline.anyplayer.utils.GlobalFunctions
 import java.io.IOException
 
+
 class AnyPlayerApplication : Application() {
     private var castServer: CastServer? = null
     override fun onCreate() {

@@ -82,7 +82,7 @@ class GalleryAdapter(
                     R.drawable.logo_playlist2
                 }
             )
-            .sizeMultiplier(0.25f)
+            .sizeMultiplier(0.75f)
             .placeholder(
                 if (playerModel.streamType == PlayerModel.STREAM_OFFLINE_AUDIO) R.drawable.ic_empty_music2
                 else R.drawable.main_logo
@@ -101,6 +101,7 @@ class GalleryAdapter(
             holder.durationView.text = playerModel.link
         }
         holder.titleView.text = playerModel.title
+        holder.titleView.isSelected = true
         if (type == GalleryItemViewHolder.SINGLE_NO_DELETE) {
             holder.titleView.setTextColor(Color.WHITE)
             holder.durationView.setTextColor(Color.WHITE)

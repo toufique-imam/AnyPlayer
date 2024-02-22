@@ -17,10 +17,8 @@
 
 package com.retroline.anyplayer.ui.view;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Surface;
@@ -43,7 +41,6 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHolder;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHost;
 
-@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class TextureRenderView extends TextureView implements IRenderView {
     private static final String TAG = "TextureRenderView";
     private MeasureHelper mMeasureHelper;
@@ -64,7 +61,6 @@ public class TextureRenderView extends TextureView implements IRenderView {
         initView(context);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public TextureRenderView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initView(context);
@@ -76,6 +72,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
         setSurfaceTextureListener(mSurfaceCallback);
     }
 
+    @NonNull
     @Override
     public View getView() {
         return this;
@@ -143,12 +140,12 @@ public class TextureRenderView extends TextureView implements IRenderView {
     //-------------------------
 
     @Override
-    public void addRenderCallback(IRenderCallback callback) {
+    public void addRenderCallback(@NonNull IRenderCallback callback) {
         mSurfaceCallback.addRenderCallback(callback);
     }
 
     @Override
-    public void removeRenderCallback(IRenderCallback callback) {
+    public void removeRenderCallback(@NonNull IRenderCallback callback) {
         mSurfaceCallback.removeRenderCallback(callback);
     }
 
@@ -181,13 +178,11 @@ public class TextureRenderView extends TextureView implements IRenderView {
             mSurfaceTextureHost = surfaceTextureHost;
         }
 
-        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         public void bindToMediaPlayer(IMediaPlayer mp) {
             if (mp == null)
                 return;
 
-            if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) &&
-                    (mp instanceof ISurfaceTextureHolder)) {
+            if (mp instanceof ISurfaceTextureHolder) {
                 ISurfaceTextureHolder textureHolder = (ISurfaceTextureHolder) mp;
                 mTextureView.mSurfaceCallback.setOwnSurfaceTexture(false);
 
@@ -256,8 +251,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
             ISurfaceHolder surfaceHolder = null;
             if (mSurfaceTexture != null) {
-                if (surfaceHolder == null)
-                    surfaceHolder = new InternalSurfaceHolder(mWeakRenderView.get(), mSurfaceTexture, this);
+                surfaceHolder = new InternalSurfaceHolder(mWeakRenderView.get(), mSurfaceTexture, this);
                 callback.onSurfaceCreated(surfaceHolder, mWidth, mHeight);
             }
 
@@ -273,7 +267,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
         }
 
         @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surface, int width, int height) {
             mSurfaceTexture = surface;
             mIsFormatChanged = false;
             mWidth = 0;
@@ -286,7 +280,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
         }
 
         @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+        public void onSurfaceTextureSizeChanged(@NonNull SurfaceTexture surface, int width, int height) {
             mSurfaceTexture = surface;
             mIsFormatChanged = true;
             mWidth = width;
@@ -299,7 +293,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
         }
 
         @Override
-        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        public boolean onSurfaceTextureDestroyed(@NonNull SurfaceTexture surface) {
             mSurfaceTexture = surface;
             mIsFormatChanged = false;
             mWidth = 0;
@@ -315,7 +309,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
         }
 
         @Override
-        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+        public void onSurfaceTextureUpdated(@NonNull SurfaceTexture surface) {
         }
 
         //-------------------------

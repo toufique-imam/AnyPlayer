@@ -115,7 +115,7 @@ class AdMobUtils(var activity: Activity) {
         }
     }
 
-    private val STOP_AD = "JMX_REWARD_PRO"
+    private val STOP_AD = "ANYPLAYER_REWARD_PRO"
     private fun saveReward() {
         val time: Long
         val timeNow = preference.getLong(STOP_AD, 0L)

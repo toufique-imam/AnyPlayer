@@ -50,6 +50,7 @@ class BrowseFragment : Fragment() {
     private lateinit var permissionRationaleView: LinearLayout
     lateinit var galleryAdapter: GalleryAdapter
     var typeNow = PlayerModel.STREAM_OFFLINE_VIDEO
+    var lastSelectedTab: Int = 0
     private var overlayView: ImageOverlayView? = null
     private var imageViewer: StfalconImageViewer<PlayerModel>? = null
     private var iCastController: ICastController? = null
@@ -76,11 +77,17 @@ class BrowseFragment : Fragment() {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {
+                    lastSelectedTab = tab.position
                     val prevType = typeNow
                     when (tab.text) {
-                        resources.getString(R.string.video) -> typeNow = PlayerModel.STREAM_OFFLINE_VIDEO
-                        resources.getString(R.string.audio) -> typeNow = PlayerModel.STREAM_OFFLINE_AUDIO
-                        resources.getString(R.string.image) -> typeNow = PlayerModel.STREAM_OFFLINE_IMAGE
+                        resources.getString(R.string.video) -> typeNow =
+                            PlayerModel.STREAM_OFFLINE_VIDEO
+
+                        resources.getString(R.string.audio) -> typeNow =
+                            PlayerModel.STREAM_OFFLINE_AUDIO
+
+                        resources.getString(R.string.image) -> typeNow =
+                            PlayerModel.STREAM_OFFLINE_IMAGE
                     }
                     if (prevType != typeNow) {
                         openMediaStore()
@@ -197,7 +204,7 @@ class BrowseFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
-            inflater.inflate(R.menu.toolbar_browse, menu)
+        inflater.inflate(R.menu.toolbar_browse, menu)
 
         val searchManager =
             requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
@@ -273,15 +280,21 @@ class BrowseFragment : Fragment() {
      */
     private fun getPermissions() =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(Manifest.permission.READ_MEDIA_IMAGES , Manifest.permission.READ_MEDIA_AUDIO, Manifest.permission.READ_MEDIA_VIDEO)
+            arrayOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_AUDIO,
+                Manifest.permission.READ_MEDIA_VIDEO
+            )
         } else {
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
+
     private fun requestPermission() {
         if (!haveStoragePermission()) {
             (activity as? IStoragePermission)?.getRequestPermissions()?.launch(getPermissions())
         }
     }
+
     private fun permissionCallback() {
         if (haveStoragePermission()) {
             openMediaStore()

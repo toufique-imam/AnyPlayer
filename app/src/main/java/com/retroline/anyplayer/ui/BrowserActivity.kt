@@ -20,8 +20,14 @@ import com.retroline.anyplayer.model.ICastController
 import com.retroline.anyplayer.model.IStoragePermission
 import com.retroline.anyplayer.model.PlayerModel
 import com.retroline.anyplayer.ui.fragment.BrowseFragment
-import com.retroline.anyplayer.utils.*
+import com.retroline.anyplayer.utils.AdMobUtils
+import com.retroline.anyplayer.utils.GlobalFunctions
 import com.retroline.anyplayer.utils.GlobalFunctions.toaster
+import com.retroline.anyplayer.utils.NotificationCenter
+import com.retroline.anyplayer.utils.PlayerUtils
+import com.retroline.anyplayer.utils.Settings
+import com.retroline.anyplayer.utils.createAlertDialogueLoading
+import com.retroline.anyplayer.utils.initPiracy
 
 
 class BrowserActivity : AppCompatActivity(), ICastController, IAdListener, IStoragePermission {

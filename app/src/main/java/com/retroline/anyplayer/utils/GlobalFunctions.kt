@@ -25,7 +25,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object GlobalFunctions {
-    const val DEFAULT_STREAM_NAME = "JMX Stream"
+    const val DEFAULT_STREAM_NAME = "AnyPlayer-Stream"
     fun getNameFromUrl(url: String): String {
         if (url.isEmpty()) return DEFAULT_STREAM_NAME
         try {
@@ -305,12 +305,12 @@ object GlobalFunctions {
 
     fun getReferer(playerModel: PlayerModel): String {
         if (!playerModel.headers["referer"].isNullOrEmpty()) return playerModel.headers["referer"]
-            ?: "JMX Player"
+            ?: "AnyPlayer"
         if (!playerModel.headers["Referrer"].isNullOrEmpty()) return playerModel.headers["Referrer"]
-            ?: "JMX Player"
+            ?: "AnyPlayer"
         if (!playerModel.headers["referrer"].isNullOrEmpty()) return playerModel.headers["referrer"]
-            ?: "JMX Player"
-        return "JMX Player"
+            ?: "AnyPlayer"
+        return "AnyPlayer"
 
     }
 }

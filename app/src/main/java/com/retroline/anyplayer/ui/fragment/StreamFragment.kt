@@ -1,7 +1,11 @@
 package com.retroline.anyplayer.ui.fragment
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -45,7 +49,7 @@ class StreamFragment : Fragment() {
         collectionAdapter = ViewPagerAdapter(this)
         viewPager2.adapter = collectionAdapter
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            tab.text = if (position == 0) "Listas M3U" else "Link M3U"
+            tab.text = if (position == 0) "M3U List" else "Stream Link"
         }.attach()
     }
 

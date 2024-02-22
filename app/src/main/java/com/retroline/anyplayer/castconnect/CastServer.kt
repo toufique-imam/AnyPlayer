@@ -160,6 +160,6 @@ class CastServer(private val context: Context) : NanoHTTPD(CAST_SERVER_PORT) {
 
     private fun errorResponse(message: String? = "Error"): Response {
         logger("error", message + "")
-        return newFixedLengthResponse("JMX PLAYER $message")
+        return newFixedLengthResponse("AnyPlayer PLAYER $message")
     }
 }

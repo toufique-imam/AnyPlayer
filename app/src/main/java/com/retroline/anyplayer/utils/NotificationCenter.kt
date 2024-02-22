@@ -16,5 +16,6 @@ class NotificationCenter {
     companion object {
         val shared = NotificationCenter()
         const val PermissionCallback = "PermissionCallback"
+        const val ResetTabLayoutCallback = "ResetTabLayoutCallback"
     }
 }
