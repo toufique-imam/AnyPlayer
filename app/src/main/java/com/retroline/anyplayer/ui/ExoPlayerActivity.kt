@@ -252,6 +252,7 @@ class ExoPlayerActivity : AppCompatActivity(),
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         mPlayerView = findViewById(R.id.media_view)
+
         forwardButton = mPlayerView.findViewById(R.id.exo_ffwd)
         rewindButton = mPlayerView.findViewById(R.id.exo_rew)
         playButton = mPlayerView.findViewById(R.id.exo_play)

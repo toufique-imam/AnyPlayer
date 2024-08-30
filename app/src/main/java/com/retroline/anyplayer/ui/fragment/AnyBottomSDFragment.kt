@@ -32,7 +32,7 @@ abstract class AnyBottomSDFragment : BottomSheetDialogFragment() {
                     if (bsb.state == BottomSheetBehavior.STATE_COLLAPSED) bsb.state =
                         getDefaultState()
                 }
-            val viewD = dialog?.findViewById<View>(R.id.touch_outside)
+            val viewD = dialog?.findViewById<View>(com.google.android.material.R.id.touch_outside)
             viewD?.isFocusable = false
             viewD?.isFocusableInTouchMode = false
 

@@ -147,7 +147,7 @@
             android:src="@drawable/ic_skip_back" />
 
         <ImageButton
-            android:id="@id/exo_rew"
+            android:id="@+id/exo_rew"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
@@ -157,7 +157,7 @@
             android:src="@drawable/ic_rewind" />
 
         <ImageButton
-            android:id="@id/exo_play"
+            android:id="@+id/exo_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/circle_background"
@@ -169,7 +169,7 @@
             app:tint="@color/black" />
 
         <ImageButton
-            android:id="@id/exo_pause"
+            android:id="@+id/exo_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/circle_background"
@@ -182,7 +182,7 @@
             app:tint="@color/black" />
 
         <ImageButton
-            android:id="@id/exo_ffwd"
+            android:id="@+id/exo_ffwd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
