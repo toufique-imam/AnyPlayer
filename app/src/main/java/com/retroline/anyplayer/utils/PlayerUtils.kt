@@ -3,23 +3,23 @@ package com.retroline.anyplayer.utils
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.MediaSourceFactory
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.dash.DashMediaSource
-import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
-import com.google.android.exoplayer2.source.hls.DefaultHlsExtractorFactory
-import com.google.android.exoplayer2.source.hls.HlsExtractorFactory
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.util.Util
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.dash.DashMediaSource
+import androidx.media3.exoplayer.dash.DefaultDashChunkSource
+import androidx.media3.exoplayer.hls.DefaultHlsExtractorFactory
+import androidx.media3.exoplayer.hls.HlsExtractorFactory
+import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import androidx.media3.extractor.DefaultExtractorsFactory
+import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory
 import com.retroline.anyplayer.castconnect.CastServer.Companion.CAST_SERVER_PORT
 import com.retroline.anyplayer.model.MediaData
 import com.retroline.anyplayer.model.PlayerModel
@@ -40,21 +40,22 @@ import com.retroline.anyplayer.utils.GlobalFunctions.logger
 import org.json.JSONObject
 import java.net.URL
 
-
+@UnstableApi
 object PlayerUtils {
+
     private fun getMimeType(link: String): String {
         val uriNow = Uri.parse(link)
         when (Util.inferContentType(uriNow)) {
-            C.TYPE_HLS -> {
+            C.CONTENT_TYPE_HLS -> {
                 return "application/x-mpegurl"
             }
-            C.TYPE_DASH -> {
+            C.CONTENT_TYPE_DASH -> {
                 return "application/dash+xml"
             }
-            C.TYPE_SS -> {
+            C.CONTENT_TYPE_SS -> {
                 return "video/mp4"
             }
-            C.TYPE_OTHER -> {
+            C.CONTENT_TYPE_OTHER -> {
                 return "application/x-mpegurl"
             }
             else -> {
@@ -276,10 +277,10 @@ object PlayerUtils {
         activity: Activity,
         playerModel: PlayerModel,
         errorCount: Int
-    ): MediaSourceFactory {
+    ): MediaSource.Factory {
         if (PlayerModel.isLocal(playerModel.streamType)) {
             return ProgressiveMediaSource.Factory(
-                DefaultDataSourceFactory(activity, "ua"),
+                DefaultDataSource.Factory(activity),
                 DefaultExtractorsFactory()
             )
         }
@@ -291,21 +292,21 @@ object PlayerUtils {
 
         val uriNow = Uri.parse(playerModel.link)
         when (Util.inferContentType(uriNow)) {
-            C.TYPE_DASH -> {
+            C.CONTENT_TYPE_DASH -> {
                 return DashMediaSource.Factory(
                     DefaultDashChunkSource.Factory(httpDataSourceFactory),
                     httpDataSourceFactory
                 )
             }
-            C.TYPE_HLS -> {
+            C.CONTENT_TYPE_HLS -> {
                 return HlsMediaSource.Factory(httpDataSourceFactory)
                     .setAllowChunklessPreparation(true)
                     .setExtractorFactory(extractorFactory)
             }
-            C.TYPE_SS -> {
+            C.CONTENT_TYPE_SS -> {
                 return SsMediaSource.Factory(httpDataSourceFactory)
             }
-            C.TYPE_OTHER -> {
+            C.CONTENT_TYPE_OTHER -> {
                 if (playerModel.link.contains(playerLatinoDomain)) {
                     return HlsMediaSource.Factory(httpDataSourceFactory)
                         .setExtractorFactory(extractorFactory)

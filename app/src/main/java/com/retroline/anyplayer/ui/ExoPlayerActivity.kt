@@ -23,27 +23,28 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.media3.common.C
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.TrackGroup
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.source.LoadEventInfo
+import androidx.media3.exoplayer.source.MediaLoadData
+import androidx.media3.exoplayer.source.TrackGroupArray
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.exoplayer.trackselection.MappingTrackSelector
+import androidx.media3.ui.PlayerView
+import androidx.media3.ui.TrackSelectionDialogBuilder
 import androidx.mediarouter.app.MediaRouteButton
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.javiersantos.piracychecker.PiracyChecker
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultLoadControl
-import com.google.android.exoplayer2.DefaultRenderersFactory
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaMetadata
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.analytics.AnalyticsListener
-import com.google.android.exoplayer2.source.LoadEventInfo
-import com.google.android.exoplayer2.source.MediaLoadData
-import com.google.android.exoplayer2.source.TrackGroup
-import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector
-import com.google.android.exoplayer2.ui.StyledPlayerView
-import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
-import com.google.android.exoplayer2.util.Util
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.retroline.anyplayer.R
@@ -69,10 +70,10 @@ import com.retroline.anyplayer.utils.createPlayerDialogue
 import com.retroline.anyplayer.utils.initPiracy
 import kotlin.math.max
 
+@UnstableApi
 class ExoPlayerActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
-    Player.Listener,
-    AnalyticsListener {
+    Player.Listener, AnalyticsListener {
 
     private val _autoPlay = "autoplay"
     private val _currentWindowIndex = "current_window_index"
@@ -97,7 +98,7 @@ class ExoPlayerActivity : AppCompatActivity(),
     private lateinit var playerDesc: TextView
     private lateinit var playerLang: TextView
 
-    private lateinit var mPlayerView: StyledPlayerView
+    private lateinit var mPlayerView: PlayerView
     private lateinit var backButton: ImageButton
     private lateinit var menuButton: ImageButton
     private lateinit var drawerLayout: DrawerLayout
@@ -437,12 +438,14 @@ class ExoPlayerActivity : AppCompatActivity(),
                 ) || isSubtitleRenderer(mappedTrackInfo, i)
             ) {
                 trackSelectorDialog.add(
-                    TrackSelectionDialogBuilder(
-                        this,
-                        "Select audio track",
-                        trackSelector,
-                        i
-                    ).build()
+                    mPlayer?.let {
+                        TrackSelectionDialogBuilder(
+                            this,
+                            "Select audio track",
+                            it,
+                            i
+                        ).build()
+                    }
                 )
                 val radioButton = RadioButton(this)
                 radioButton.id = cnt
@@ -819,9 +822,7 @@ class ExoPlayerActivity : AppCompatActivity(),
         audioTrackSelector.visibility = View.GONE
         addToHistory(playerModelNow)
         val mediaSource = PlayerUtils.createMediaSource(this, playerModelNow, errorCount)
-        if (mPlayer is ExoPlayer)
-            (mPlayer as ExoPlayer).setMediaSource(mediaSource)
-        else mPlayer?.setMediaItem(mediaSource.mediaItem)
+        mPlayer?.setMediaSource(mediaSource)
     }
 
     private fun createPlayer() {
@@ -872,9 +873,9 @@ class ExoPlayerActivity : AppCompatActivity(),
             createPlayer()
             mPlayer?.playWhenReady = autoPlay
             mPlayer?.addListener(this)
-            if (mPlayer is ExoPlayer) {
-                (mPlayer as ExoPlayer).addAnalyticsListener(this)
-            }
+
+                mPlayer?.addAnalyticsListener(this)
+
             mPlayerView.player = mPlayer
         }
         if (!fromError) {

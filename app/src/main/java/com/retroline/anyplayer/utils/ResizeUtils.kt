@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.view.Gravity
 import android.view.ViewGroup
+import androidx.annotation.OptIn
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.ui.AspectRatioFrameLayout
 import com.retroline.anyplayer.model.EAspectRatio
 import com.retroline.anyplayer.model.EResizeMode
 
@@ -23,6 +25,7 @@ class ResizeUtils(val activity: Activity) {
         GlobalFunctions.toaster(activity, aspectRatio.valueStr)
     }
 
+    @OptIn(UnstableApi::class)
     fun setResize(): Int {
         return when (resizeMode) {
             EResizeMode.FILL -> AspectRatioFrameLayout.RESIZE_MODE_FILL
